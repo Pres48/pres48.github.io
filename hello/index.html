@@ -1,55 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hello World</title>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello World</title>
+
     <style>
+        /* Fullscreen gradient background */
         body {
+            margin: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(180deg, #141e30, #243b55);
-            font-family: "Poppins", sans-serif;
-            position: relative;
+            background: linear-gradient(135deg, #1e90ff, #6a5acd, #ff69b4);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
             overflow: hidden;
-            color: white;
+            font-family: "Poppins", sans-serif;
         }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         h1 {
             font-size: 48px;
+            color: white;
+            text-shadow: 0 0 15px rgba(255,255,255,0.9);
             margin-bottom: 10px;
-            text-shadow: 0 0 15px #4da3ff;
-            text-align: center;
-            padding: 0 20px;
         }
+
+        img {
+            width: 200px;
+            margin: 20px 0;
+        }
+
         button {
-            padding: 12px 26px;
-            font-size: 18px;
+            padding: 12px 28px;
+            font-size: 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            background-color: red;
+            background: red;
             color: white;
             font-weight: bold;
-            box-shadow: 0 0 10px red, 0 0 20px red;
-            animation: redGlow 1.8s ease-in-out infinite alternate;
+            margin-top: 20px;
+            box-shadow: 0 0 12px red, 0 0 25px red;
+            animation: glow 1.8s ease-in-out infinite alternate;
         }
-        @keyframes redGlow {
+
+        @keyframes glow {
             from { box-shadow: 0 0 10px red; }
-            to { box-shadow: 0 0 28px red; }
+            to { box-shadow: 0 0 25px red; }
         }
 
         #message {
             margin-top: 20px;
             font-size: 26px;
-            color: #4da3ff;
+            color: white;
             text-align: center;
-            padding: 0 20px;
+            max-width: 90%;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
         }
 
-        /* Particles */
+        /* BACK BUTTON */
+        .back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.4);
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Floating particles */
         .particle {
             position: absolute;
             width: 6px;
@@ -59,93 +91,95 @@
             opacity: 0.8;
             animation: floatUp linear infinite;
         }
+
         @keyframes floatUp {
-            from { transform: translateY(100vh); opacity: 0; }
-            to { transform: translateY(-10vh); opacity: 1; }
+            from { transform: translateY(0); opacity: 0.8; }
+            to { transform: translateY(-120vh); opacity: 0; }
         }
 
-        .music-toggle {
+        /* Music Toggle */
+        #musicToggle {
             position: absolute;
-            bottom: 20px;
-            font-size: 16px;
-            padding: 10px 18px;
-            background: rgba(255,255,255,0.2);
+            bottom: 25px;
+            right: 25px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.4);
             color: white;
-            border-radius: 12px;
+            border-radius: 10px;
+            border: none;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(8px);
-        }
-
-        /* Back button */
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 16px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 16px;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(6px);
+            font-size: 18px;
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
+
 <body>
 
-    <a href="../index.html" class="back-button">⬅ Back</a>
+    <a href="../index.html" class="back">⬅ Back</a>
 
     <h1>Hello World!</h1>
 
-    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3ZoYmd6eHdlengzazZ1ZDc3eXhzZzdhbGltNnJ6M2dxbTVkM3U1ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ifBColYSQBYy99Dldd/giphy.gif" width="200" alt="Waving Cat">
+    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3ZoYmd6eHdlengzazZ1ZDc3eXhzZzdhbGltNnJ6M2dxbTVkM3U1ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ifBColYSQBYy99Dldd/giphy.gif" alt="Waving Cat">
 
     <button onclick="askName(); playClick();">Click Me</button>
 
     <div id="message"></div>
 
-    <button class="music-toggle" onclick="toggleMusic()">🎵 Toggle Music</button>
+    <!-- Background Music -->
+    <audio id="bgMusic" src="fun_background.mp3" loop></audio>
 
-    <audio id="bgMusic" loop>
-        <source src="fun_background.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Click Sound -->
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
-    <audio id="clickSound">
-        <source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" type="audio/ogg">
-    </audio>
+    <button id="musicToggle" onclick="toggleMusic()">🔊 Music: Off</button>
 
-<script>
-// Particles
-for(let i = 0; i < 35; i++) {
-    const p = document.createElement('div');
-    p.classList.add('particle');
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.animationDuration = (4 + Math.random() * 10) + 's';
-    p.style.animationDelay = Math.random() * 5 + 's';
-    document.body.appendChild(p);
-}
 
-// Name prompt
-function askName() {
-    let name = prompt("What is your name?");
-    if (name && name.trim() !== "") {
-        document.getElementById("message").textContent =
-            "Nice to meet you, " + name + "! 😺 The waving cat says hello!";
-    }
-}
+    <script>
+        /* Ask Name */
+        function askName() {
+            let name = prompt("What is your name?");
+            if (name && name.trim() !== "") {
+                document.getElementById("message").textContent =
+                    "Nice to meet you, " + name + "! 😺 The waving cat says hello!";
+            }
+        }
 
-// Click sound
-function playClick() {
-    document.getElementById('clickSound').play();
-}
+        /* Click Sound */
+        function playClick() {
+            document.getElementById("clickSound").play();
+        }
 
-// Music toggle
-function toggleMusic() {
-    let music = document.getElementById('bgMusic');
-    if (music.paused) music.play(); else music.pause();
-}
-</script>
+        /* Music Toggle */
+        let music = document.getElementById("bgMusic");
+        let toggle = document.getElementById("musicToggle");
+        let musicOn = false;
+
+        function toggleMusic() {
+            if (!musicOn) {
+                music.play();
+                toggle.textContent = "🔊 Music: On";
+                musicOn = true;
+            } else {
+                music.pause();
+                toggle.textContent = "🔇 Music: Off";
+                musicOn = false;
+            }
+        }
+
+        /* Floating particles */
+        function createParticles() {
+            for (let i = 0; i < 40; i++) {
+                let p = document.createElement("div");
+                p.classList.add("particle");
+                p.style.left = Math.random() * 100 + "vw";
+                p.style.top = Math.random() * 100 + "vh";
+                p.style.animationDuration = 6 + Math.random() * 6 + "s";
+                document.body.appendChild(p);
+            }
+        }
+        createParticles();
+    </script>
 
 </body>
 </html>
