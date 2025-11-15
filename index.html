@@ -11,6 +11,7 @@
             height: 100vh;
             margin: 0;
             background-color: white;
+            position: relative;
         }
         h1 {
             font-size: 50px;
@@ -32,6 +33,13 @@
         img {
             margin: 15px 0;
         }
+        footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 14px;
+            color: #555;
+            opacity: 0.7;
+        }
     </style>
 </head>
 
@@ -45,6 +53,8 @@
     <button onclick="askName()">Click Me</button>
 
     <div id="message"></div>
+
+    <footer>a PresHag original.</footer>
 
     <script>
         function askName() {
