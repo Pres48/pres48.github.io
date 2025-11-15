@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stuffed Animal Mixer</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Fredoka', sans-serif;
+            background: linear-gradient(#e3fff1, #c7e8ff);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 40px;
+            color: #1a92b6;
+            text-shadow: 2px 2px #ffffff;
+        }
+
+        button {
+            background: #6cd4b4;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 3px 0 #4aa88b;
+            transition: transform 0.1s;
+        }
+        button:hover {
+            transform: scale(1.08);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #tabs button {
+            width: 140px;
+        }
+
+        .carousel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #ffffffaa;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px #00000020;
+            border: 3px dashed #7fd6ff;
+        }
+
+        .carousel img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            border: 3px solid #b8edff;
+            box-shadow: 0 4px 8px #00000020;
+        }
+
+        #preview-area {
+            width: 320px;
+            height: 420px;
+            background: #ffffffaa;
+            border: 4px solid #7fe6c9;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px #00000025;
+        }
+
+        .part {
+            position: absolute;
+            width: 120px;
+            left: 100px;
+        }
+
+        #head { top: 10px; }
+        #body { top: 140px; }
+        #left-arm { top: 160px; left: 30px; }
+        #right-arm { top: 160px; left: 190px; }
+        #left-leg { top: 280px; left: 70px; }
+        #right-leg { top: 280px; left: 150px; }
+    </style>
+</head>
+<body>
+    <h1>Stuffed Animal Mixer</h1>
+
+    <div style="display:flex; gap:20px; width:100%; justify-content:center;">
+        <!-- TAB MENU -->
+        <div id="tabs" style="display:flex; flex-direction:column; gap:10px; width:150px;">
+            <button onclick="showTab('head')">Head</button>
+            <button onclick="showTab('body')">Body</button>
+            <button onclick="showTab('leftArm')">Left Arm</button>
+            <button onclick="showTab('rightArm')">Right Arm</button>
+            <button onclick="showTab('leftLeg')">Left Leg</button>
+            <button onclick="showTab('rightLeg')">Right Leg</button>
+        </div>
+
+        <!-- CAROUSEL AREA (only one visible at a time) -->
+        <div id="carousel-area" style="width:200px;">
+            <div class="carousel" id="carousel-head" data-part="head">
+                <h3>Head</h3>
+                <img id="head-img" src="" alt="Head" />
+                <button onclick="prev('head')">Prev</button>
+                <button onclick="next('head')">Next</button>
+            </div>
+
+            <div class="carousel" id="carousel-body" data-part="body" style="display:none;">
+                <h3>Body</h3>
+                <img id="body-img" src="" alt="Body" />
+                <button onclick="prev('body')">Prev</button>
+                <button onclick="next('body')">Next</button>
+            </div>
+
+            <div class="carousel" id="carousel-leftArm" data-part="leftArm" style="display:none;">
+                <h3>Left Arm</h3>
+                <img id="left-arm-img" src="" alt="Left Arm" />
+                <button onclick="prev('leftArm')">Prev</button>
+                <button onclick="next('leftArm')">Next</button>
+            </div>
+
+            <div class="carousel" id="carousel-rightArm" data-part="rightArm" style="display:none;">
+                <h3>Right Arm</h3>
+                <img id="right-arm-img" src="" alt="Right Arm" />
+                <button onclick="prev('rightArm')">Prev</button>
+                <button onclick="next('rightArm')">Next</button>
+            </div>
+
+            <div class="carousel" id="carousel-leftLeg" data-part="leftLeg" style="display:none;">
+                <h3>Left Leg</h3>
+                <img id="left-leg-img" src="" alt="Left Leg" />
+                <button onclick="prev('leftLeg')">Prev</button>
+                <button onclick="next('leftLeg')">Next</button>
+            </div>
+
+            <div class="carousel" id="carousel-rightLeg" data-part="rightLeg" style="display:none;">
+                <h3>Right Leg</h3>
+                <img id="right-leg-img" src="" alt="Right Leg" />
+                <button onclick="prev('rightLeg')">Prev</button>
+                <button onclick="next('rightLeg')">Next</button>
+            </div>
+        </div>
+
+        <!-- PREVIEW AREA -->
+        <div id="preview-area">
+            <img id="head" class="part" />
+            <img id="body" class="part" />
+            <img id="left-arm" class="part" />
+            <img id="right-arm" class="part" />
+            <img id="left-leg" class="part" />
+            <img id="right-leg" class="part" />
+        </div>
+    </div>
+
+    <script>
+        const parts = {
+            head: [
+                "img/heads/bear.png", "img/heads/tiger.png", "img/heads/elephant.png", "img/heads/giraffe.png",
+                "img/heads/dog.png", "img/heads/unicorn.png", "img/heads/dragon.png", "img/heads/lion.png",
+                "img/heads/monkey.png", "img/heads/dinosaur.png"
+            ],
+            body: [
+                "img/bodies/bear.png", "img/bodies/tiger.png", "img/bodies/elephant.png", "img/bodies/giraffe.png",
+                "img/bodies/dog.png", "img/bodies/unicorn.png", "img/bodies/dragon.png", "img/bodies/lion.png",
+                "img/bodies/monkey.png", "img/bodies/dinosaur.png"
+            ],
+            leftArm: [
+                "img/arms/left-bear.png", "img/arms/left-tiger.png", "img/arms/left-elephant.png", "img/arms/left-giraffe.png",
+                "img/arms/left-dog.png", "img/arms/left-unicorn.png", "img/arms/left-dragon.png", "img/arms/left-lion.png",
+                "img/arms/left-monkey.png", "img/arms/left-dinosaur.png"
+            ],
+            rightArm: [
+                "img/arms/right-bear.png", "img/arms/right-tiger.png", "img/arms/right-elephant.png", "img/arms/right-giraffe.png",
+                "img/arms/right-dog.png", "img/arms/right-unicorn.png", "img/arms/right-dragon.png", "img/arms/right-lion.png",
+                "img/arms/right-monkey.png", "img/arms/right-dinosaur.png"
+            ],
+            leftLeg: [
+                "img/legs/left-bear.png", "img/legs/left-tiger.png", "img/legs/left-elephant.png", "img/legs/left-giraffe.png",
+                "img/legs/left-dog.png", "img/legs/left-unicorn.png", "img/legs/left-dragon.png", "img/legs/left-lion.png",
+                "img/legs/left-monkey.png", "img/legs/left-dinosaur.png"
+            ],
+            rightLeg: [
+                "img/legs/right-bear.png", "img/legs/right-tiger.png", "img/legs/right-elephant.png", "img/legs/right-giraffe.png",
+                "img/legs/right-dog.png", "img/legs/right-unicorn.png", "img/legs/right-dragon.png", "img/legs/right-lion.png",
+                "img/legs/right-monkey.png", "img/legs/right-dinosaur.png"
+            ]
+        };
+
+        const index = { head: 0, body: 0, leftArm: 0, rightArm: 0, leftLeg: 0, rightLeg: 0 };
+
+        function update(part) {
+            const img = document.getElementById(part + "-img");
+            const view = document.getElementById(part.replace(/([A-Z])/g, '-$1').toLowerCase());
+            const list = parts[part];
+            img.src = list[index[part]];
+            view.src = list[index[part]];
+        }
+
+        function next(part) {
+            index[part] = (index[part] + 1) % parts[part].length;
+            update(part);
+        }
+
+        function prev(part) {
+            index[part] = (index[part] - 1 + parts[part].length) % parts[part].length;
+            update(part);
+        }
+
+        function showTab(part) {
+            document.querySelectorAll('.carousel').forEach(c => c.style.display = 'none');
+            document.getElementById('carousel-' + part).style.display = 'block';
+        }
+
+        Object.keys(parts).forEach(update);
+        showTab('head');
+    </script>
+</body>
+</body>
+</html>
