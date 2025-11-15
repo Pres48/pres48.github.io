@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stuffed Animal Mixer</title>
+
     <style>
         body {
             font-family: 'Comic Sans MS', 'Fredoka', sans-serif;
@@ -34,40 +35,46 @@
             box-shadow: 0 3px 0 #4aa88b;
             transition: transform 0.1s;
         }
-        button:hover {
-            transform: scale(1.08);
-        }
-        button:active {
-            transform: scale(0.95);
-        }
+        button:hover { transform: scale(1.08); }
+        button:active { transform: scale(0.95); }
 
         #tabs button {
             width: 140px;
         }
 
+        /* FIXED: Stable non-shrinking carousel */
         .carousel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 20px;
+
             background: #ffffffaa;
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 4px 10px #00000020;
             border: 3px dashed #7fd6ff;
+
+            width: 260px;
+            height: 340px;
+            justify-content: space-between;
         }
 
+        /* FIXED: Image stays same size, never collapsing */
         .carousel img {
-            width: 140px;
-            height: 140px;
+            width: 220px;
+            height: 220px;
             object-fit: contain;
+
             background: white;
             border-radius: 15px;
             padding: 10px;
             border: 3px solid #b8edff;
             box-shadow: 0 4px 8px #00000020;
+
+            flex-shrink: 0;
         }
 
+        /* Preview (assembled character) */
         #preview-area {
             width: 320px;
             height: 420px;
@@ -78,25 +85,30 @@
             box-shadow: 0 5px 15px #00000025;
         }
 
+        /* FIXED: parts have consistent size + object-fit */
         .part {
             position: absolute;
-            width: 120px;
-            left: 100px;
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
         }
 
-        #head { top: 10px; }
-        #body { top: 140px; }
-        #left-arm { top: 160px; left: 30px; }
-        #right-arm { top: 160px; left: 190px; }
-        #left-leg { top: 280px; left: 70px; }
-        #right-leg { top: 280px; left: 150px; }
+        #head       { top: 10px;  left: 90px; }
+        #body       { top: 140px; left: 90px; }
+        #left-arm   { top: 160px; left: 20px; }
+        #right-arm  { top: 160px; left: 160px; }
+        #left-leg   { top: 280px; left: 60px; }
+        #right-leg  { top: 280px; left: 120px; }
+
     </style>
 </head>
+
 <body>
     <h1>Stuffed Animal Mixer</h1>
 
     <div style="display:flex; gap:20px; width:100%; justify-content:center;">
-        <!-- TAB MENU -->
+
+        <!-- Tabs -->
         <div id="tabs" style="display:flex; flex-direction:column; gap:10px; width:150px;">
             <button onclick="showTab('head')">Head</button>
             <button onclick="showTab('body')">Body</button>
@@ -106,8 +118,8 @@
             <button onclick="showTab('rightLeg')">Right Leg</button>
         </div>
 
-        <!-- CAROUSEL AREA (only one visible at a time) -->
-        <div id="carousel-area" style="width:200px;">
+        <!-- Carousel (one visible at a time) -->
+        <div id="carousel-area" style="width:260px;">
             <div class="carousel" id="carousel-head" data-part="head">
                 <h3>Head</h3>
                 <img id="head-img" src="" alt="Head" />
@@ -151,7 +163,7 @@
             </div>
         </div>
 
-        <!-- PREVIEW AREA -->
+        <!-- Assembled Character Preview -->
         <div id="preview-area">
             <img id="head" class="part" />
             <img id="body" class="part" />
@@ -160,6 +172,7 @@
             <img id="left-leg" class="part" />
             <img id="right-leg" class="part" />
         </div>
+
     </div>
 
     <script>
@@ -196,14 +209,21 @@
             ]
         };
 
-        const index = { head: 0, body: 0, leftArm: 0, rightArm: 0, leftLeg: 0, rightLeg: 0 };
+        const index = {
+            head: 0, body: 0,
+            leftArm: 0, rightArm: 0,
+            leftLeg: 0, rightLeg: 0
+        };
 
         function update(part) {
             const img = document.getElementById(part + "-img");
-            const view = document.getElementById(part.replace(/([A-Z])/g, '-$1').toLowerCase());
+            const previewImg = document.getElementById(
+                part.replace(/([A-Z])/g, '-$1').toLowerCase()
+            );
             const list = parts[part];
+
             img.src = list[index[part]];
-            view.src = list[index[part]];
+            previewImg.src = list[index[part]];
         }
 
         function next(part) {
@@ -218,12 +238,12 @@
 
         function showTab(part) {
             document.querySelectorAll('.carousel').forEach(c => c.style.display = 'none');
-            document.getElementById('carousel-' + part).style.display = 'block';
+            document.getElementById('carousel-' + part).style.display = 'flex';
         }
 
         Object.keys(parts).forEach(update);
         showTab('head');
     </script>
-</body>
+
 </body>
 </html>
