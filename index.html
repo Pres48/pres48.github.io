@@ -27,6 +27,19 @@
             background-color: red;
             color: white;
             font-weight: bold;
+            box-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red;
+            animation: redGlow 1.8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes redGlow {
+            from {
+                box-shadow: 0 0 8px red, 0 0 16px red, 0 0 24px red;
+                opacity: 0.9;
+            }
+            to {
+                box-shadow: 0 0 15px red, 0 0 30px red, 0 0 45px red;
+                opacity: 1;
+            }
         }
         #message {
             margin-top: 20px;
