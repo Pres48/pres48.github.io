@@ -15,7 +15,7 @@
         h1 {
             font-size: 50px;
             color: #1E90FF; /* Neon blue */
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         button {
             padding: 10px 20px;
@@ -29,12 +29,18 @@
             font-size: 28px;
             color: #1E90FF;
         }
+        img {
+            margin: 15px 0;
+        }
     </style>
 </head>
 
 <body>
 
     <h1>Hello World!</h1>
+
+    <!-- Waving cat GIF -->
+    <img src="https://i.imgur.com/5c3LZQb.gif" width="200" alt="Waving Cat">
 
     <button onclick="askName()">Click Me</button>
 
@@ -45,7 +51,7 @@
             let name = prompt("What is your name?");
             if (name && name.trim() !== "") {
                 document.getElementById("message").textContent =
-                    "Nice to meet you, " + name + "! Welcome to this awesome webpage!";
+                    "Nice to meet you, " + name + "! 😺 The waving cat says hello!";
             }
         }
     </script>
