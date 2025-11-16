@@ -22,7 +22,6 @@ const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
 const rawName = playerNameInput.value.trim();
 const name = rawName || "Guest";
-await saveScoreToSupabase(name, finalScore, gameState.level);
 
 // popover elements
 const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
@@ -40,6 +39,8 @@ let turnDeadline = null;
 let selectedThisTurn = false;
 let bestScore = 0;
 let bestLevel = 0;
+
+await saveScoreToSupabase(name, finalScore, gameState.level);
 
 // ---------- Utility ----------
 
