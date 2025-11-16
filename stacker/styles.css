@@ -1,15 +1,16 @@
 body {
   margin: 0;
-  padding: 0;
+  padding: 20px 0 0 0;   /* <-- add top padding */
   font-family: Arial, sans-serif;
   text-align: center;
   display: flex;
-  justify-content: center; /* Center content horizontally */
+  justify-content: center;
   align-items: center;
   flex-direction: column;
   height: 100vh;
   background-color: #87ceeb;
 }
+
 
 h1 {
   margin: 0 20px;
@@ -38,21 +39,20 @@ p {
 
 /* Back button — force to top-left */
 #back {
-    align-self: flex-start;
-    margin-left: 20px;
-    margin-top: 20px;
-    padding: 12px 20px;
-    background: #444;
-    color: white;
-    font-size: 20px;
-    border-radius: 10px;
-    text-decoration: none;
+  align-self: flex-start;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  padding: 12px 20px;
+  background: #444;
+  color: white;
+  font-size: 20px;
+  border-radius: 10px;
+  text-decoration: none;
 }
 
 #back:hover {
-    background: #666;
+  background: #666;
 }
-
 
 /* Reset Button Styling */
 .reset-button {
