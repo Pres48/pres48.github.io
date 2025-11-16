@@ -36,9 +36,10 @@ p {
   background-color: #f0f0f0;
 }
 
-/* Back button */
+/* Back button — force to top-left */
 #back {
-    display: inline-block;
+    align-self: flex-start;
+    margin-left: 20px;
     margin-top: 20px;
     padding: 12px 20px;
     background: #444;
@@ -51,6 +52,7 @@ p {
 #back:hover {
     background: #666;
 }
+
 
 /* Reset Button Styling */
 .reset-button {
