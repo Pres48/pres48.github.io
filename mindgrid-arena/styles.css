@@ -354,6 +354,50 @@ button:disabled {
   min-height: 18px;
 }
 
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 0.78rem;
+  border-bottom: 1px dashed rgba(55, 65, 81, 0.6);
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row .rank {
+  color: #9ca3af;
+}
+
+.leaderboard-row .entry-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboard-row .entry-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-row .entry-level {
+  color: #9ca3af;
+  font-size: 0.7rem;
+}
+
+.soft-text {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
 /* Responsive */
 
 @media (max-width: 800px) {
