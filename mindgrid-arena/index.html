@@ -78,20 +78,47 @@
         </section>
 
         <section class="panel-block">
-          <h2>High Score</h2>
-          <div id="highScoreBox" class="highscore-box">
-            <div class="highscore-row">
-              <span class="label">Best Score:</span>
-              <span class="value" id="bestScoreDisplay">–</span>
-            </div>
-            <div class="highscore-row">
-              <span class="label">Best Level:</span>
-              <span class="value" id="bestLevelDisplay">–</span>
-            </div>
-            <button id="saveScoreButton" class="secondary" disabled>Save Score</button>
-            <p id="saveStatus" class="save-status"></p>
-          </div>
+          <h2>How to Play</h2>
+          <p>
+            Each level is a series of fast turns. On every turn you must click
+            <strong>exactly one tile</strong> before the bar runs out.
+          </p>
+          <p>
+            Your <strong>score for a turn</strong> is:
+            <br />
+            <code>tile points × current multiplier</code>
+          </p>
+          <p>
+            Different tiles change your points and multiplier in different ways:
+          </p>
+          <ul class="bullet-list">
+            <li>
+              <strong>Blue – Number</strong>: gives base points (shown on the tile),
+              multiplied by your current multiplier.
+            </li>
+            <li>
+              <strong>Yellow – Bonus</strong>: small points, but
+              <strong>raises your multiplier</strong> for future turns.
+            </li>
+            <li>
+              <strong>Green – Chain</strong>: gives more points when you pick them
+              on <strong>consecutive turns</strong>. Each chain in a row is worth more.
+            </li>
+            <li>
+              <strong>Red – Risk</strong>: can be big positive or negative. Negative
+              values can <strong>lower your multiplier</strong>.
+            </li>
+          </ul>
+          <p>
+            Missing a turn (no click in time) gives <strong>0 points</strong> and
+            breaks any active chain.
+          </p>
+          <p>
+            As levels go up, you get <strong>less time per move</strong>,
+            <strong>more turns</strong>, and <strong>trickier boards</strong>.
+          </p>
         </section>
+
       </aside>
     </main>
   </div>
