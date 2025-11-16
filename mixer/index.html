@@ -106,6 +106,109 @@
   .bubble{ position:absolute; border-radius:50%; background:rgba(255,255,255,0.6); filter:blur(6px); mix-blend-mode:overlay; opacity:.9; animation: floatUp linear infinite; }
   @keyframes floatUp { from{ transform: translateY(120vh) scale(1);} to{ transform: translateY(-40vh) scale(.9);} }
 
+  /* --------- Mobile / Tablet layout tweaks --------- */
+@media (max-width: 900px) {
+  body {
+    padding: 12px;
+  }
+
+  h1 {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  /* Stack everything vertically instead of side-by-side */
+  .page-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
+  /* Tabs become a responsive button grid on top */
+  #tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 480px;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #tabs button {
+    flex: 1 1 calc(33.33% - 8px);
+    min-width: 90px;
+    text-align: center;
+    padding: 10px;
+  }
+
+  /* Carousel area centers and shrinks slightly */
+  #carousel-area {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .carousel {
+    width: 100%;
+    max-width: 360px;
+    height: auto;              /* allow height to grow with content */
+    padding: 14px;
+  }
+
+  .carousel img {
+    width: 100%;
+    max-width: 260px;
+    height: auto;              /* keep aspect ratio */
+  }
+
+  /* Preview takes full width below carousel */
+  .preview-wrap {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  #preview-area {
+    width: 100%;
+    max-width: 420px;          /* still scales with your JS */
+  }
+
+  /* Buttons can wrap on small screens */
+  #action-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .action-btn {
+    flex: 1 1 140px;
+    text-align: center;
+  }
+}
+
+/* Extra-tight phones */
+@media (max-width: 520px) {
+  body {
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  #tabs {
+    max-width: 100%;
+  }
+
+  #tabs button {
+    flex: 1 1 calc(50% - 8px);  /* two per row on very small screens */
+  }
+
+  #preview-area {
+    max-width: 360px;
+  }
+}
+
   /* Responsive tweaks: adjust scale limits if screen is tiny */
   @media (max-width:520px){
     /* we still use uniform scale, but ensure preview area doesn't become tiny */
