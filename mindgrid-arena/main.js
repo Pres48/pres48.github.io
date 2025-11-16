@@ -21,6 +21,13 @@ const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
 const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
 const howToPlayInfoPopover = document.getElementById("howToPlayInfoPopover");
+const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
+const howToPlayInfoPopover = document.getElementById("howToPlayInfoPopover");
+const levelGoalsInfoBtn = document.getElementById("levelGoalsInfoBtn");
+const levelGoalsInfoPopover = document.getElementById("levelGoalsInfoPopover");
+const leaderboardInfoBtn = document.getElementById("leaderboardInfoBtn");
+const leaderboardInfoPopover = document.getElementById("leaderboardInfoPopover");
+
 
 
 const MIN_SUBMIT_SCORE = 200; // minimum score required to submit to global leaderboard
@@ -479,7 +486,7 @@ function restartGame() {
 }
 
 function init() {
-  // existing button hooks
+  // Button handlers
   startButton.onclick = startGame;
   restartButton.onclick = restartGame;
   saveScoreButton.onclick = handleSaveScore;
@@ -489,26 +496,57 @@ function init() {
   restartButton.disabled = true;
   saveScoreButton.disabled = true;
 
-  // Load leaderboard on page load
   loadLeaderboard();
 
-  // 👉 How to Play popover behavior
-  if (howToPlayInfoBtn && howToPlayInfoPopover) {
-    howToPlayInfoBtn.onclick = (event) => {
-      event.stopPropagation();
-      howToPlayInfoPopover.classList.toggle("visible");
-    };
-
-    // Click anywhere else closes it
-    document.addEventListener("click", () => {
-      howToPlayInfoPopover.classList.remove("visible");
+  // --- Popover helpers ---
+  function togglePopover(popover) {
+    if (!popover) return;
+    const isVisible = popover.classList.contains("visible");
+    // close all first
+    [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach(p => {
+      if (p) p.classList.remove("visible");
     });
-
-    // Prevent clicks inside the popover from closing it immediately
-    howToPlayInfoPopover.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
+    if (!isVisible) {
+      popover.classList.add("visible");
+    }
   }
+
+  if (howToPlayInfoBtn && howToPlayInfoPopover) {
+    howToPlayInfoBtn.onclick = (e) => {
+      e.stopPropagation();
+      togglePopover(howToPlayInfoPopover);
+    };
+  }
+
+  if (levelGoalsInfoBtn && levelGoalsInfoPopover) {
+    levelGoalsInfoBtn.onclick = (e) => {
+      e.stopPropagation();
+      togglePopover(levelGoalsInfoPopover);
+    };
+  }
+
+  if (leaderboardInfoBtn && leaderboardInfoPopover) {
+    leaderboardInfoBtn.onclick = (e) => {
+      e.stopPropagation();
+      togglePopover(leaderboardInfoPopover);
+    };
+  }
+
+  // Click anywhere else closes all
+  document.addEventListener("click", () => {
+    [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach(p => {
+      if (p) p.classList.remove("visible");
+    });
+  });
+
+  // Prevent clicks inside popovers from closing them immediately
+  [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach(p => {
+    if (!p) return;
+    p.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  });
 }
+
 
 init();
