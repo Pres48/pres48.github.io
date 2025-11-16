@@ -19,14 +19,14 @@ const saveStatus = document.getElementById("saveStatus");
 const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
+
+// popover elements
 const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
 const howToPlayInfoPopover = document.getElementById("howToPlayInfoPopover");
 const levelGoalsInfoBtn = document.getElementById("levelGoalsInfoBtn");
 const levelGoalsInfoPopover = document.getElementById("levelGoalsInfoPopover");
 const leaderboardInfoBtn = document.getElementById("leaderboardInfoBtn");
 const leaderboardInfoPopover = document.getElementById("leaderboardInfoPopover");
-
-
 
 const MIN_SUBMIT_SCORE = 200; // minimum score required to submit to global leaderboard
 
