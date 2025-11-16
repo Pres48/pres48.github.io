@@ -270,7 +270,7 @@ body {
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #22c55e, #facc15, #ef4444);
+  background: linear-gradient(90deg, #ef4444, #facc15, #22c55e);
   transition: width 0.05s linear;
 }
 
