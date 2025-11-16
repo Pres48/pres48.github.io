@@ -36,6 +36,22 @@ p {
   background-color: #f0f0f0;
 }
 
+/* Back button */
+#back {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #444;
+    color: white;
+    font-size: 20px;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+#back:hover {
+    background: #666;
+}
+
 /* Reset Button Styling */
 .reset-button {
   color: white;
