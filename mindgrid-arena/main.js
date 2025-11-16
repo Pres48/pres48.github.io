@@ -16,6 +16,7 @@ const bestScoreDisplay = document.getElementById("bestScoreDisplay");
 const bestLevelDisplay = document.getElementById("bestLevelDisplay");
 const saveScoreButton = document.getElementById("saveScoreButton");
 const saveStatus = document.getElementById("saveStatus");
+const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 
 let gameState = null;
 let timerInterval = null;
@@ -109,6 +110,7 @@ function handleMissedTurn() {
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
   gameState.lastTileDelta = 0;
+  updateUIFromState();
   setTimeout(() => {
     nextTurn();
   }, 400);
@@ -200,10 +202,24 @@ function onTileClick(tile) {
 
 function updateUIFromState() {
   if (!gameState) return;
+
   levelDisplay.textContent = gameState.level;
   scoreDisplay.textContent = gameState.score.toLocaleString();
   multiplierDisplay.textContent = `x${gameState.multiplier.toFixed(2)}`;
   updateTurnDisplay();
+
+  // Last move display
+  const delta = gameState.lastTileDelta ?? 0;
+  let text = delta === 0 ? "0" : delta > 0 ? `+${delta}` : `${delta}`;
+  lastMoveDisplay.textContent = text;
+
+  if (delta > 0) {
+    lastMoveDisplay.style.color = "#22c55e"; // green
+  } else if (delta < 0) {
+    lastMoveDisplay.style.color = "#f97373"; // red
+  } else {
+    lastMoveDisplay.style.color = "#9ca3af"; // neutral
+  }
 }
 
 function updateTurnDisplay() {
