@@ -63,35 +63,30 @@
         
         <div class="level-goals-header">
           <span class="level-goals-label">Level Goals</span>
+        
           <button
             type="button"
             class="info-icon"
             id="levelGoalsInfoBtn"
             aria-label="More info about level goals"
-          >
-            ?
-          </button>
+          >?</button>
+        
+          <span class="level-goals-separator">|</span>
+        
+          <span class="level-goals-text" id="levelGoals">
+            Level target: +80 pts, Max misses: 3
+          </span>
+        
           <div class="info-popover" id="levelGoalsInfoPopover">
             <strong>How level goals are calculated</strong>
-            <p>
-              Each level has two requirements to advance:
-            </p>
+            <p>Each level has two requirements:</p>
             <ul>
-              <li>
-                <strong>Score gain this level</strong> must be at least the
-                <em>Level target</em> shown above the grid.
-              </li>
-              <li>
-                You must stay under the <strong>Max misses</strong> shown for the level.
-              </li>
+              <li><strong>Score gain</strong> this level must meet the Level target.</li>
+              <li>You must stay under the <strong>Max misses</strong> limit.</li>
             </ul>
-            <p>
-              Later levels require bigger point gains and allow fewer missed turns.
-            </p>
+            <p>Higher levels require bigger gains and allow fewer missed turns.</p>
           </div>
         </div>
-        
-        <div class="level-goals" id="levelGoals"></div>
         
         <div class="grid" id="gridContainer">
           <!-- tiles injected by JS -->
