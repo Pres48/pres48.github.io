@@ -340,8 +340,12 @@ function updateLevelGoals() {
   const target = getRequiredGainForLevel(level);
   const maxMiss = getAllowedMissesForLevel(level);
 
-  levelGoals.textContent = `Level target: +${target.toLocaleString()} pts, Max misses: ${maxMiss}`;
+  // NEW: Show "Level X target"
+  levelGoals.textContent =
+    `Level ${level} target: +${target.toLocaleString()} pts, ` +
+    `Max misses: ${maxMiss}`;
 }
+
 
 // ---------- Auto-save to leaderboard ----------
 
