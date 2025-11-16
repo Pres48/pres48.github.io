@@ -411,9 +411,10 @@ async function handleSaveScore() {
  * Wire up top-level events.
  */
 function init() {
-  startButton.addEventListener("click", startGame);
-  restartButton.addEventListener("click", restartGame);
-  saveScoreButton.addEventListener("click", handleSaveScore);
+  // Use onclick instead of addEventListener so we can safely replace behavior
+  startButton.onclick = startGame;
+  restartButton.onclick = restartGame;
+  saveScoreButton.onclick = handleSaveScore;
 
   // Defaults
   bestScoreDisplay.textContent = "–";
@@ -424,6 +425,7 @@ function init() {
   // Load leaderboard on page load
   loadLeaderboard();
 }
+
 
 
 init();
