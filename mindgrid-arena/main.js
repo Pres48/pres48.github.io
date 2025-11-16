@@ -18,6 +18,7 @@ const saveScoreButton = document.getElementById("saveScoreButton");
 const saveStatus = document.getElementById("saveStatus");
 const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 const leaderboardList = document.getElementById("leaderboardList");
+const MIN_SUBMIT_SCORE = 200; // minimum score required to submit to global leaderboard
 
 let gameState = null;
 let timerInterval = null;
@@ -253,17 +254,28 @@ function endRound() {
   setTilesDisabled(true);
   gameState.locked = true;
 
-  messageArea.textContent = `Round complete! Final score: ${gameState.score.toLocaleString()}`;
+  const finalScore = gameState.score;
+  messageArea.textContent = `Round complete! Final score: ${finalScore.toLocaleString()}`;
 
-  // Track local best
-  if (gameState.score > bestScore) {
-    bestScore = gameState.score;
+  // Track local best in this session
+  if (finalScore > bestScore) {
+    bestScore = finalScore;
     bestLevel = gameState.level;
     bestScoreDisplay.textContent = bestScore.toLocaleString();
     bestLevelDisplay.textContent = bestLevel;
   }
 
-  saveScoreButton.disabled = false;
+  // Anti-spam: only allow leaderboard submit if score >= MIN_SUBMIT_SCORE
+  if (finalScore >= MIN_SUBMIT_SCORE) {
+    saveScoreButton.disabled = false;
+    saveStatus.textContent = "";
+    saveStatus.style.color = "";
+  } else {
+    saveScoreButton.disabled = true;
+    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE} points to submit to the global leaderboard.`;
+    saveStatus.style.color = "#9ca3af";
+  }
+
   startButton.disabled = false;
   startButton.textContent = "Play Next Level";
 
@@ -273,6 +285,7 @@ function endRound() {
     startLevel(nextLevel);
   };
 }
+
 
 function startLevel(level) {
   gameState = {
@@ -303,8 +316,11 @@ function restartGame() {
   resetTimer();
   startButton.disabled = true;
   startButton.textContent = "Start Game";
+  saveStatus.textContent = "";
+  saveStatus.style.color = "";
   startGame();
 }
+
 
 async function loadLeaderboard() {
   if (!leaderboardList) return;
@@ -325,18 +341,33 @@ async function loadLeaderboard() {
     rows.forEach((row, index) => {
       const div = document.createElement("div");
       div.className = "leaderboard-row";
-
+    
       const safeName = escapeHtml(row.name || "Guest");
       const score = row.score ?? 0;
       const level = row.level ?? 1;
-
+    
+      // Format date/time
+      let timeText = "";
+      if (row.created_at) {
+        const d = new Date(row.created_at);
+        // e.g. "11/16 9:23p"
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        let hours = d.getHours();
+        const mins = d.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "p" : "a";
+        hours = hours % 12 || 12;
+        timeText = `${month}/${day} ${hours}:${mins}${ampm}`;
+      }
+    
       div.innerHTML = `
         <span class="rank">#${index + 1}</span>
         <span class="entry-name">${safeName}</span>
         <span class="entry-score">${score.toLocaleString()}</span>
         <span class="entry-level">Lv ${level}</span>
+        <span class="entry-time">${timeText}</span>
       `;
-
+    
       fragment.appendChild(div);
     });
 
