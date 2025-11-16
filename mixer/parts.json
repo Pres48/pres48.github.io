@@ -20,9 +20,11 @@
     "tiger.png"
   ],
   "leftLeg": [
-    "bear.png"
+    "bear.png",
+    "tiger.png"
   ],
   "rightLeg": [
-    "bear.png"
+    "bear.png",
+    "tiger.png"
   ]
 }
