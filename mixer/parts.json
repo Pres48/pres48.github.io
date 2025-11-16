@@ -24,10 +24,12 @@
   ],
   "leftLeg": [
     "bear.png",
+    "elephant.png",
     "tiger.png"
   ],
   "rightLeg": [
     "bear.png",
+    "elephant.png",
     "tiger.png"
   ]
 }
