@@ -1,0 +1,313 @@
+// main.js
+import { generateGrid, getDifficultyForLevel, resolveTileSelection } from "./game.js";
+import { saveScoreToSupabase } from "./supabaseClient.js";
+
+const gridContainer = document.getElementById("gridContainer");
+const levelDisplay = document.getElementById("levelDisplay");
+const turnDisplay = document.getElementById("turnDisplay");
+const scoreDisplay = document.getElementById("scoreDisplay");
+const multiplierDisplay = document.getElementById("multiplierDisplay");
+const timerFill = document.getElementById("timerFill");
+const messageArea = document.getElementById("messageArea");
+const startButton = document.getElementById("startButton");
+const restartButton = document.getElementById("restartButton");
+const playerNameInput = document.getElementById("playerNameInput");
+const bestScoreDisplay = document.getElementById("bestScoreDisplay");
+const bestLevelDisplay = document.getElementById("bestLevelDisplay");
+const saveScoreButton = document.getElementById("saveScoreButton");
+const saveStatus = document.getElementById("saveStatus");
+
+let gameState = null;
+let timerInterval = null;
+let turnDeadline = null;
+let selectedThisTurn = false;
+let bestScore = 0;
+let bestLevel = 0;
+
+function resetTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerFill.style.width = "0%";
+  turnDeadline = null;
+}
+
+/**
+ * Initialize a new run.
+ */
+function startGame() {
+  const level = 1;
+
+  gameState = {
+    level,
+    turnIndex: 0,
+    turns: getDifficultyForLevel(level).turns,
+    score: 0,
+    multiplier: 1,
+    chainCount: 0,
+    lastTileDelta: 0,
+    grid: generateGrid(level),
+    timePerTurnMs: getDifficultyForLevel(level).timePerTurnMs,
+    locked: false,
+  };
+
+  updateUIFromState();
+  renderGrid();
+  messageArea.textContent = "Pick a tile before the time runs out!";
+  startButton.disabled = true;
+  restartButton.disabled = false;
+  saveScoreButton.disabled = true;
+  saveStatus.textContent = "";
+  nextTurn();
+}
+
+/**
+ * Starts timer and waits for a tile click. If none, auto-advance.
+ */
+function nextTurn() {
+  if (!gameState) return;
+
+  if (gameState.turnIndex >= gameState.turns) {
+    endRound();
+    return;
+  }
+
+  selectedThisTurn = false;
+  // enable tiles
+  setTilesDisabled(false);
+  timerFill.style.transition = "none";
+  timerFill.style.width = "100%";
+
+  const now = performance.now();
+  const duration = gameState.timePerTurnMs;
+  turnDeadline = now + duration;
+
+  // Timer animation
+  timerInterval = setInterval(() => {
+    const nowInner = performance.now();
+    const remaining = Math.max(0, turnDeadline - nowInner);
+    const pct = (remaining / duration) * 100;
+    timerFill.style.transition = "width 0.05s linear";
+    timerFill.style.width = `${pct}%`;
+
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      if (!selectedThisTurn) {
+        handleMissedTurn();
+      }
+    }
+  }, 50);
+
+  updateTurnDisplay();
+}
+
+function handleMissedTurn() {
+  setTilesDisabled(true);
+  messageArea.textContent = "Missed! No tile selected this turn.";
+  gameState.turnIndex += 1;
+  gameState.chainCount = 0;
+  gameState.lastTileDelta = 0;
+  setTimeout(() => {
+    nextTurn();
+  }, 400);
+}
+
+function setTilesDisabled(disabled) {
+  const tileEls = gridContainer.querySelectorAll(".tile");
+  tileEls.forEach((el) => {
+    if (disabled) el.classList.add("disabled");
+    else el.classList.remove("disabled");
+  });
+}
+
+/**
+ * Create DOM for current grid.
+ */
+function renderGrid() {
+  gridContainer.innerHTML = "";
+  if (!gameState) return;
+  const { grid } = gameState;
+
+  const size = grid.length;
+  gridContainer.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
+
+  grid.forEach((row) => {
+    row.forEach((tile) => {
+      const tileEl = document.createElement("button");
+      tileEl.className = `tile type-${tile.type}`;
+      tileEl.dataset.tileId = tile.id;
+
+      const label = document.createElement("span");
+      label.className = "tile-label";
+      const valueEl = document.createElement("span");
+      valueEl.className = "tile-value";
+
+      if (tile.type === "number") {
+        label.textContent = "NUM";
+        valueEl.textContent = `${tile.value}`;
+      } else if (tile.type === "bonus") {
+        label.textContent = "BONUS";
+        valueEl.textContent = `+x${(tile.value * 0.25).toFixed(2)}`;
+      } else if (tile.type === "chain") {
+        label.textContent = "CHAIN";
+        valueEl.textContent = `${tile.value}`;
+      } else if (tile.type === "risk") {
+        label.textContent = "RISK";
+        valueEl.textContent = `${tile.value}`;
+      }
+
+      tileEl.appendChild(label);
+      tileEl.appendChild(valueEl);
+
+      tileEl.addEventListener("click", () => onTileClick(tile));
+
+      gridContainer.appendChild(tileEl);
+    });
+  });
+}
+
+/**
+ * Handle tile click -> update state, go to next turn.
+ */
+function onTileClick(tile) {
+  if (!gameState || gameState.locked) return;
+  if (selectedThisTurn) return;
+
+  selectedThisTurn = true;
+  setTilesDisabled(true);
+
+  // highlight selected
+  const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
+  if (el) el.classList.add("selected");
+
+  resetTimer();
+
+  const updatedState = resolveTileSelection(tile, gameState);
+  gameState = {
+    ...gameState,
+    ...updatedState,
+  };
+
+  updateUIFromState();
+
+  // Short delay for feedback, then next turn
+  setTimeout(() => {
+    nextTurn();
+  }, 300);
+}
+
+function updateUIFromState() {
+  if (!gameState) return;
+  levelDisplay.textContent = gameState.level;
+  scoreDisplay.textContent = gameState.score.toLocaleString();
+  multiplierDisplay.textContent = `x${gameState.multiplier.toFixed(2)}`;
+  updateTurnDisplay();
+}
+
+function updateTurnDisplay() {
+  if (!gameState) {
+    turnDisplay.textContent = "0 / 0";
+    return;
+  }
+  turnDisplay.textContent = `${gameState.turnIndex + 1} / ${gameState.turns}`;
+}
+
+/**
+ * Round finished. Determine next level / best scores.
+ */
+function endRound() {
+  resetTimer();
+  setTilesDisabled(true);
+  gameState.locked = true;
+
+  messageArea.textContent = `Round complete! Final score: ${gameState.score.toLocaleString()}`;
+
+  // Track local best
+  if (gameState.score > bestScore) {
+    bestScore = gameState.score;
+    bestLevel = gameState.level;
+    bestScoreDisplay.textContent = bestScore.toLocaleString();
+    bestLevelDisplay.textContent = bestLevel;
+  }
+
+  saveScoreButton.disabled = false;
+  startButton.disabled = false;
+  startButton.textContent = "Play Next Level";
+
+  // Prep next level on next start click
+  startButton.onclick = () => {
+    const nextLevel = gameState.level + 1;
+    startLevel(nextLevel);
+  };
+}
+
+function startLevel(level) {
+  gameState = {
+    level,
+    turnIndex: 0,
+    turns: getDifficultyForLevel(level).turns,
+    score: gameState ? gameState.score : 0, // cumulative across levels
+    multiplier: 1,
+    chainCount: 0,
+    lastTileDelta: 0,
+    grid: generateGrid(level),
+    timePerTurnMs: getDifficultyForLevel(level).timePerTurnMs,
+    locked: false,
+  };
+
+  updateUIFromState();
+  renderGrid();
+  messageArea.textContent = `Level ${level}: Faster & trickier tiles.`;
+  startButton.disabled = true;
+  restartButton.disabled = false;
+  saveScoreButton.disabled = true;
+  saveStatus.textContent = "";
+  startButton.onclick = startGame; // reset to default
+  nextTurn();
+}
+
+function restartGame() {
+  resetTimer();
+  startButton.disabled = true;
+  startButton.textContent = "Start Game";
+  startGame();
+}
+
+/**
+ * Save score to Supabase
+ */
+async function handleSaveScore() {
+  if (!gameState) return;
+  saveScoreButton.disabled = true;
+  saveStatus.textContent = "Saving…";
+
+  try {
+    const name = playerNameInput.value;
+    await saveScoreToSupabase(name, gameState.score, gameState.level);
+    saveStatus.textContent = "Score saved!";
+    saveStatus.style.color = "#22c55e";
+  } catch (err) {
+    saveStatus.textContent = "Error saving score. Check console.";
+    saveStatus.style.color = "#f97373";
+    saveScoreButton.disabled = false;
+  }
+}
+
+/**
+ * Wire up top-level events.
+ */
+function init() {
+  startButton.addEventListener("click", startGame);
+  restartButton.addEventListener("click", restartGame);
+  saveScoreButton.addEventListener("click", handleSaveScore);
+
+  // Defaults
+  bestScoreDisplay.textContent = "–";
+  bestLevelDisplay.textContent = "–";
+  restartButton.disabled = true;
+  saveScoreButton.disabled = true;
+}
+
+init();
