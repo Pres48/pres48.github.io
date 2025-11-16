@@ -27,6 +27,21 @@ let selectedThisTurn = false;
 let bestScore = 0;
 let bestLevel = 0;
 
+function getRequiredGainForLevel(level) {
+  // required points "earned" in that level (not total)
+  // tweak numbers as you test
+  const base = 80;             // level 1
+  const perLevel = 30;         // extra requirement per level
+  return base + (level - 1) * perLevel;
+}
+
+function getAllowedMissesForLevel(level) {
+  // fewer misses allowed as level climbs
+  if (level <= 3) return 3;
+  if (level <= 6) return 2;
+  return 1;
+}
+
 function escapeHtml(str) {
   if (typeof str !== "string") return "";
   return str.replace(/[&<>"']/g, (c) => {
@@ -60,7 +75,9 @@ function startGame() {
     level,
     turnIndex: 0,
     turns: getDifficultyForLevel(level).turns,
-    score: 0,                  // NEW RUN always starts at 0
+    score: 0,                  // new run
+    scoreAtLevelStart: 0,      // start of level 1
+    missedTurns: 0,            // per-level misses
     multiplier: 1,
     chainCount: 0,
     lastTileDelta: 0,
@@ -80,6 +97,7 @@ function startGame() {
 
   nextTurn();
 }
+
 
 
 /**
@@ -126,14 +144,19 @@ function nextTurn() {
 function handleMissedTurn() {
   setTilesDisabled(true);
   messageArea.textContent = "Missed! No tile selected this turn.";
+
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
   gameState.lastTileDelta = 0;
+  gameState.missedTurns = (gameState.missedTurns || 0) + 1;
+
   updateUIFromState();
+
   setTimeout(() => {
     nextTurn();
   }, 400);
 }
+
 
 function setTilesDisabled(disabled) {
   const tileEls = gridContainer.querySelectorAll(".tile");
@@ -263,39 +286,80 @@ function endRound() {
   gameState.locked = true;
 
   const finalScore = gameState.score;
-  messageArea.textContent = `Round complete! Final score: ${finalScore.toLocaleString()}`;
+  const level = gameState.level;
+  const levelGain = finalScore - (gameState.scoreAtLevelStart || 0);
+  const missed = gameState.missedTurns || 0;
 
-  // session best tracking (optional)
+  const requiredGain = getRequiredGainForLevel(level);
+  const allowedMisses = getAllowedMissesForLevel(level);
+
+  const passedScoreGate = levelGain >= requiredGain;
+  const passedMissGate = missed <= allowedMisses;
+
+  // Session best tracking (still based on cumulative score)
   if (finalScore > bestScore) {
     bestScore = finalScore;
-    bestLevel = gameState.level;
+    bestLevel = level;
     bestScoreDisplay.textContent = bestScore.toLocaleString();
     bestLevelDisplay.textContent = bestLevel;
   }
 
-  // (your anti-spam + save button logic here...)
+  // Leaderboard anti-spam check (unchanged)
+  if (finalScore >= MIN_SUBMIT_SCORE) {
+    saveScoreButton.disabled = false;
+    saveStatus.textContent = "";
+    saveStatus.style.color = "";
+  } else {
+    saveScoreButton.disabled = true;
+    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE} points to submit to the global leaderboard.`;
+    saveStatus.style.color = "#9ca3af";
+  }
 
-  startButton.disabled = false;
-  startButton.textContent = "Play Next Level";
+  if (passedScoreGate && passedMissGate) {
+    // ✅ Level cleared – allow NEXT level
+    messageArea.textContent =
+      `Level ${level} cleared! You earned ${levelGain.toLocaleString()} points this level ` +
+      `(${missed} missed turn${missed === 1 ? "" : "s"}).`;
 
-  // ✅ important: next click goes to the NEXT LEVEL, keeping score
-  startButton.onclick = () => {
-    const nextLevel = gameState.level + 1;
-    startLevel(nextLevel);
-  };
+    startButton.disabled = false;
+    startButton.textContent = "Play Next Level";
+
+    startButton.onclick = () => {
+      const nextLevel = level + 1;
+      startLevel(nextLevel);
+    };
+  } else {
+    // ❌ Run ends here
+    let reason = "";
+    if (!passedScoreGate) {
+      reason += `You needed at least ${requiredGain.toLocaleString()} points this level (you got ${levelGain.toLocaleString()}). `;
+    }
+    if (!passedMissGate) {
+      reason += `Too many missed turns (allowed ${allowedMisses}, you had ${missed}).`;
+    }
+
+    messageArea.textContent =
+      `Run over at Level ${level}. Final score: ${finalScore.toLocaleString()}. ${reason}`;
+
+    startButton.disabled = false;
+    startButton.textContent = "Start Game";
+    startButton.onclick = startGame;
+  }
 }
 
 
 
+
 function startLevel(level) {
-  // preserve cumulative score from previous levels
   const prevScore = gameState ? gameState.score : 0;
 
   gameState = {
     level,
     turnIndex: 0,
     turns: getDifficultyForLevel(level).turns,
-    score: prevScore,          // ✅ carry over score
+    score: prevScore,              // ✅ cumulative
+    scoreAtLevelStart: prevScore,  // ✅ baseline for this level
+    missedTurns: 0,                // reset per level
     multiplier: 1,
     chainCount: 0,
     lastTileDelta: 0,
@@ -315,6 +379,7 @@ function startLevel(level) {
 
   nextTurn();
 }
+
 
 
 function restartGame() {
