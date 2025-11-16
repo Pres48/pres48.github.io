@@ -13,6 +13,7 @@ const startButton = document.getElementById("startButton");
 const endButton = document.getElementById("endButton");
 const restartButton = document.getElementById("restartButton");
 const playerNameInput = document.getElementById("playerNameInput");
+const playerNameHelper = document.getElementById("playerNameHelper");
 const bestScoreDisplay = document.getElementById("bestScoreDisplay");
 const bestLevelDisplay = document.getElementById("bestLevelDisplay");
 const saveScoreButton = document.getElementById("saveScoreButton");
@@ -20,11 +21,8 @@ const saveStatus = document.getElementById("saveStatus");
 const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
-const playerNameHelper = document.getElementById("playerNameHelper");
-const rawName = playerNameInput.value.trim();
-const name = rawName || "Guest";
 
-// popover elements
+// Popover elements
 const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
 const howToPlayInfoPopover = document.getElementById("howToPlayInfoPopover");
 const levelGoalsInfoBtn = document.getElementById("levelGoalsInfoBtn");
@@ -33,6 +31,7 @@ const leaderboardInfoBtn = document.getElementById("leaderboardInfoBtn");
 const leaderboardInfoPopover = document.getElementById("leaderboardInfoPopover");
 
 const MIN_SUBMIT_SCORE = 200; // minimum score required to submit to global leaderboard
+const HIGH_SCORE_NAME_WARN_THRESHOLD = MIN_SUBMIT_SCORE;
 
 let gameState = null;
 let timerInterval = null;
@@ -40,8 +39,6 @@ let turnDeadline = null;
 let selectedThisTurn = false;
 let bestScore = 0;
 let bestLevel = 0;
-
-await saveScoreToSupabase(name, finalScore, gameState.level);
 
 // ---------- Utility ----------
 
@@ -58,34 +55,6 @@ function escapeHtml(str) {
     }
   });
 }
-
-function setNameWarningActive(active) {
-  if (!playerNameInput || !playerNameHelper) return;
-  if (active) {
-    playerNameHelper.classList.add("warning");
-    playerNameInput.classList.add("name-warning");
-  } else {
-    playerNameHelper.classList.remove("warning");
-    playerNameInput.classList.remove("name-warning");
-  }
-}
-
-// Placeholder profanity checker – YOU fill in the patterns you care about.
-// This keeps the structure ready without me hardcoding any specific slurs.
-function isNameProfane(name) {
-  if (!name) return false;
-  const lowered = name.toLowerCase();
-
-  const prohibitedPatterns = [
-    // Example:
-    // /badword1/i,
-    // /badword2/i,
-    // etc.
-  ];
-
-  return prohibitedPatterns.some((re) => re.test(lowered));
-}
-
 
 // Required performance per level
 function getRequiredGainForLevel(level) {
@@ -107,6 +76,32 @@ function resetTimer() {
   }
   timerFill.style.width = "0%";
   turnDeadline = null;
+}
+
+function setNameWarningActive(active) {
+  if (!playerNameInput || !playerNameHelper) return;
+  if (active) {
+    playerNameHelper.classList.add("warning");
+    playerNameInput.classList.add("name-warning");
+  } else {
+    playerNameHelper.classList.remove("warning");
+    playerNameInput.classList.remove("name-warning");
+  }
+}
+
+// Placeholder profanity checker – fill in patterns you care about.
+function isNameProfane(name) {
+  if (!name) return false;
+  const lowered = name.toLowerCase();
+
+  const prohibitedPatterns = [
+    // Example:
+    // /badword1/i,
+    // /badword2/i,
+    // Add your own patterns here
+  ];
+
+  return prohibitedPatterns.some((re) => re.test(lowered));
 }
 
 // ---------- Core Game ----------
@@ -362,10 +357,10 @@ async function autoSaveScoreIfEligible() {
     return;
   }
 
-  const rawName = (playerNameInput && playerNameInput.value) ? playerNameInput.value : "";
+  const rawName = playerNameInput && playerNameInput.value ? playerNameInput.value : "";
   const trimmed = rawName.trim();
 
-  // 🔶 High score + blank name → warn, don't save yet
+  // High score + blank name → warn, don't save yet
   if (finalScore >= HIGH_SCORE_NAME_WARN_THRESHOLD && trimmed.length === 0) {
     saveStatus.textContent = "Enter a name to save this high score on the public leaderboard.";
     saveStatus.style.color = "#f97373";
@@ -374,7 +369,7 @@ async function autoSaveScoreIfEligible() {
     return;
   }
 
-  // 🚫 Profanity/inappropriate filter
+  // Profanity/inappropriate filter
   if (trimmed && isNameProfane(trimmed)) {
     saveStatus.textContent = "That name isn't allowed on the public leaderboard. Please choose a different one.";
     saveStatus.style.color = "#f97373";
@@ -383,7 +378,7 @@ async function autoSaveScoreIfEligible() {
     return;
   }
 
-  // ✅ Safe to use. If blank but below threshold case, fallback to Guest.
+  // Safe to use. If still blank (shouldn't happen with threshold), fallback to Guest.
   const nameToUse = trimmed || "Guest";
 
   saveScoreButton.disabled = true;
@@ -404,7 +399,6 @@ async function autoSaveScoreIfEligible() {
     saveScoreButton.disabled = false; // allow manual retry
   }
 }
-
 
 // ---------- End of Round & Progression ----------
 
@@ -567,42 +561,39 @@ function restartGame() {
 }
 
 function init() {
-  // --- Buttons ---
+  // Main buttons
   startButton.onclick = startGame;
   restartButton.onclick = restartGame;
   endButton.onclick = endGame;
   saveScoreButton.onclick = handleSaveScore;
 
-  // --- Initial UI state ---
+  // Initial UI state
   bestScoreDisplay.textContent = "–";
   bestLevelDisplay.textContent = "–";
   restartButton.disabled = true;
   endButton.disabled = true;
   saveScoreButton.disabled = true;
 
-  // --- Restore player name from previous visit (localStorage) ---
+  // Restore player name from previous visit, if any
   try {
     const savedName = localStorage.getItem("mindgridPlayerName");
     if (savedName && typeof savedName === "string" && playerNameInput) {
       playerNameInput.value = savedName;
     }
   } catch (e) {
-    // localStorage might be disabled; fail silently
     console.warn("Name restore skipped (localStorage unavailable):", e);
   }
 
-  // --- Persist player name on change ---
+  // Persist player name on change + clear warnings
   if (playerNameInput) {
     playerNameInput.addEventListener("input", () => {
       const raw = playerNameInput.value || "";
       const trimmed = raw.trim();
 
-      // Clear any previous warning as they type
       setNameWarningActive(false);
 
       try {
         if (trimmed.length === 0) {
-          // Optional: clear key if empty
           localStorage.removeItem("mindgridPlayerName");
         } else {
           localStorage.setItem("mindgridPlayerName", trimmed);
@@ -613,8 +604,7 @@ function init() {
     });
   }
 
-
-  // --- Load leaderboard on page load ---
+  // Load leaderboard on page load
   loadLeaderboard();
 
   // --- Popover helpers ---
@@ -622,7 +612,7 @@ function init() {
     if (!popover) return;
     const isVisible = popover.classList.contains("visible");
 
-    // Close all first
+    // close all first
     [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach((p) => {
       if (p) p.classList.remove("visible");
     });
@@ -653,14 +643,14 @@ function init() {
     };
   }
 
-  // Click anywhere else closes all popovers
+  // Click anywhere else closes all
   document.addEventListener("click", () => {
     [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach((p) => {
       if (p) p.classList.remove("visible");
     });
   });
 
-  // Prevent clicks inside popovers from closing them immediately
+  // Prevent clicks inside popovers from closing them
   [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach((p) => {
     if (!p) return;
     p.addEventListener("click", (e) => {
@@ -668,6 +658,5 @@ function init() {
     });
   });
 }
-
 
 init();
