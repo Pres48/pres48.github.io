@@ -363,11 +363,17 @@ button:disabled {
 
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 22px 1fr auto auto;
+  grid-template-columns: 22px 1fr auto auto auto; /* rank, name, score, level, time */
   gap: 6px;
   padding: 3px 0;
   font-size: 0.78rem;
   border-bottom: 1px dashed rgba(55, 65, 81, 0.6);
+}
+
+.leaderboard-row .entry-time {
+  color: #6b7280;
+  font-size: 0.7rem;
+  white-space: nowrap;
 }
 
 .leaderboard-row:last-child {
