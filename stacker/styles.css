@@ -37,19 +37,28 @@ p {
   background-color: #f0f0f0;
 }
 
-/* Back button — force to top-left */
-#back {
-  align-self: flex-start;
-  margin-left: 20px;
-  margin-bottom: 10px;
-  padding: 12px 20px;
-  background: #444;
-  color: white;
-  font-size: 20px;
-  border-radius: 10px;
-  text-decoration: none;
+.top-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: flex-start;  /* back link hugs the left */
+  align-items: center;
+  margin-bottom: 8px;
 }
 
+/* Back button */
+#back {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #444;
+  color: white;
+  font-size: 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+}
+
+/* hover */
 #back:hover {
   background: #666;
 }
