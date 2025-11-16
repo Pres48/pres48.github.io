@@ -31,3 +31,18 @@ export async function saveScoreToSupabase(name, score, level) {
 
   return data;
 }
+
+export async function fetchTopScores(limit = 10) {
+  const { data, error } = await supabase
+    .from("scores")
+    .select("name, score, level, created_at")
+    .order("score", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Supabase fetch leaderboard error:", error);
+    throw error;
+  }
+  return data;
+}
+
