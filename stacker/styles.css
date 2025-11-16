@@ -176,13 +176,13 @@ p {
 
 /* Leaderboard */
 #leaderboard-container {
-  max-width: 800px;
-  width: 90vw;
-  margin: 10px auto 0 auto;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  text-align: left;
+    max-width: 800px;
+    width: 90vw;
+    margin: 10px auto 50px auto;  /* space below leaderboard */
+    padding: 10px 10px 20px 10px; /* more internal spacing */
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    text-align: left;
 }
 
 #leaderboard-container h2 {
