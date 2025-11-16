@@ -330,16 +330,8 @@ function endRound() {
     bestLevelDisplay.textContent = bestLevel;
   }
 
-  // Anti-spam: only allow leaderboard submit if finalScore >= MIN_SUBMIT_SCORE
-  if (finalScore >= MIN_SUBMIT_SCORE) {
-    saveScoreButton.disabled = false;
-    saveStatus.textContent = "";
-    saveStatus.style.color = "";
-  } else {
-    saveScoreButton.disabled = true;
-    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE} points to submit to the global leaderboard.`;
-    saveStatus.style.color = "#9ca3af";
-  }
+  // Auto-save high scores (or show why they can't be saved)
+  autoSaveScoreIfEligible();
 
   if (passedScoreGate && passedMissGate) {
     // Level cleared – allow NEXT level
@@ -431,27 +423,46 @@ async function loadLeaderboard() {
   }
 }
 
-async function handleSaveScore() {
+async function autoSaveScoreIfEligible() {
   if (!gameState) return;
+
+  const finalScore = gameState.score;
+
+  // Below threshold: nothing to save, just show info
+  if (finalScore < MIN_SUBMIT_SCORE) {
+    saveScoreButton.disabled = true;
+    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE} points to appear on the global leaderboard.`;
+    saveStatus.style.color = "#9ca3af";
+    return;
+  }
+
+  // Try auto-save
   saveScoreButton.disabled = true;
-  saveStatus.textContent = "Saving…";
+  saveStatus.textContent = "Saving to leaderboard…";
   saveStatus.style.color = "#9ca3af";
 
   try {
     const name = playerNameInput.value;
-    await saveScoreToSupabase(name, gameState.score, gameState.level);
-    saveStatus.textContent = "Score saved!";
+    await saveScoreToSupabase(name, finalScore, gameState.level);
+
+    saveStatus.textContent = "Auto-saved to leaderboard.";
     saveStatus.style.color = "#22c55e";
 
     await loadLeaderboard();
   } catch (err) {
-    console.error("Save score error:", err);
-    saveStatus.textContent = "Error saving score. Check console.";
+    console.error("Auto-save error:", err);
+    saveStatus.textContent = "Auto-save failed. Tap to retry.";
     saveStatus.style.color = "#f97373";
-    // let them try again
+    // Let player use the button to retry manually
     saveScoreButton.disabled = false;
   }
 }
+
+async function handleSaveScore() {
+  // Manual retry uses the same logic as auto-save
+  await autoSaveScoreIfEligible();
+}
+
 
 // ---------- Restart & Init ----------
 
