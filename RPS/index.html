@@ -1,1 +1,158 @@
-code here
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rock Paper Scissors Web Game</title>
+<style>
+    body {
+        background: #222;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        font-size: 6vw;
+        margin-top: 20px;
+    }
+
+    #player, #computer {
+        font-size: 6vw;
+        margin-top: 10px;
+    }
+
+    #result {
+        font-size: 7vw;
+        margin-top: 20px;
+        height: 50px;
+    }
+
+    #scoreboard, #highscore {
+        background: #333;
+        padding: 12px;
+        border-radius: 12px;
+        margin: 20px auto;
+        width: 80%;
+        max-width: 330px;
+        font-size: 5vw;
+    }
+
+    /* Buttons */
+    .emoji-btn {
+        font-size: 16vw;
+        margin: 15px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .emoji-btn:active {
+        transform: scale(0.9);
+    }
+
+    /* Desktop adjustments */
+    @media (min-width: 700px) {
+        h1 { font-size: 32px; }
+        #player, #computer { font-size: 26px; }
+        #result { font-size: 32px; }
+        #scoreboard, #highscore { font-size: 20px; }
+        .emoji-btn { font-size: 60px; }
+    }
+
+    /* Back button */
+    #back {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        background: #444;
+        color: white;
+        font-size: 20px;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+    #back:hover {
+        background: #666;
+    }
+</style>
+</head>
+<body>
+
+<a id="back" href="index.html">⬅ Back to Menu</a>
+
+<h1>Rock, Paper, Scissors!</h1>
+
+<div id="player">You: ❔</div>
+<div id="computer">Computer: ❔</div>
+
+<div id="result"></div>
+
+<div id="scoreboard">Player: 0 | Computer: 0 | Ties: 0</div>
+<div id="highscore">🏆 High Score: 0</div>
+
+<!-- Buttons -->
+<button class="emoji-btn" onclick="play('rock')">✊</button>
+<button class="emoji-btn" onclick="play('paper')">✋</button>
+<button class="emoji-btn" onclick="play('scissors')">✌️</button>
+
+<script>
+    const emoji = {
+        rock: "✊",
+        paper: "✋",
+        scissors: "✌️"
+    };
+
+    let playerScore = 0;
+    let computerScore = 0;
+    let ties = 0;
+
+    // Load high score
+    let highScore = localStorage.getItem("rps_highscore");
+    if (!highScore) highScore = 0;
+    document.getElementById("highscore").textContent = "🏆 High Score: " + highScore;
+
+    function play(playerChoice) {
+        const choices = ["rock", "paper", "scissors"];    
+        const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+        document.getElementById("player").textContent = "You: " + emoji[playerChoice];
+        document.getElementById("computer").textContent = "Computer: " + emoji[computerChoice];
+
+        let result = "";
+        if (playerChoice === computerChoice) {
+            result = "It's a tie!";
+            ties++;
+            document.getElementById("result").style.color = "orange";
+        } else if (
+            (playerChoice === "rock" && computerChoice === "scissors") ||
+            (playerChoice === "paper" && computerChoice === "rock") ||
+            (playerChoice === "scissors" && computerChoice === "paper")
+        ) {
+            result = "You win!";
+            playerScore++;
+            document.getElementById("result").style.color = "lightgreen";
+        } else {
+            result = "Computer wins!";
+            computerScore++;
+            document.getElementById("result").style.color = "red";
+        }
+
+        document.getElementById("result").textContent = result;
+
+        document.getElementById("scoreboard").textContent =
+            `Player: ${playerScore} | Computer: ${computerScore} | Ties: ${ties}`;
+
+        // Update high score
+        if (playerScore > highScore) {
+            highScore = playerScore;
+            localStorage.setItem("rps_highscore", highScore);
+            document.getElementById("highscore").textContent = "🏆 High Score: " + highScore;
+        }
+    }
+</script>
+
+</body>
+</html>
