@@ -485,30 +485,59 @@ function applyPreviewScaling(){
 /* ========== Download (html2canvas) ========== */
 function downloadCreature(){
   const bubbles = document.querySelector('.bubbles');
-  const oldVis = bubbles.style.display;
-  bubbles.style.display = 'none';
   const area = document.getElementById('preview-area');
 
-  // temporarily set background to white so transparent artifacts are avoided (optional)
-  const origBg = area.style.background;
-  area.style.background = '#ffffff00';
+  if (!window.html2canvas) {
+    console.error('html2canvas is not loaded');
+    alert('Download failed — html2canvas did not load.');
+    return;
+  }
 
-  // scale option: capture at device pixels — scale 2 for sharper image
-  html2canvas(area, { backgroundColor: null, scale: 2 }).then(canvas=>{
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = 'my-stuffed-animal.png';
-    a.click();
-    // restore
-    bubbles.style.display = oldVis;
-    area.style.background = origBg;
-  }).catch(err=>{
-    console.error('html2canvas error', err);
-    bubbles.style.display = oldVis;
-    area.style.background = origBg;
-    alert('Download failed — check console.');
+  // hide background bubbles so they don’t appear in the download
+  const oldBubblesDisplay = bubbles ? bubbles.style.display : '';
+  if (bubbles) bubbles.style.display = 'none';
+
+  // remember and temporarily tweak background
+  const origBg = area.style.background;
+  area.style.background = '#ffffff00'; // transparent
+
+  // IMPORTANT: ensure any remote images are marked for CORS
+  document.querySelectorAll('#preview-area img.part').forEach(img => {
+    // If you're using same-origin images (img/... in the same site),
+    // this won't hurt anything; if they are remote, it helps when CORS is set.
+    img.crossOrigin = 'anonymous';
   });
+
+  html2canvas(area, {
+    backgroundColor: null,
+    scale: 2,
+    useCORS: true,
+    allowTaint: false
+  })
+    .then(canvas => {
+      const dataUrl = canvas.toDataURL('image/png');
+
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'my-stuffed-animal.png';
+
+      // append to DOM for better browser compatibility
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // restore
+      if (bubbles) bubbles.style.display = oldBubblesDisplay;
+      area.style.background = origBg;
+    })
+    .catch(err => {
+      console.error('html2canvas error', err);
+      if (bubbles) bubbles.style.display = oldBubblesDisplay;
+      area.style.background = origBg;
+      alert('Download failed — check the console for details.');
+    });
 }
+
 
 /* ========== Small click sound ========== */
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
