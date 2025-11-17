@@ -719,4 +719,13 @@ button:disabled {
   .grid {
     grid-auto-rows: 46px;
   }
+
+  .tile-value {
+    display: inline-block;
+    transform-origin: center;
+    white-space: nowrap;
+  }
+
 }
+
+
