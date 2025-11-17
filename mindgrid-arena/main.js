@@ -39,6 +39,8 @@ let turnDeadline = null;
 let selectedThisTurn = false;
 let bestScore = 0;
 let bestLevel = 0;
+let currentRunScoreId = null;
+let currentRunSavedScore = 0;
 
 // ---------- Utility ----------
 
@@ -109,12 +111,16 @@ function isNameProfane(name) {
 function startGame() {
   const level = 1;
 
+  // New run → clear current run leaderboard tracking
+  currentRunScoreId = null;
+  currentRunSavedScore = 0;
+
   gameState = {
     level,
     turnIndex: 0,
     turns: getDifficultyForLevel(level).turns,
-    score: 0,                 // new run
-    scoreAtLevelStart: 0,     // baseline for this level
+    score: 0,
+    scoreAtLevelStart: 0,
     missedTurns: 0,
     multiplier: 1,
     chainCount: 0,
@@ -354,6 +360,7 @@ async function autoSaveScoreIfEligible() {
 
   const finalScore = gameState.score;
 
+  // Below threshold → don't save, just show hint
   if (finalScore < MIN_SUBMIT_SCORE) {
     saveScoreButton.disabled = true;
     saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE} points to appear on the global leaderboard.`;
@@ -361,12 +368,19 @@ async function autoSaveScoreIfEligible() {
     return;
   }
 
-  const rawName = playerNameInput && playerNameInput.value ? playerNameInput.value : "";
+  // NEW: if score hasn't improved vs what we've already saved this RUN, do nothing
+  if (finalScore <= currentRunSavedScore) {
+    return;
+  }
+
+  const rawName =
+    playerNameInput && playerNameInput.value ? playerNameInput.value : "";
   const trimmed = rawName.trim();
 
   // High score + blank name → warn, don't save yet
   if (finalScore >= HIGH_SCORE_NAME_WARN_THRESHOLD && trimmed.length === 0) {
-    saveStatus.textContent = "Enter a name to save this high score on the public leaderboard.";
+    saveStatus.textContent =
+      "Enter a name to save this high score on the public leaderboard.";
     saveStatus.style.color = "#f97373";
     saveScoreButton.disabled = false; // allow manual retry after they type
     setNameWarningActive(true);
@@ -375,7 +389,8 @@ async function autoSaveScoreIfEligible() {
 
   // Profanity/inappropriate filter
   if (trimmed && isNameProfane(trimmed)) {
-    saveStatus.textContent = "That name isn't allowed on the public leaderboard. Please choose a different one.";
+    saveStatus.textContent =
+      "That name isn't allowed on the public leaderboard. Please choose a different one.";
     saveStatus.style.color = "#f97373";
     saveScoreButton.disabled = false;
     setNameWarningActive(true);
@@ -390,7 +405,17 @@ async function autoSaveScoreIfEligible() {
   saveStatus.style.color = "#9ca3af";
 
   try {
-    await saveScoreToSupabase(nameToUse, finalScore, gameState.level);
+    // 👇 NEW: pass currentRunScoreId so Supabase can UPDATE instead of always INSERT
+    const returnedId = await saveScoreToSupabase(
+      nameToUse,
+      finalScore,
+      gameState.level,
+      currentRunScoreId
+    );
+
+    // Track this row + score for the rest of the run
+    currentRunScoreId = returnedId;
+    currentRunSavedScore = finalScore;
 
     saveStatus.textContent = "Auto-saved to leaderboard.";
     saveStatus.style.color = "#22c55e";
@@ -403,6 +428,7 @@ async function autoSaveScoreIfEligible() {
     saveScoreButton.disabled = false; // allow manual retry
   }
 }
+
 
 // ---------- End of Round & Progression ----------
 
