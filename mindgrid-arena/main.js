@@ -368,7 +368,7 @@ async function autoSaveScoreIfEligible() {
     return;
   }
 
-  // NEW: if score hasn't improved vs what we've already saved this RUN, do nothing
+  // 👇 NEW: only save if this run's score improved over what we've already logged
   if (finalScore <= currentRunSavedScore) {
     return;
   }
@@ -428,6 +428,7 @@ async function autoSaveScoreIfEligible() {
     saveScoreButton.disabled = false; // allow manual retry
   }
 }
+
 
 
 // ---------- End of Round & Progression ----------
