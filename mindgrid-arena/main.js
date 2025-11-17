@@ -43,7 +43,6 @@ let currentRunScoreId = null;
 let currentRunSavedScore = 0;
 
 // ---------- Utility ----------
-
 function escapeHtml(str) {
   if (typeof str !== "string") return "";
   return str.replace(/[&<>"']/g, (c) => {
@@ -57,6 +56,62 @@ function escapeHtml(str) {
     }
   });
 }
+
+
+/* ============================================================
+   PROFANITY FILTER (safe patterns — fill in your word list)
+   ============================================================ */
+
+// Build leetspeak + punctuation-tolerant regex for each word
+function buildWordRegex(word) {
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const map = {
+    a: "[a4@^ÀÁÂÃÄÅàáâãäå∆Λ]",
+    e: "[e3ÈÉÊËèéêë€]",
+    i: "[i1!|ÌÍÎÏìíîï]",
+    o: "[o0°ºòóôõöø]",
+    u: "[uµùúûüÙÚÛÜ]",
+    s: "[s5$§]",
+    t: "[t7+†]",
+    b: "[b8ß]",
+    g: "[g69]",
+    l: "[l1|!¡]",
+    c: "[c(<{¢©]",
+    k: "[k(<{]",
+  };
+
+  const pattern = escaped
+    .split("")
+    .map((ch) => map[ch.toLowerCase()] || ch)
+    .join("");
+
+  // allow punctuation/spaces between letters (f.u.c.k / f u ck)
+  return pattern.split("").join("[^a-zA-Z0-9]*");
+}
+
+// Put your actual word list BELOW (fill privately in your file only)
+const PROFANITY_WORDS = [
+  "WORD1",
+  "WORD2",
+  "WORD3",
+  "WORD4",
+  "WORD5",
+  // ...
+];
+
+// Compile the regex patterns
+const PROFANITY_PATTERNS = PROFANITY_WORDS.map(
+  (w) => new RegExp(buildWordRegex(w), "i")
+);
+
+// Main exported function
+function isNameProfane(name) {
+  if (!name) return false;
+  const cleaned = name.normalize("NFKD");
+  return PROFANITY_PATTERNS.some((re) => re.test(cleaned));
+}
+
 
 // Required performance per level
 function getRequiredGainForLevel(level) {
