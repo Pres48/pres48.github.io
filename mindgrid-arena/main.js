@@ -527,13 +527,11 @@ function updateLevelGoals() {
 
   const level = gameState.level;
   const target = getRequiredGainForLevel(level);
-  const maxMiss = getAllowedMissesForLevel(level);
 
-  // NEW: Show "Level X target"
   levelGoals.textContent =
-    `Level ${level} target: +${target.toLocaleString()} pts, ` +
-    `Max misses: ${maxMiss}`;
+    `Level ${level} target: +${target.toLocaleString()} pts`;
 }
+
 
 
 // ---------- Auto-save to leaderboard ----------
@@ -628,10 +626,9 @@ function endRound(reason = "normal") {
   const missed = gameState.missedTurns || 0;
 
   const requiredGain = getRequiredGainForLevel(level);
-  const allowedMisses = getAllowedMissesForLevel(level);
 
+  // ✅ Only gate on points now
   const passedScoreGate = levelGain >= requiredGain;
-  const passedMissGate = missed <= allowedMisses;
 
   // Track session best (cumulative score)
   if (finalScore > bestScore) {
@@ -658,37 +655,30 @@ function endRound(reason = "normal") {
     return;
   }
 
-  if (passedScoreGate && passedMissGate) {
-    // Level cleared – allow NEXT level
+  if (passedScoreGate) {
+    // ✅ Level cleared – allow NEXT level (misses are just informational)
     messageArea.innerHTML =
       `<strong>Level ${level} cleared!</strong> ` +
       `You earned ${levelGain.toLocaleString()} points this level ` +
       `(${missed} missed turn${missed === 1 ? "" : "s"}).`;
 
-    // --- Show NEXT level requirements right now ---
+    // Show NEXT level’s point requirement
     const nextLevel = level + 1;
     const targetNext = getRequiredGainForLevel(nextLevel);
-    const maxMissNext = getAllowedMissesForLevel(nextLevel);
-    levelGoals.textContent =
-      `Level ${nextLevel} target: +${targetNext.toLocaleString()} pts, ` +
-      `Max misses: ${maxMissNext}`;
+    if (levelGoals) {
+      levelGoals.textContent =
+        `Level ${nextLevel} target: +${targetNext.toLocaleString()} pts`;
+    }
 
-    // Prepare the button for next level
     startButton.disabled = false;
     startButton.textContent = "Play Next Level";
-
     startButton.onclick = () => {
       startLevel(nextLevel);
     };
   } else {
-    // Run ends here due to failing goals
+    // ❌ Run ends here due to not hitting the point target
     let reasonText = "";
-    if (!passedScoreGate) {
-      reasonText += `You needed at least ${requiredGain.toLocaleString()} points this level (you got ${levelGain.toLocaleString()}). `;
-    }
-    if (!passedMissGate) {
-      reasonText += `Too many missed turns (allowed ${allowedMisses}, you had ${missed}).`;
-    }
+    reasonText += `You needed at least ${requiredGain.toLocaleString()} points this level (you got ${levelGain.toLocaleString()}).`;
 
     messageArea.innerHTML =
       `<strong class="over">Run over at Level ${level}.</strong> ` +
@@ -704,6 +694,7 @@ function endRound(reason = "normal") {
   // In any end-of-round case, there's no active run anymore
   endButton.disabled = true;
 }
+
 
 // ---------- Leaderboard ----------
 
@@ -804,14 +795,12 @@ function init() {
     minScoreSpan.textContent = MIN_SUBMIT_SCORE.toLocaleString();
   }
 
-  // Initial Level 1 goals before the first game starts
+  // Initial Level 1 goals before the first game starts (points-only)
   if (levelGoals) {
     const initialLevel = 1;
     const target = getRequiredGainForLevel(initialLevel);
-    const maxMiss = getAllowedMissesForLevel(initialLevel);
     levelGoals.textContent =
-      `Level ${initialLevel} target: +${target.toLocaleString()} pts, ` +
-      `Max misses: ${maxMiss}`;
+      `Level ${initialLevel} target: +${target.toLocaleString()} pts`;
   }
 
   // Restore player name from previous visit, if any
