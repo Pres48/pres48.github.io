@@ -46,8 +46,10 @@ export function getDifficultyForLevel(level) {
     baseTimeMs - (level - 1) * 70
   );
 
-  const gridSize = level >= 15 ? 7 : 6;
-  const turns = 8 + Math.min(4, Math.floor(level / 5)); // 8–12 turns
+  // const gridSize = level >= 15 ? 7 : 6;
+  // const turns = 8 + Math.min(4, Math.floor(level / 5)); // 8–12 turns
+  const gridSize = level >= 28 ? 7 : 6;
+  const turns = 8 + Math.min(4, Math.floor(level / 7)); // 8–12 turns
 
   // Tile distribution weights – same as before
   const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));
