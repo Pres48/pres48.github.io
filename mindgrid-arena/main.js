@@ -608,18 +608,6 @@ function init() {
   endButton.onclick = endGame;
   saveScoreButton.onclick = handleSaveScore;
 
-  // Accordion for How to Play
-  const howToPlayToggle = document.getElementById("howToPlayToggle");
-  const howToPlayContent = document.getElementById("howToPlayContent");
-  const howToPlayArrow = document.getElementById("howToPlayArrow");
-  
-  if (howToPlayToggle && howToPlayContent && howToPlayArrow) {
-    howToPlayToggle.onclick = () => {
-      const open = howToPlayContent.classList.toggle("open");
-      howToPlayArrow.classList.toggle("open", open);
-    };
-  }
-
   // Initial UI state
   bestScoreDisplay.textContent = "–";
   bestLevelDisplay.textContent = "–";
@@ -627,7 +615,7 @@ function init() {
   endButton.disabled = true;
   saveScoreButton.disabled = true;
   
-  // --- NEW: dynamically update popover leaderboard minimum ---
+  // --- Dynamically update popover leaderboard minimum ---
   const minScoreSpan = document.getElementById("leaderboardMinScore");
   if (minScoreSpan) {
     minScoreSpan.textContent = MIN_SUBMIT_SCORE.toLocaleString();
@@ -712,9 +700,7 @@ function init() {
     };
   }
 
-
-
-  // Click anywhere else closes all
+  // Click anywhere else closes all popovers
   document.addEventListener("click", () => {
     [howToPlayInfoPopover, levelGoalsInfoPopover, leaderboardInfoPopover].forEach((p) => {
       if (p) p.classList.remove("visible");
@@ -728,6 +714,53 @@ function init() {
       e.stopPropagation();
     });
   });
+
+  // --- How to Play accordion with smooth slide + saved state ---
+  const howToPlayToggle = document.getElementById("howToPlayToggle");
+  const howToPlayContent = document.getElementById("howToPlayContent");
+  const howToPlayArrow = document.getElementById("howToPlayArrow");
+  const HOW_TO_PLAY_KEY = "mindgridHowToPlayOpen";
+
+  function setHowToPlayOpen(open) {
+    if (!howToPlayContent || !howToPlayArrow) return;
+
+    if (open) {
+      howToPlayContent.classList.add("open");
+      howToPlayArrow.classList.add("open");
+      // use scrollHeight for smooth dynamic height
+      howToPlayContent.style.maxHeight = howToPlayContent.scrollHeight + "px";
+    } else {
+      howToPlayContent.classList.remove("open");
+      howToPlayArrow.classList.remove("open");
+      howToPlayContent.style.maxHeight = "0px";
+    }
+  }
+
+  // Restore saved state (default: open on first visit)
+  let initialOpen = true;
+  try {
+    const stored = localStorage.getItem(HOW_TO_PLAY_KEY);
+    if (stored === "0") initialOpen = false;
+    if (stored === "1") initialOpen = true;
+  } catch (e) {
+    // ignore if storage not available
+  }
+  setHowToPlayOpen(initialOpen);
+
+  if (howToPlayToggle && howToPlayContent && howToPlayArrow) {
+    howToPlayToggle.onclick = (e) => {
+      e.preventDefault();
+      const nowOpen = !howToPlayContent.classList.contains("open");
+      setHowToPlayOpen(nowOpen);
+
+      try {
+        localStorage.setItem(HOW_TO_PLAY_KEY, nowOpen ? "1" : "0");
+      } catch (e2) {
+        // ignore storage errors
+      }
+    };
+  }
 }
 
 init();
+
