@@ -34,27 +34,26 @@ function randomInt(min, max) {
 
 /**
  * Compute difficulty parameters for a given level.
- * You can tweak this curve over time.
  */
 export function getDifficultyForLevel(level) {
-  // Slower start, smoother ramp
-  const baseTimeMs = 4500;   // Level 1 = 4.5 seconds per turn
-  const minTimeMs = 1400;    // Hard cap for very high levels
+  // 🎯 New timing curve: more thinking room, smoother ramp
+  const baseTimeMs = 4200;   // L1 ≈ 4.2s per turn
+  const minTimeMs  = 2200;   // Never go below ~2.2s per turn
 
-  // Each level shaves off 150ms, until minTimeMs
+  // Each level shaves off 70ms, until minTimeMs
   const timePerTurnMs = Math.max(
     minTimeMs,
-    baseTimeMs - (level - 1) * 150
+    baseTimeMs - (level - 1) * 70
   );
 
   const gridSize = level >= 15 ? 7 : 6;
   const turns = 8 + Math.min(4, Math.floor(level / 5)); // 8–12 turns
 
-  // Tile distribution weights
-  const bonusWeight = 1 + Math.min(3, Math.floor(level / 4));
-  const chainWeight = 1 + Math.min(3, Math.floor(level / 5));
-  const riskWeight = 1 + Math.min(4, Math.floor(level / 6));
-  const numberWeight = 6; // always common
+  // Tile distribution weights – same as before
+  const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));
+  const chainWeight  = 1 + Math.min(3, Math.floor(level / 5));
+  const riskWeight   = 1 + Math.min(4, Math.floor(level / 6));
+  const numberWeight = 6;
 
   return {
     timePerTurnMs,
@@ -62,12 +61,13 @@ export function getDifficultyForLevel(level) {
     turns,
     tileWeights: {
       [TILE_TYPES.NUMBER]: numberWeight,
-      [TILE_TYPES.BONUS]: bonusWeight,
-      [TILE_TYPES.CHAIN]: chainWeight,
-      [TILE_TYPES.RISK]: riskWeight,
+      [TILE_TYPES.BONUS]:  bonusWeight,
+      [TILE_TYPES.CHAIN]:  chainWeight,
+      [TILE_TYPES.RISK]:   riskWeight,
     },
   };
 }
+
 
 function pickTileType(weights) {
   const entries = Object.entries(weights);
