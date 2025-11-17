@@ -120,48 +120,70 @@ function isNameProfane(name) {
 //  return base + (level - 1) * perLevel;
 // }
 
-// Curved difficulty for required points per *level*.
-// Idea:
-// - Levels 1–5: gentle onboarding
-// - 6–10: steady climb
-// - 11–15: mid-game challenge
-// - 16–20: late-game push
-// - 21+: flattens with a soft curve so pros can reach very high levels
-function getRequiredGainForLevel(level) {
-  if (level <= 0) return 0;
+// ======================================================
+//  LEVEL GOAL / DIFFICULTY HELPERS (CURVED PROGRESSION)
+// ======================================================
 
-  // 1–5: 80, 95, 110, 125, 140
-  if (level <= 5) {
-    return 80 + 15 * (level - 1);
-  }
+function getTheoreticalMaxLevelGain(level) {
+  // Use the same function you already have in game.js
+  // to know how many turns this level will have.
+  const { turns } = getDifficultyForLevel(level); // 8–12 turns
 
-  // 6–10: 160, 180, 200, 220, 240
-  if (level <= 10) {
-    return 160 + 20 * (level - 6);
-  }
-
-  // 11–15: 270, 295, 320, 345, 370
-  if (level <= 15) {
-    return 270 + 25 * (level - 11);
-  }
-
-  // 16–20: 400, 430, 460, 490, 520
-  if (level <= 20) {
-    return 400 + 30 * (level - 16);
-  }
-
-  // 21+: slowly rising curve, but not crazy.
-  // Requirements hover in the ~550–700+ range so
-  // high-level players are challenged but not hard-capped.
-  const extra = level - 20;
-  const baseAfter20 = 550; // roughly just above Level 20 requirement
-  const step = 35;         // how steep the tail gets
-
-  // use log2 for diminishing growth: big jump at first, then flatter
-  const gain = baseAfter20 + step * Math.log2(1 + extra);
-  return Math.round(gain);
+  // These are generous upper bounds given your current tile ranges:
+  // NUMBER: 5–20, CHAIN: 5–12, RISK: -25–40, BONUS boosts multiplier.
+  if (turns <= 8)  return 650;  // early levels, slow timer, 8 turns
+  if (turns <= 10) return 800;  // mid levels, 9–10 turns
+  return 950;                   // later levels, 11–12 turns
 }
 
+/**
+ * Required score gain PER LEVEL to advance.
+ * Uses a curved progression so:
+ *  - Levels 1–5 ramp gently (onboarding)
+ *  - 6–15 ramp steadily (core difficulty)
+ *  - 16–20 are spicy
+ *  - 20+ ramps with a slow log curve (endless but not impossible)
+ *
+ * Then we clamp the requirement by getTheoreticalMaxLevelGain(level)
+ * so a level is NEVER mathematically impossible.
+ */
+function getRequiredGainForLevel(level) {
+  let required;
+
+  if (level <= 1) {
+    // Level 1: easy intro
+    required = 80;
+  } else if (level <= 5) {
+    // Levels 2–5: +15 per level
+    // L1: 80, L2: 95, L3: 110, L4: 125, L5: 140
+    required = 80 + 15 * (level - 1);
+  } else if (level <= 10) {
+    // Levels 6–10: ramp a bit quicker, +20 each
+    // L6: 160, L7: 180, L8: 200, L9: 220, L10: 240
+    required = 160 + 20 * (level - 6);
+  } else if (level <= 15) {
+    // Levels 11–15: +25 each
+    // L11: 270, L12: 295, L13: 320, L14: 345, L15: 370
+    required = 270 + 25 * (level - 11);
+  } else if (level <= 20) {
+    // Levels 16–20: +30 each
+    // L16: 400, L17: 430, L18: 460, L19: 490, L20: 520
+    required = 400 + 30 * (level - 16);
+  } else {
+    // 21+ : slow logarithmic growth so it's endless but not insane
+    const extra = level - 20;
+    const baseAfter20 = 550;  // starting requirement around level 20
+    const step = 35;          // strength of late-game ramp
+    required = baseAfter20 + step * Math.log2(1 + extra);
+  }
+
+  // Round nicely
+  required = Math.round(required);
+
+  // 🔒 Safety: never require more than the theoretical max for that level.
+  const cap = getTheoreticalMaxLevelGain(level);
+  return Math.min(required, cap);
+}
 
 // function getAllowedMissesForLevel(level) {
 //  if (level <= 3) return 3;
