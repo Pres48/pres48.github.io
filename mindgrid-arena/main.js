@@ -607,7 +607,7 @@ function init() {
   endButton.disabled = true;
   saveScoreButton.disabled = true;
 
-  // 👇 NEW: show Level 1 target on initial load
+  // Initial Level 1 goals before the first game starts
   if (levelGoals) {
     const initialLevel = 1;
     const target = getRequiredGainForLevel(initialLevel);
