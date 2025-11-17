@@ -681,6 +681,46 @@ async function autoSaveScoreIfEligible() {
   }
 }
 
+function triggerFireworks() {
+  const overlay = document.getElementById("fireworksOverlay");
+  if (!overlay) return;
+
+  overlay.innerHTML = "";
+  overlay.classList.add("active");
+
+  const particleCount = 45;
+  const colors = ["#f97316", "#facc15", "#22c55e", "#38bdf8", "#a855f7", "#f97373"];
+
+  for (let i = 0; i < particleCount; i++) {
+    const p = document.createElement("span");
+    p.className = "firework-particle";
+
+    // Random direction + distance
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 60 + Math.random() * 100; // 60–160px
+
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+
+    p.style.setProperty("--dx", `${dx}px`);
+    p.style.setProperty("--dy", `${dy}px`);
+
+    // Center of panel (you could bias toward grid if you want)
+    p.style.left = "50%";
+    p.style.top = "50%";
+
+    // Color cycle
+    p.style.background = colors[i % colors.length];
+
+    overlay.appendChild(p);
+  }
+
+  // Turn off after animation completes
+  setTimeout(() => {
+    overlay.classList.remove("active");
+    overlay.innerHTML = "";
+  }, 750);
+}
 
 
 // ---------- End of Round & Progression ----------
@@ -728,6 +768,9 @@ function endRound(reason = "normal") {
   }
 
   if (passedScoreGate) {
+    // 🎆 Fireworks on level clear
+    triggerFireworks();
+    
     // ✅ Level cleared – allow NEXT level (misses are just informational)
     messageArea.innerHTML =
       `<strong>Level ${level} cleared!</strong> ` +
