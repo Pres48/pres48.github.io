@@ -157,7 +157,7 @@ export function getLevelBehavior(level) {
 export function getDifficultyForLevel(level) {
   // 🎯 New timing curve: more thinking room, smoother ramp
   // const baseTimeMs = 4200;   // L1 ≈ 4.2s per turn
-  const baseTimeMs = 6200;   // L1 ≈ 4.2s per turn
+  const baseTimeMs = 6200;   // L1 ≈ 6.2s per turn
   const minTimeMs  = 2200;   // Never go below ~2.2s per turn
 
   // Each level shaves off 70ms, until minTimeMs
