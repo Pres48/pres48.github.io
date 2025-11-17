@@ -265,6 +265,13 @@ body {
 }
 
 /* Fireworks overlay across the whole game panel */
+/* === FIREWORKS OVERLAY === */
+
+.game-panel {
+  position: relative; /* already there, but required for overlay */
+}
+
+/* Full-panel overlay above the grid */
 .fireworks-overlay {
   position: absolute;
   inset: 0;
@@ -279,21 +286,28 @@ body {
   display: block;
 }
 
-/* Individual particles */
+/* Larger, glowier particles */
 .firework-particle {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
-  background: #facc15;
   opacity: 0;
-  animation: fireworkBurst 700ms ease-out forwards;
+  background: #facc15;
+  box-shadow:
+    0 0 8px rgba(250, 204, 21, 0.9),
+    0 0 16px rgba(250, 204, 21, 0.7),
+    0 0 24px rgba(250, 204, 21, 0.5);
+  animation: fireworkBurst 900ms ease-out forwards;
 }
 
-/* Burst animation using CSS custom properties for direction */
+/* Burst animation with directional travel via CSS vars */
 @keyframes fireworkBurst {
   0% {
-    transform: translate(0, 0) scale(1);
+    transform: translate(0, 0) scale(0.6);
+    opacity: 1;
+  }
+  40% {
     opacity: 1;
   }
   100% {
@@ -301,7 +315,6 @@ body {
     opacity: 0;
   }
 }
-
 
 /* Stats */
 
