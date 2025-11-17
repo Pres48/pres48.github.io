@@ -146,21 +146,6 @@ function setNameWarningActive(active) {
   }
 }
 
-// Placeholder profanity checker – fill in patterns you care about.
-function isNameProfane(name) {
-  if (!name) return false;
-  const lowered = name.toLowerCase();
-
-  const prohibitedPatterns = [
-    // Example:
-    // /badword1/i,
-    // /badword2/i,
-    // Add your own patterns here
-  ];
-
-  return prohibitedPatterns.some((re) => re.test(lowered));
-}
-
 // ---------- Core Game ----------
 
 function startGame() {
