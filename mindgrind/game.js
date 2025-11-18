@@ -3,25 +3,22 @@
 // ==== EASY TUNING: TILE VALUE RANGES ====
 
 // Number tiles: base points before multiplier
-// const NUMBER_MIN = 2; const NUMBER_MAX = 10;
-// const NUMBER_MIN = 5; const NUMBER_MAX = 20;
-const NUMBER_MIN = 8; const NUMBER_MAX = 25;
+const NUMBER_MIN = 8; 
+const NUMBER_MAX = 25;
 
 // Bonus tiles: "steps" used as +x(steps * 0.25) to the multiplier
 // e.g., 1 => +x0.25, 2 => +x0.50, etc.
-// const BONUS_STEPS_MIN = 1; const BONUS_STEPS_MAX = 3;
-const BONUS_STEPS_MIN = 2; const BONUS_STEPS_MAX = 4;
+const BONUS_STEPS_MIN = 2; 
+const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
-// const CHAIN_MIN = 3; const CHAIN_MAX = 7;
-// const CHAIN_MIN = 5; const CHAIN_MAX = 12;
-const CHAIN_MIN = 7; const CHAIN_MAX = 18;
+const CHAIN_MIN = 7; 
+const CHAIN_MAX = 18;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
-// const RISK_MIN = -8; const RISK_MAX = 16;
-// const RISK_MIN = -25; const RISK_MAX = 40;
-const RISK_MIN = -30; const RISK_MAX = 50;
+const RISK_MIN = -30; 
+const RISK_MAX = 50;
 
 // =========================================
 
@@ -39,7 +36,8 @@ function randomInt(min, max) {
 // ---- LEVEL BEHAVIOR / DIFFICULTY FLAGS ----
 
 // This describes how tiles should *display* and behave at a given level.
-// You can tune these thresholds however you like.
+// Cleaned up to remove unreachable conditions, but effective behavior is the same
+// as in your current version.
 export function getLevelBehavior(level) {
   // Base behavior (Level 1)
   const behavior = {
@@ -60,37 +58,37 @@ export function getLevelBehavior(level) {
   };
 
   // ---------------------------
-  // TIER 1 – Onboarding (L1–4)
-  // ---------------------------
+  // TIER 1 – Onboarding (L1–10)
   // Pure numeric, full labels, no tricks.
+  // ---------------------------
   if (level <= 10) {
     return behavior;
   }
 
   // ----------------------------------
-  // TIER 2 – Light equations (L5–8)
-  // ----------------------------------
+  // TIER 2 – Light equations (L11–20)
   // Start sprinkling equations on NUMBER / CHAIN tiles, but keep labels
+  // ----------------------------------
   if (level <= 20) {
-    behavior.equationChance = 0.18;       // ~18% of number/chain tiles show as equations
-    behavior.multiStepEquationChance = 0; // only single-op: "10+7", "4×3", etc.
+    behavior.equationChance = 0.18;
+    behavior.multiStepEquationChance = 0.0; // only single-op
     return behavior;
   }
 
   // -----------------------------------------
-  // TIER 3 – More equations (L9–12)
-  // -----------------------------------------
+  // TIER 3 – More equations (L21–30)
   // Mental load increases, still readable.
+  // -----------------------------------------
   if (level <= 30) {
-    behavior.equationChance = 0.30;       // 30% of number/chain tiles as equations
-    behavior.multiStepEquationChance = 0.10; // ~10% of those become 2–3 term equations
+    behavior.equationChance = 0.30;
+    behavior.multiStepEquationChance = 0.10;
     return behavior;
   }
 
   // ------------------------------------------------
-  // TIER 4 – Riskier & mathier (L13–16)
+  // TIER 4 – Riskier & mathier (L31–40)
+  // More equations, occasional multi-step.
   // ------------------------------------------------
-  // More equations, occasional multi-step, risk starts getting obscured later.
   if (level <= 40) {
     behavior.equationChance = 0.42;
     behavior.multiStepEquationChance = 0.18;
@@ -98,48 +96,44 @@ export function getLevelBehavior(level) {
   }
 
   // ----------------------------------------------------------
-  // TIER 5 – Pattern recognition challenge (L17–20)
+  // TIER 5 – Pattern recognition challenge (L41–50)
+  // Remove NUM/CHAIN labels; rely on colors + equation format.
+  // In your current code, risk is NOT hidden yet at these levels.
   // ----------------------------------------------------------
-  // Remove NUM/CHAIN labels; you rely on colors + equation format.
   if (level <= 50) {
     behavior.equationChance = 0.55;
     behavior.multiStepEquationChance = 0.28;
 
-    behavior.showNumberChainLabels = false; // tiles still colored, but no "NUM"/"CHAIN"
-    behavior.hideRiskValues = true;        // risk stays hidden
-
-    // behavior.hideRiskValues = true; // risk tiles show "???"
-    behavior.hideRiskValues = (level >= 55); // only true at Level 55
+    behavior.showNumberChainLabels = false;
+    behavior.hideRiskValues = false; // matches effective behavior in your last version
 
     return behavior;
   }
 
   // ------------------------------------------------------
-  // TIER 6 – Advanced play (L21–30)
+  // TIER 6 – Advanced play (L51–60)
+  // Higher equation density, more multi-step, risk hidden.
+  // ShuffleEachTurn was never actually enabled here in your old code,
+  // so we keep it off to preserve behavior.
   // ------------------------------------------------------
-  // Higher equation density, more multi-step, optional board shuffle at 26+.
   if (level <= 60) {
     behavior.equationChance = 0.65;
     behavior.multiStepEquationChance = 0.35;
 
     behavior.showNumberChainLabels = false;
     behavior.hideRiskValues = true;
-    
-    // if (level >= 26) {
-    if (level >= 65) {
-      behavior.shuffleEachTurn = true; // grid layout scrambles between turns
-    }
+    // shuffleEachTurn stays false here (matches previous effective behavior)
 
     return behavior;
   }
 
   // ------------------------------------------------------
-  // TIER 7 – Expert / “endless” (L31+)
+  // TIER 7 – Expert / “endless” (L61+)
+  // Dense equations, frequent multi-step, shuffled boards, risk hidden,
+  // NUM/CHAIN labels gone.
   // ------------------------------------------------------
-  // This is where grinders live. Very dense equations, frequent multi-step,
-  // shuffled boards, risk hidden, NUM/CHAIN labels gone.
-  behavior.equationChance = 0.75;          // 3/4 of number/chain tiles are equations
-  behavior.multiStepEquationChance = 0.45; // almost half of those are multi-step
+  behavior.equationChance = 0.75;
+  behavior.multiStepEquationChance = 0.45;
 
   behavior.showNumberChainLabels = false;
   behavior.hideRiskValues = true;
@@ -150,8 +144,6 @@ export function getLevelBehavior(level) {
 
   return behavior;
 }
-
-
 
 /**
  * Compute difficulty parameters for a given level.
@@ -168,9 +160,7 @@ export function getDifficultyForLevel(level) {
     baseTimeMs - (level - 1) * 70
   );
 
-  // const gridSize = level >= 15 ? 7 : 6;
-  // const turns = 8 + Math.min(4, Math.floor(level / 5)); // 8–12 turns
-  const gridSize = level >= 28 ? 7 : 6;
+  const gridSize = level >= 30 ? 7 : 6;
   const turns = 8 + Math.min(4, Math.floor(level / 7)); // 8–12 turns
 
   // Tile distribution weights – same as before
@@ -191,7 +181,6 @@ export function getDifficultyForLevel(level) {
     },
   };
 }
-
 
 function pickTileType(weights) {
   const entries = Object.entries(weights);
@@ -264,10 +253,15 @@ export function resolveTileSelection(tile, state) {
     basePoints = value;
 
   } else if (type === TILE_TYPES.CHAIN) {
-    const chainFactor = 1 + newState.chainCount * 0.35;
+    // Slightly stronger chains so they become a real strategy,
+    // especially in mid/high levels.
+    let step = 0.40;
+    if (state.level >= 10) step = 0.45;
+    if (state.level >= 20) step = 0.50;
+  
+    const chainFactor = 1 + newState.chainCount * step;
     basePoints = Math.round(value * chainFactor);
     newState.chainCount += 1;
-
   } else if (type === TILE_TYPES.BONUS) {
     newState.multiplier = parseFloat(
       (newState.multiplier + value * 0.25).toFixed(2)
