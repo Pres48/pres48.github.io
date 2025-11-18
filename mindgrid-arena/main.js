@@ -491,7 +491,8 @@ function startGame() {
 
   
   
-// Debug exports
+// Debug exports - START ----------------------
+  
 window.gameState = gameState;
 window.getLevelBehavior = getLevelBehavior;
 window.renderGrid = renderGrid;
@@ -525,7 +526,7 @@ window.jumpToLevel = function (level) {
   messageArea.textContent = `Debug jump to Level ${level}`;
 };
 
-
+// Debug exports - END ----------------------
   
 
   updateUIFromState();
