@@ -486,6 +486,7 @@ function startGame() {
     timePerTurnMs: difficulty.timePerTurnMs,
     behavior,
     locked: false,
+    lastClickTurn: -1,
   };
 
 
@@ -564,6 +565,7 @@ function startLevel(level) {
     timePerTurnMs: difficulty.timePerTurnMs,
     behavior,
     locked: false,
+    lastClickTurn: -1,
   };
 
   updateUIFromState();
@@ -711,17 +713,27 @@ function renderGrid() {
       tileEl.appendChild(label);
       tileEl.appendChild(valueEl);
 
-      // 🔒 Prevent multiple scoring clicks in the same turn
+      // ✅ One-click-per-turn guard
       tileEl.onclick = () => {
-        if (!gameState || gameState.locked) return; // ignore extra clicks
-        gameState.locked = true;                    // consume this turn
-        onTileClick(tile);                          // existing logic
+        if (!gameState) return;
+
+        // If we've already clicked a tile this turn, ignore
+        if (gameState.lastClickTurn === gameState.turnIndex) {
+          return;
+        }
+
+        // Mark this turn as "used"
+        gameState.lastClickTurn = gameState.turnIndex;
+
+        // Existing click behavior
+        onTileClick(tile);
       };
 
       gridContainer.appendChild(tileEl);
     });
   });
 }
+
 
 
 function onTileClick(tile) {
