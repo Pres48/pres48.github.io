@@ -658,6 +658,14 @@ function renderGrid() {
         valueEl.textContent = formatTileDisplay(tile, behavior);
       }
 
+      const text = valueEl.textContent || "";
+      if (text.length >= 5) {
+        valueEl.style.transform = "scale(0.90)";
+      }
+      if (text.length >= 7) {
+        valueEl.style.transform = "scale(0.80)";
+      }
+      
       tileEl.appendChild(label);
       tileEl.appendChild(valueEl);
 
