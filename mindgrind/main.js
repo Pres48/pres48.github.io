@@ -31,6 +31,7 @@ const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
 
 // ----- Result Modal Elements -----
+const mgModal       = document.querySelector(".mg-modal");
 const mgOverlay     = document.getElementById("mg-modal-overlay");
 const mgTitle       = document.getElementById("mg-title");
 const mgSubtitle    = document.getElementById("mg-subtitle");
@@ -339,6 +340,11 @@ function openResultModal({
     isNewHighScore,
   });
 
+  // Tag modal for layout differences in "run over" vs "cleared"
+  if (mgModal) {
+    mgModal.classList.toggle("mg-run-over", !cleared);
+  }
+
   // ---- Header text ----
   if (cleared) {
     if (mgTitle) mgTitle.textContent = `Level ${level} Cleared!`;
@@ -451,21 +457,21 @@ function openResultModal({
       btnContinue.classList.toggle("hidden", !showContinue);
 
       if (showContinue) {
-        btnContinue.textContent = `Continue (${credits})`;
+        btnContinue.textContent = "Continue Run";   // ← no (credits) here
         btnContinue.onclick = () => {
-          // Spend one credit
-          retryCredits = Math.max(0, retryCredits - 1);
+          window.retryCredits = Math.max(0, (window.retryCredits || 0) - 1);
 
-          // Restore score at start of this level
+          // Restore score and retry same level
           if (gameState && typeof gameState.scoreAtLevelStart === "number") {
             gameState.score = gameState.scoreAtLevelStart;
           }
 
           closeResultModal();
-          startLevel(level); // retry the same level
+          startLevel(level); // retry same level
         };
       }
     }
+
 
     // Never show separate New Game button
     if (btnNewGame) btnNewGame.classList.add("hidden");
