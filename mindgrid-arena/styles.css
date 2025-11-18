@@ -502,6 +502,12 @@ body {
   transform: scale(1.08);
 }
 
+.tile-used {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+
 
 /* Controls */
 
