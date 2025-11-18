@@ -713,20 +713,12 @@ function renderGrid() {
       tileEl.appendChild(label);
       tileEl.appendChild(valueEl);
 
-      // 🔒 Lock per turn using a snapshot of the turn index
-      const clickTurnIndex = gameState.turnIndex;  // snapshot when this tile is created
+      if (tile.used) {
+        tileEl.disabled = true;
+        tileEl.classList.add("tile-used");
+      }
 
-      tileEl.onclick = () => {
-        if (!gameState) return;
-
-        // If the game has advanced to a new turn, ignore this click
-        if (gameState.turnIndex !== clickTurnIndex) {
-          return;
-        }
-
-        // Normal behavior
-        onTileClick(tile);
-      };
+      tileEl.onclick = () => onTileClick(tile);
 
       gridContainer.appendChild(tileEl);
     });
@@ -740,27 +732,32 @@ function onTileClick(tile) {
   if (!gameState || gameState.locked) return;
   if (selectedThisTurn) return;
 
+  // 🚫 If this tile has already been used in this level, ignore it
+  if (tile.used) return;
+
+  // ✅ First time this tile is being used in this level
   selectedThisTurn = true;
+  tile.used = true;          // 👈 mark it as used for the rest of the level
   setTilesDisabled(true);
 
-const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
+  const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
 
-if (el) {
-  el.classList.add("selected");
+  if (el) {
+    el.classList.add("selected");
 
-  // If risk values are hidden at this level, reveal this one on click
-  if (tile.type === "risk" && shouldHideRiskValues(gameState.level)) {
-    const valueSpan = el.querySelector(".tile-value");
-    if (valueSpan) {
-      valueSpan.textContent = tile.value;          // show actual number
-      valueSpan.classList.add("risk-revealed");    // optional, for a little effect
+    // If risk values are hidden at this level, reveal this one on click
+    if (tile.type === "risk" && shouldHideRiskValues(gameState.level)) {
+      const valueSpan = el.querySelector(".tile-value");
+      if (valueSpan) {
+        valueSpan.textContent = tile.value;          // show actual number
+        valueSpan.classList.add("risk-revealed");    // optional, for a little effect
+      }
     }
   }
-}
 
-resetTimer();
+  resetTimer();
 
-const updatedState = resolveTileSelection(tile, gameState);
+  const updatedState = resolveTileSelection(tile, gameState);
 
   gameState = {
     ...gameState,
@@ -773,6 +770,7 @@ const updatedState = resolveTileSelection(tile, gameState);
     nextTurn();
   }, 300);
 }
+
 
 // ---------- UI Updates ----------
 
