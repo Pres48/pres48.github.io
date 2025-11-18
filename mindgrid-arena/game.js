@@ -4,20 +4,24 @@
 
 // Number tiles: base points before multiplier
 // const NUMBER_MIN = 2; const NUMBER_MAX = 10;
-const NUMBER_MIN = 5; const NUMBER_MAX = 20;
+// const NUMBER_MIN = 5; const NUMBER_MAX = 20;
+const NUMBER_MIN = 8; const NUMBER_MAX = 25;
 
 // Bonus tiles: "steps" used as +x(steps * 0.25) to the multiplier
 // e.g., 1 => +x0.25, 2 => +x0.50, etc.
-const BONUS_STEPS_MIN = 1; const BONUS_STEPS_MAX = 3;
+// const BONUS_STEPS_MIN = 1; const BONUS_STEPS_MAX = 3;
+const BONUS_STEPS_MIN = 2; const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
 // const CHAIN_MIN = 3; const CHAIN_MAX = 7;
-const CHAIN_MIN = 5; const CHAIN_MAX = 12;
+// const CHAIN_MIN = 5; const CHAIN_MAX = 12;
+const CHAIN_MIN = 7; const CHAIN_MAX = 18;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
 // const RISK_MIN = -8; const RISK_MAX = 16;
-const RISK_MIN = -25; const RISK_MAX = 40;
+// const RISK_MIN = -25; const RISK_MAX = 40;
+const RISK_MIN = -30; const RISK_MAX = 50;
 
 // =========================================
 
@@ -59,7 +63,7 @@ export function getLevelBehavior(level) {
   // TIER 1 – Onboarding (L1–4)
   // ---------------------------
   // Pure numeric, full labels, no tricks.
-  if (level <= 4) {
+  if (level <= 10) {
     return behavior;
   }
 
@@ -67,7 +71,7 @@ export function getLevelBehavior(level) {
   // TIER 2 – Light equations (L5–8)
   // ----------------------------------
   // Start sprinkling equations on NUMBER / CHAIN tiles, but keep labels
-  if (level <= 8) {
+  if (level <= 20) {
     behavior.equationChance = 0.18;       // ~18% of number/chain tiles show as equations
     behavior.multiStepEquationChance = 0; // only single-op: "10+7", "4×3", etc.
     return behavior;
@@ -77,7 +81,7 @@ export function getLevelBehavior(level) {
   // TIER 3 – More equations (L9–12)
   // -----------------------------------------
   // Mental load increases, still readable.
-  if (level <= 12) {
+  if (level <= 30) {
     behavior.equationChance = 0.30;       // 30% of number/chain tiles as equations
     behavior.multiStepEquationChance = 0.10; // ~10% of those become 2–3 term equations
     return behavior;
@@ -87,12 +91,12 @@ export function getLevelBehavior(level) {
   // TIER 4 – Riskier & mathier (L13–16)
   // ------------------------------------------------
   // More equations, occasional multi-step, risk starts getting obscured later.
-  if (level <= 16) {
+  if (level <= 40) {
     behavior.equationChance = 0.42;
     behavior.multiStepEquationChance = 0.18;
 
     // At 15+ we start hiding risk values: pure “feel” choices
-    if (level >= 15) {
+    if (level >= 45) {
       behavior.hideRiskValues = true; // risk tiles show "???"
     }
 
@@ -103,7 +107,7 @@ export function getLevelBehavior(level) {
   // TIER 5 – Pattern recognition challenge (L17–20)
   // ----------------------------------------------------------
   // Remove NUM/CHAIN labels; you rely on colors + equation format.
-  if (level <= 20) {
+  if (level <= 50) {
     behavior.equationChance = 0.55;
     behavior.multiStepEquationChance = 0.28;
 
@@ -117,14 +121,15 @@ export function getLevelBehavior(level) {
   // TIER 6 – Advanced play (L21–30)
   // ------------------------------------------------------
   // Higher equation density, more multi-step, optional board shuffle at 26+.
-  if (level <= 30) {
+  if (level <= 60) {
     behavior.equationChance = 0.65;
     behavior.multiStepEquationChance = 0.35;
 
     behavior.showNumberChainLabels = false;
     behavior.hideRiskValues = true;
-
-    if (level >= 26) {
+    
+    // if (level >= 26) {
+    if (level >= 65) {
       behavior.shuffleEachTurn = true; // grid layout scrambles between turns
     }
 
@@ -155,7 +160,7 @@ export function getLevelBehavior(level) {
  * Compute difficulty parameters for a given level.
  */
 export function getDifficultyForLevel(level) {
-  // 🎯 New timing curve: more thinking room, smoother ramp
+  // New timing curve: more thinking room, smoother ramp
   // const baseTimeMs = 4200;   // L1 ≈ 4.2s per turn
   const baseTimeMs = 6200;   // L1 ≈ 6.2s per turn
   const minTimeMs  = 2200;   // Never go below ~2.2s per turn
