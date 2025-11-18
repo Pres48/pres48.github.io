@@ -353,12 +353,6 @@ function openResultModal({
 
   const credits = typeof retryCredits === "number" ? retryCredits : window.retryCredits || 0;
 
-  // ✅ Safe local copy of credits
-  const credits =
-    typeof retryCredits === "number"
-      ? retryCredits
-      : (window.retryCredits ?? 0);
-
   // Header text
   if (cleared) {
     if (mgTitle) mgTitle.textContent = `Level ${level} Cleared!`;
