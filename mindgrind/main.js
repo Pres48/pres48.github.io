@@ -327,6 +327,7 @@ function maybeAwardRetryCreditForLevel(level) {
   const milestones = [12, 15, 25, 30];
   if (milestones.includes(level)) {
     retryCredits++;
+    console.log("Retry credit earned, total:", retryCredits);
   }
 }
 
@@ -342,47 +343,69 @@ function openResultModal({
   isPerfectLevel = false,
   isNewHighScore = false,
 }) {
-  if (!mgOverlay) return; // safety
-
-  if (cleared) {
-    mgTitle.textContent = `Level ${level} Cleared!`;
-    mgSubtitle.textContent = `Nice job — Level ${level + 1} is up next.`;
-  } else {
-    mgTitle.textContent = `Run Over — Level ${level}`;
-    mgSubtitle.textContent = `You were ${Math.max(
-      0,
-      neededPoints - roundPoints
-    ).toLocaleString()} points short.`;
+  if (!mgOverlay) {
+    console.warn("mgOverlay not found, skipping modal");
+    return;
   }
 
-  mgTotalPoints.textContent = totalPoints.toLocaleString();
-  mgRoundPoints.textContent = roundPoints.toLocaleString();
-  mgNeeded.textContent = neededPoints.toLocaleString();
-  mgMisses.textContent = misses.toLocaleString();
-  mgCredits.textContent = retryCredits.toString();
+  console.log("openResultModal called", {
+    cleared,
+    level,
+    totalPoints,
+    roundPoints,
+    neededPoints,
+    misses,
+    retryCredits,
+    nextLevelNeededPoints,
+    isPerfectLevel,
+    isNewHighScore,
+  });
+
+  if (cleared) {
+    if (mgTitle) mgTitle.textContent = `Level ${level} Cleared!`;
+    if (mgSubtitle)
+      mgSubtitle.textContent = `Nice job — Level ${level + 1} is up next.`;
+  } else {
+    if (mgTitle) mgTitle.textContent = `Run Over — Level ${level}`;
+    if (mgSubtitle)
+      mgSubtitle.textContent = `You were ${Math.max(
+        0,
+        neededPoints - roundPoints
+      ).toLocaleString()} points short.`;
+  }
+
+  if (mgTotalPoints) mgTotalPoints.textContent = totalPoints.toLocaleString();
+  if (mgRoundPoints) mgRoundPoints.textContent = roundPoints.toLocaleString();
+  if (mgNeeded) mgNeeded.textContent = neededPoints.toLocaleString();
+  if (mgMisses) mgMisses.textContent = misses.toLocaleString();
+  if (mgCredits) mgCredits.textContent = retryCredits.toString();
 
   // Extra line only when you CLEAR a level
   if (cleared && typeof nextLevelNeededPoints === "number") {
     let msg = `Next level target: ${nextLevelNeededPoints.toLocaleString()} points.`;
     if (isPerfectLevel) msg += " Perfect level (0 misses)!";
     if (isNewHighScore) msg += " New high score!";
-    mgExtra.textContent = msg;
-    mgExtra.classList.remove("hidden");
-  } else {
+    if (mgExtra) {
+      mgExtra.textContent = msg;
+      mgExtra.classList.remove("hidden");
+    }
+  } else if (mgExtra) {
     mgExtra.textContent = "";
     mgExtra.classList.add("hidden");
   }
 
   // Button visibility:
-  // Cleared → Next Level only
-  mgBtnNext.classList.toggle("hidden", !cleared);
-  // Failed → New Game always
-  mgBtnNew.classList.toggle("hidden", cleared);
-  // Failed + credits → Continue(N)
+  const showNext = !!cleared;
+  const showNew = !cleared;
   const canContinue = !cleared && retryCredits > 0;
-  mgBtnContinue.classList.toggle("hidden", !canContinue);
-  if (canContinue) {
-    mgBtnContinue.textContent = `Continue (${retryCredits})`;
+
+  if (mgBtnNext) mgBtnNext.classList.toggle("hidden", !showNext);
+  if (mgBtnNew) mgBtnNew.classList.toggle("hidden", !showNew);
+  if (mgBtnContinue) {
+    mgBtnContinue.classList.toggle("hidden", !canContinue);
+    if (canContinue) {
+      mgBtnContinue.textContent = `Continue (${retryCredits})`;
+    }
   }
 
   mgOverlay.classList.remove("hidden");
@@ -432,6 +455,7 @@ if (mgBtnContinue) {
     startLevel(gameState.level); // retry same level
   });
 }
+
 
 
 // ---------- Fairness helpers: ensure each level is beatable ----------
@@ -1182,8 +1206,7 @@ function endRound(reason = "normal") {
   const passedScoreGate = levelGain >= requiredGain;
   const passedMissGate = true; // ignore misses for progression (for now)
 
-  // Check if this is a new session high before updating
-  const isNewHighScore = finalScore > bestScore;
+  const wasNewHighScore = finalScore > bestScore;
 
   // Track session best (cumulative score)
   if (finalScore > bestScore) {
@@ -1196,7 +1219,7 @@ function endRound(reason = "normal") {
   // Auto-save (or show why not)
   autoSaveScoreIfEligible();
 
-  // If player chose End Game, treat as manual quit (no modal for now)
+  // If player chose End Game, always treat as run over (no modal)
   if (reason === "quit") {
     messageArea.innerHTML =
       `<strong class="over">Run ended by player at Level ${level}.</strong> ` +
@@ -1230,6 +1253,11 @@ function endRound(reason = "normal") {
         `Level ${nextLevel} target: +${targetNext.toLocaleString()} pts`;
     }
 
+    // Backup: Start button still works to advance
+    startButton.disabled = false;
+    startButton.textContent = `Play Level ${nextLevel}`;
+    startButton.onclick = () => startLevel(nextLevel);
+
     // Show modal for "Level Cleared"
     openResultModal({
       cleared: true,
@@ -1240,7 +1268,7 @@ function endRound(reason = "normal") {
       misses: missed,
       nextLevelNeededPoints: targetNext,
       isPerfectLevel: missed === 0,
-      isNewHighScore,
+      isNewHighScore: wasNewHighScore,
     });
 
   } else {
@@ -1255,6 +1283,11 @@ function endRound(reason = "normal") {
 
     if (levelGoals) levelGoals.textContent = "";
 
+    // Backup: Start button returns to "Start Game"
+    startButton.disabled = false;
+    startButton.textContent = "Start Game";
+    startButton.onclick = startGame;
+
     // Show modal for "Run Over"
     openResultModal({
       cleared: false,
@@ -1263,13 +1296,14 @@ function endRound(reason = "normal") {
       roundPoints: levelGain,
       neededPoints: requiredGain,
       misses: missed,
-      // retryCredits is global and read inside openResultModal
+      // retryCredits is global and displayed inside openResultModal
     });
   }
 
   // No active run after round ends
   endButton.disabled = true;
 }
+
 
 
 
