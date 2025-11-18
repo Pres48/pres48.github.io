@@ -382,18 +382,31 @@ function openResultModal({
   if (mgMisses) mgMisses.textContent = misses.toLocaleString();
   if (mgCredits) mgCredits.textContent = retryCredits.toString();
 
-  // Extra line only when you CLEAR a level
-  if (cleared && typeof nextLevelNeededPoints === "number") {
-    let msg = `Next level target: ${nextLevelNeededPoints.toLocaleString()} points.`;
-    if (isPerfectLevel) msg += " Perfect level (0 misses)!";
-    if (isNewHighScore) msg += " New high score!";
-    if (mgExtra) {
-      mgExtra.textContent = msg;
-      mgExtra.classList.remove("hidden");
+  // ---- Build mgExtra (stacked info lines, clean UI text) ----
+  if (mgExtra) {
+    const extraLines = [];
+  
+    if (cleared && typeof nextLevelNeededPoints === "number") {
+      extraLines.push(
+        `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`
+      );
     }
-  } else if (mgExtra) {
-    mgExtra.textContent = "";
-    mgExtra.classList.add("hidden");
+  
+    if (cleared && isPerfectLevel) {
+      extraLines.push(`Perfect level (0 misses)`);
+    }
+  
+    if (isNewHighScore) {
+      extraLines.push(`New high score!`);
+    }
+  
+    if (extraLines.length > 0) {
+      mgExtra.innerHTML = extraLines.join("<br>");
+      mgExtra.classList.remove("hidden");
+    } else {
+      mgExtra.innerHTML = "";
+      mgExtra.classList.add("hidden");
+    }
   }
 
   // Button visibility:
