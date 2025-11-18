@@ -313,7 +313,6 @@ function openResultModal({
   roundPoints,
   neededPoints,
   misses,
-  retryCredits: retryCreditsParam,
   nextLevelNeededPoints,
   isPerfectLevel = false,
   isNewHighScore = false,
@@ -323,9 +322,8 @@ function openResultModal({
     return;
   }
 
-  // Safe credit value (prefer argument, fall back to global)
-  const credits =
-    typeof retryCreditsParam === "number" ? retryCreditsParam : retryCredits;
+  // Use the global retryCredits as the single source of truth
+  const credits = retryCredits;
 
   console.log("openResultModal()", {
     cleared,
@@ -340,7 +338,7 @@ function openResultModal({
     isNewHighScore,
   });
 
-  // Tag modal for layout differences in "run over" vs "cleared"
+  // 🔹 Tag modal for layout differences in "run over" vs "cleared"
   if (mgModal) {
     mgModal.classList.toggle("mg-run-over", !cleared);
   }
