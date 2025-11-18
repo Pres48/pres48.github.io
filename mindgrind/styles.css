@@ -280,7 +280,7 @@ body {
   overflow: hidden;
   /* z-index: 5; */
   z-index: 9500;             /* higher than .mg-overlay (9000) */
-  display: none;
+  /* display: none; */
 }
 
 /* Shown while fireworks are active */
