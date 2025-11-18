@@ -490,6 +490,19 @@ body {
   background: radial-gradient(circle at 30% 20%, #fecaca, var(--tile-red));
 }
 
+/* Risk tiles with hidden value */
+.tile.type-risk.risk-hidden .tile-value {
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+/* When revealed on click */
+.tile.type-risk .tile-value.risk-revealed {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  transform: scale(1.08);
+}
+
+
 /* Controls */
 
 .controls-row {
