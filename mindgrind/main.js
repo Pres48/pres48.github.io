@@ -28,6 +28,21 @@ const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 const leaderboardList = document.getElementById("leaderboardList");
 const levelGoals = document.getElementById("levelGoals");
 
+// ----- Result Modal Elements -----
+const mgOverlay    = document.getElementById("mg-modal-overlay");
+const mgTitle      = document.getElementById("mg-title");
+const mgSubtitle   = document.getElementById("mg-subtitle");
+const mgExtra      = document.getElementById("mg-extra");
+const mgTotal      = document.getElementById("mg-total-points");
+const mgRound      = document.getElementById("mg-round-points");
+const mgNeeded     = document.getElementById("mg-needed");
+const mgMisses     = document.getElementById("mg-misses");
+const mgCreditsEl  = document.getElementById("mg-credits");
+const mgBtnNext    = document.getElementById("mg-next");
+const mgBtnNew     = document.getElementById("mg-new");
+const mgBtnContinue= document.getElementById("mg-continue");
+const mgBtnClose   = document.getElementById("mg-close");
+
 // Popover elements
 const howToPlayInfoBtn = document.getElementById("howToPlayInfoBtn");
 const howToPlayInfoPopover = document.getElementById("howToPlayInfoPopover");
@@ -47,6 +62,10 @@ let bestScore = 0;
 let bestLevel = 0;
 let currentRunScoreId = null;
 let currentRunSavedScore = 0;
+
+// Retry credits you earn at certain milestone levels
+let retryCredits = 0;
+
 
 // ---------- Utility ----------
 function escapeHtml(str) {
@@ -302,6 +321,118 @@ function getAllowedMissesForLevel(level) {
   return 9999;
 }
 
+// ===== Retry credit awards at milestone levels =====
+function maybeAwardRetryCreditForLevel(level) {
+  // tweak these milestones however you like
+  const milestones = [12, 15, 25, 30];
+  if (milestones.includes(level)) {
+    retryCredits++;
+  }
+}
+
+// ===== Modal open/close helpers =====
+function openResultModal({
+  cleared,
+  level,
+  totalPoints,
+  roundPoints,
+  neededPoints,
+  misses,
+  nextLevelNeededPoints,
+  isPerfectLevel = false,
+  isNewHighScore = false,
+}) {
+  if (!mgOverlay) return; // safety
+
+  if (cleared) {
+    mgTitle.textContent = `Level ${level} Cleared!`;
+    mgSubtitle.textContent = `Nice job — Level ${level + 1} is up next.`;
+  } else {
+    mgTitle.textContent = `Run Over — Level ${level}`;
+    mgSubtitle.textContent = `You were ${Math.max(
+      0,
+      neededPoints - roundPoints
+    ).toLocaleString()} points short.`;
+  }
+
+  mgTotalPoints.textContent = totalPoints.toLocaleString();
+  mgRoundPoints.textContent = roundPoints.toLocaleString();
+  mgNeeded.textContent = neededPoints.toLocaleString();
+  mgMisses.textContent = misses.toLocaleString();
+  mgCredits.textContent = retryCredits.toString();
+
+  // Extra line only when you CLEAR a level
+  if (cleared && typeof nextLevelNeededPoints === "number") {
+    let msg = `Next level target: ${nextLevelNeededPoints.toLocaleString()} points.`;
+    if (isPerfectLevel) msg += " Perfect level (0 misses)!";
+    if (isNewHighScore) msg += " New high score!";
+    mgExtra.textContent = msg;
+    mgExtra.classList.remove("hidden");
+  } else {
+    mgExtra.textContent = "";
+    mgExtra.classList.add("hidden");
+  }
+
+  // Button visibility:
+  // Cleared → Next Level only
+  mgBtnNext.classList.toggle("hidden", !cleared);
+  // Failed → New Game always
+  mgBtnNew.classList.toggle("hidden", cleared);
+  // Failed + credits → Continue(N)
+  const canContinue = !cleared && retryCredits > 0;
+  mgBtnContinue.classList.toggle("hidden", !canContinue);
+  if (canContinue) {
+    mgBtnContinue.textContent = `Continue (${retryCredits})`;
+  }
+
+  mgOverlay.classList.remove("hidden");
+}
+
+function closeResultModal() {
+  if (!mgOverlay) return;
+  mgOverlay.classList.add("hidden");
+}
+
+// ===== Modal button handlers =====
+if (mgBtnClose) {
+  mgBtnClose.addEventListener("click", () => {
+    closeResultModal();
+  });
+}
+
+if (mgBtnNew) {
+  mgBtnNew.addEventListener("click", () => {
+    closeResultModal();
+    restartGame();  // uses your existing restart path (level 1, new run)
+  });
+}
+
+if (mgBtnNext) {
+  mgBtnNext.addEventListener("click", () => {
+    if (!gameState) return;
+    closeResultModal();
+    const nextLevel = gameState.level + 1;
+    startLevel(nextLevel); // existing function
+  });
+}
+
+if (mgBtnContinue) {
+  mgBtnContinue.addEventListener("click", () => {
+    if (!gameState || retryCredits <= 0) return;
+
+    // Spend one credit
+    retryCredits--;
+
+    // Roll score back to start-of-level so it's a true "do-over"
+    if (typeof gameState.scoreAtLevelStart === "number") {
+      gameState.score = gameState.scoreAtLevelStart;
+    }
+
+    closeResultModal();
+    startLevel(gameState.level); // retry same level
+  });
+}
+
 
 // ---------- Fairness helpers: ensure each level is beatable ----------
 
@@ -471,7 +602,7 @@ function startGame() {
 
   const difficulty = getDifficultyForLevel(level);
   const behavior = getLevelBehavior(level);
-
+ 
   gameState = {
     level,
     turnIndex: 0,
@@ -1051,6 +1182,9 @@ function endRound(reason = "normal") {
   const passedScoreGate = levelGain >= requiredGain;
   const passedMissGate = true; // ignore misses for progression (for now)
 
+  // Check if this is a new session high before updating
+  const isNewHighScore = finalScore > bestScore;
+
   // Track session best (cumulative score)
   if (finalScore > bestScore) {
     bestScore = finalScore;
@@ -1062,7 +1196,7 @@ function endRound(reason = "normal") {
   // Auto-save (or show why not)
   autoSaveScoreIfEligible();
 
-  // If player chose End Game, always treat as run over
+  // If player chose End Game, treat as manual quit (no modal for now)
   if (reason === "quit") {
     messageArea.innerHTML =
       `<strong class="over">Run ended by player at Level ${level}.</strong> ` +
@@ -1076,17 +1210,19 @@ function endRound(reason = "normal") {
     return;
   }
 
-  if (passedScoreGate) {
+  if (passedScoreGate && passedMissGate) {
     // 🎆 Fireworks on level clear
     triggerFireworks();
-    
-    // ✅ Level cleared – allow NEXT level (misses are just informational)
+
     messageArea.innerHTML =
       `<strong>Level ${level} cleared!</strong> ` +
       `You earned ${levelGain.toLocaleString()} points this level ` +
       `(${missed} missed turn${missed === 1 ? "" : "s"}).`;
 
-    // Show NEXT level’s point requirement
+    // Award retry credit if this level is a milestone
+    maybeAwardRetryCreditForLevel(level);
+
+    // NEXT level’s point requirement
     const nextLevel = level + 1;
     const targetNext = getRequiredGainForLevel(nextLevel);
     if (levelGoals) {
@@ -1094,30 +1230,47 @@ function endRound(reason = "normal") {
         `Level ${nextLevel} target: +${targetNext.toLocaleString()} pts`;
     }
 
-    startButton.disabled = false;
-    startButton.textContent = "Play Next Level";
-    startButton.onclick = () => {
-      startLevel(nextLevel);
-    };
+    // Show modal for "Level Cleared"
+    openResultModal({
+      cleared: true,
+      level,
+      totalPoints: finalScore,
+      roundPoints: levelGain,
+      neededPoints: requiredGain,
+      misses: missed,
+      nextLevelNeededPoints: targetNext,
+      isPerfectLevel: missed === 0,
+      isNewHighScore,
+    });
+
   } else {
     // ❌ Run ends here due to not hitting the point target
-    let reasonText = "";
-    reasonText += `You needed at least ${requiredGain.toLocaleString()} points this level (you got ${levelGain.toLocaleString()}).`;
+    const reasonText =
+      `You needed at least ${requiredGain.toLocaleString()} points this level ` +
+      `(you got ${levelGain.toLocaleString()}).`;
 
     messageArea.innerHTML =
       `<strong class="over">Run over at Level ${level}.</strong> ` +
       `Final score: ${finalScore.toLocaleString()}. ${reasonText}`;
 
-    startButton.disabled = false;
-    startButton.textContent = "Start Game";
-    startButton.onclick = startGame;
-
     if (levelGoals) levelGoals.textContent = "";
+
+    // Show modal for "Run Over"
+    openResultModal({
+      cleared: false,
+      level,
+      totalPoints: finalScore,
+      roundPoints: levelGain,
+      neededPoints: requiredGain,
+      misses: missed,
+      // retryCredits is global and read inside openResultModal
+    });
   }
 
-  // In any end-of-round case, there's no active run anymore
+  // No active run after round ends
   endButton.disabled = true;
 }
+
 
 
 // ---------- Leaderboard ----------
