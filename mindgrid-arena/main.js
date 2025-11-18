@@ -584,6 +584,9 @@ function startLevel(level) {
 function nextTurn() {
   if (!gameState) return;
 
+  // allow one click this turn
+  gameState.locked = false;
+
   const behavior = gameState.behavior || getLevelBehavior(gameState.level);
 
   // Optional: shuffle grid each turn for higher levels
@@ -654,7 +657,6 @@ function shouldHideRiskValues(level) {
   return behavior.hideRiskValues;
 }
 
-
 function renderGrid() {
   gridContainer.innerHTML = "";
   if (!gameState) return;
@@ -705,11 +707,16 @@ function renderGrid() {
       if (text.length >= 7) {
         valueEl.style.transform = "scale(0.80)";
       }
-      
+
       tileEl.appendChild(label);
       tileEl.appendChild(valueEl);
 
-      tileEl.onclick = () => onTileClick(tile);
+      // 🔒 Prevent multiple scoring clicks in the same turn
+      tileEl.onclick = () => {
+        if (!gameState || gameState.locked) return; // ignore extra clicks
+        gameState.locked = true;                    // consume this turn
+        onTileClick(tile);                          // existing logic
+      };
 
       gridContainer.appendChild(tileEl);
     });
