@@ -28,12 +28,26 @@
   ],
   "leftLeg": [
     "bear.png",
+    "dragon.png",
     "elephant.png",
-    "tiger.png"
+    "unicorn.png",
+    "tiger.png",
+    "giraffe.png",
+    "dinosaur.png",
+    "monkey.png",
+    "dog.png",
+    "lion.png"
   ],
   "rightLeg": [
     "bear.png",
+    "dragon.png",
     "elephant.png",
-    "tiger.png"
+    "unicorn.png",
+    "tiger.png",
+    "giraffe.png",
+    "dinosaur.png",
+    "monkey.png",
+    "dog.png",
+    "lion.png"
   ]
 }
