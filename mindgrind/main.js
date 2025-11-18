@@ -341,7 +341,7 @@ function openResultModal({
   roundPoints,
   neededPoints,
   misses,
-  retryCredits,
+  retryCredits,             // <-- keep this
   nextLevelNeededPoints,
   isPerfectLevel = false,
   isNewHighScore = false,
@@ -350,6 +350,14 @@ function openResultModal({
     console.warn("mgOverlay not found, skipping modal");
     return;
   }
+
+  const credits = typeof retryCredits === "number" ? retryCredits : window.retryCredits || 0;
+
+  // ✅ Safe local copy of credits
+  const credits =
+    typeof retryCredits === "number"
+      ? retryCredits
+      : (window.retryCredits ?? 0);
 
   // Header text
   if (cleared) {
@@ -369,7 +377,7 @@ function openResultModal({
   if (mgNeeded)      mgNeeded.textContent      = neededPoints.toLocaleString();
   if (mgTotalPoints) mgTotalPoints.textContent = totalPoints.toLocaleString();
   if (mgMisses)      mgMisses.textContent      = misses.toLocaleString();
-  if (mgCredits)     mgCredits.textContent     = retryCredits.toString();
+  if (mgCredits)     mgCredits.textContent     = credits.toString();
 
   if (mgRoundPoints) {
     const clearedThisLevel = roundPoints >= neededPoints;
@@ -408,14 +416,14 @@ function openResultModal({
   // ---- Button visibility ----
   const showNext = !!cleared;
   const showNew = !cleared;
-  const canContinue = !cleared && retryCredits > 0;
+  const canContinue = !cleared && credits > 0;
 
   if (mgBtnNext)     mgBtnNext.classList.toggle("hidden", !showNext);
   if (mgBtnNew)      mgBtnNew.classList.toggle("hidden", !showNew);
   if (mgBtnContinue) {
     mgBtnContinue.classList.toggle("hidden", !canContinue);
     if (canContinue) {
-      mgBtnContinue.textContent = `Continue (${retryCredits})`;
+      mgBtnContinue.textContent = `Continue (${credits})`;
     }
   }
 
@@ -1308,8 +1316,9 @@ function endRound(reason = "normal") {
       roundPoints: levelGain,
       neededPoints: requiredGain,
       misses: missed,
-      // retryCredits is global and displayed inside openResultModal
+      retryCredits,  // 👈 pass current value
     });
+
   }
 
   // No active run after round ends
