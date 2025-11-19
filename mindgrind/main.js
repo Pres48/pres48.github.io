@@ -78,11 +78,11 @@ const GOOD_PICK_MESSAGES = [
 ];
 
 const NEUTRAL_PICK_MESSAGES = [
-  "Solid pick.",
-  "Alright, that works.",
-  "Keep it rolling.",
-  "Nice and steady.",
-  "Okay, next tile!",
+  "Alright, warming up that brain.",
+  "Okay pick. Lining up the big ones.",
+  "Not huge, not terrible — keep scanning.",
+  "Steady. Set up your next move.",
+  "Baseline move. Now find the signal."
 ];
 
 const BAD_PICK_MESSAGES = [
@@ -90,13 +90,36 @@ const BAD_PICK_MESSAGES = [
   "Risky… didn’t pay off.",
   "That tile fought back 😬",
   "Pain. Just pain.",
-  "Shake it off!",
+  "Rough tile. Shake it off!",
 ];
 
-function pickRandom(arr) {
+// Rarity-specific flavor
+const RARITY_FLAVOR = {
+  rare:   "You found a RARE tile!",
+  epic:   "EPIC tile snagged — nice find!",
+  legend: "LEGEND tile! That’s serious value.",
+  mythic: "MYTHIC tile secured. Big brain move.",
+  relic:  "You unearthed a RELIC! Ancient points unlocked.",
+  exotic: "EXOTIC tile! That’s a wild score boost.",
+  cosmic: "COSMIC tile!! The universe just high-fived you."
+};
+
+function pickRandomMessage(arr) {
   if (!arr || arr.length === 0) return "";
   const idx = Math.floor(Math.random() * arr.length);
   return arr[idx];
+}
+
+function isRarityType(type) {
+  return (
+    type === "rare"   ||
+    type === "epic"   ||
+    type === "legend" ||
+    type === "mythic" ||
+    type === "relic"  ||
+    type === "exotic" ||
+    type === "cosmic"
+  );
 }
 
 // ---------- CONSTANTS & STATE ----------
@@ -869,9 +892,10 @@ function nextTurn() {
 function handleMissedTurn() {
   setTilesDisabled(true);
 
-  // Pick random miss message
-  const msg = MISS_MESSAGES[Math.floor(Math.random() * MISS_MESSAGES.length)];
-  messageArea.textContent = msg;
+  // 🎯 Random fun “missed” message
+  if (messageArea) {
+    messageArea.textContent = pickRandomMessage(MISS_MESSAGES);
+  }
 
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
@@ -1096,21 +1120,29 @@ function onTileClick(tile) {
 
   updateUIFromState();
 
-// --- Fun pick feedback ---
-// Based on how good the pick was
-const delta = gameState.lastTileDelta || 0;
+  // 🎉 Turn-level feedback message
+  if (messageArea) {
+    const delta = gameState.lastTileDelta ?? 0;
+    let msg = "";
 
-let msgList;
-if (delta > 0) {
-  msgList = GOOD_PICK_MESSAGES;
-} else if (delta < 0) {
-  msgList = BAD_PICK_MESSAGES;
-} else {
-  msgList = NEUTRAL_PICK_MESSAGES;
-}
+    // 1) Rarity tiles get special flavor text
+    if (isRarityType(tile.type)) {
+      const key = tile.type;
+      const base = RARITY_FLAVOR[key] || "You found a special tile!";
+      msg = `${base} +${delta.toLocaleString()} pts.`;
+    } else {
+      // 2) Otherwise, branch on delta sign
+      if (delta > 0) {
+        msg = pickRandomMessage(POSITIVE_MESSAGES);
+      } else if (delta < 0) {
+        msg = pickRandomMessage(NEGATIVE_MESSAGES);
+      } else {
+        msg = pickRandomMessage(NEUTRAL_MESSAGES);
+      }
+    }
 
-const pickMsg = msgList[Math.floor(Math.random() * msgList.length)];
-messageArea.textContent = pickMsg;
+    messageArea.textContent = msg;
+  }
   
   setTimeout(() => {
     nextTurn();
