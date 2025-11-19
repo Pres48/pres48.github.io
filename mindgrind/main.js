@@ -42,8 +42,8 @@ const mgRoundPoints = document.getElementById("mg-round-points");
 const mgNeeded      = document.getElementById("mg-needed");
 const mgMisses      = document.getElementById("mg-misses");
 const mgCredits     = document.getElementById("mg-credits");
-const mgTimeBonus   = document.getElementById("mg-timebonus");
-const mgNextTarget  = document.getElementById("mg-nexttarget");
+const mgTimeBonus   = document.getElementById("mg-time-bonus");
+const mgNextTarget  = document.getElementById("mg-next-target");
 
 const mgBtnNext     = document.getElementById("mg-next");
 const mgBtnNew      = document.getElementById("mg-new");
