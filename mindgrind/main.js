@@ -68,7 +68,7 @@ const MISS_MESSAGES = [
 ];
 
 // When player SELECTS a tile (good + neutral + bad)
-const POSITIVE_MESSAGES = [
+const HIT_POSITIVE_MESSAGES = [
   "Nice grind! 🧠",
   "Clean hit — keep the run alive.",
   "Brain is warmed up now.",
@@ -77,7 +77,7 @@ const POSITIVE_MESSAGES = [
   "Big brain play 🧠",
 ];
 
-const NEUTRAL_MESSAGES = [
+const HIT_NEUTRAL_MESSAGES = [
   "Alright, warming up that brain.",
   "Okay pick. Lining up the big ones.",
   "Not huge, not terrible — keep scanning.",
@@ -85,7 +85,7 @@ const NEUTRAL_MESSAGES = [
   "Baseline move. Now find the signal."
 ];
 
-const NEGATIVE_MESSAGES = [
+const HIT_NEGATIVE_MESSAGES = [
   "Ouch, that one stung!",
   "Risky… didn’t pay off.",
   "That tile fought back 😬",
@@ -93,8 +93,7 @@ const NEGATIVE_MESSAGES = [
   "Rough tile. Shake it off!",
 ];
 
-// Rarity-specific flavor
-const RARITY_FLAVOR = {
+const RARITY_MESSAGES = {
   rare:   "You found a RARE tile!",
   epic:   "EPIC tile snagged — nice find!",
   legend: "LEGEND tile! That’s serious value.",
@@ -104,22 +103,39 @@ const RARITY_FLAVOR = {
   cosmic: "COSMIC tile!! The universe just high-fived you."
 };
 
-function pickRandomMessage(arr) {
+function pickRandom(arr) {
   if (!arr || arr.length === 0) return "";
   const idx = Math.floor(Math.random() * arr.length);
   return arr[idx];
 }
 
-function isRarityType(type) {
-  return (
-    type === "rare"   ||
-    type === "epic"   ||
-    type === "legend" ||
-    type === "mythic" ||
-    type === "relic"  ||
-    type === "exotic" ||
-    type === "cosmic"
-  );
+function showMissMessage() {
+  if (!messageArea) return;
+  messageArea.textContent = pickRandom(MISS_MESSAGES);
+}
+
+function showHitMessage(delta, tile) {
+  if (!messageArea) return;
+
+  // Rarity tiles get special shout-outs
+  if (
+    tile &&
+    ["rare", "epic", "legend", "mythic", "relic", "exotic", "cosmic"].includes(tile.type)
+  ) {
+    const msg = RARITY_MESSAGES[tile.type] || "You found something special!";
+    messageArea.innerHTML = `<strong>${msg}</strong>`;
+    return;
+  }
+
+  // Positive / negative flavor based on the last tile delta
+  if (delta > 0) {
+    messageArea.textContent = pickRandom(HIT_POSITIVE_MESSAGES);
+  } else if (delta < 0) {
+    messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
+  } else {
+    // Neutral-ish fallback
+    messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
+  }
 }
 
 // ---------- CONSTANTS & STATE ----------
@@ -839,9 +855,6 @@ function startLevel(level) {
 function nextTurn() {
   if (!gameState) return;
 
-  // 🧹 Clear old messages each turn
-  messageArea.textContent = "";
-
   gameState.locked = false;
 
   const behavior = gameState.behavior || getLevelBehavior(gameState.level);
@@ -891,12 +904,10 @@ function nextTurn() {
 
 function handleMissedTurn() {
   setTilesDisabled(true);
-
-  // 🎯 Random fun “missed” message
-  if (messageArea) {
-    messageArea.textContent = pickRandomMessage(MISS_MESSAGES);
-  }
-
+  
+  // ⚠️ Fun miss message
+  showMissMessage();
+  
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
   gameState.lastTileDelta = 0;
@@ -1073,9 +1084,6 @@ function onTileClick(tile) {
   // 🚫 If this tile has already been used in this level, ignore it
   if (tile.used) return;
 
-  // 🧹 Clear "Missed!" or other leftover messages
-  messageArea.textContent = "";
-
   // ✅ First time this tile is being used in this level
   selectedThisTurn = true;
   tile.used = true;
@@ -1120,29 +1128,9 @@ function onTileClick(tile) {
 
   updateUIFromState();
 
-  // 🎉 Turn-level feedback message
-  if (messageArea) {
-    const delta = gameState.lastTileDelta ?? 0;
-    let msg = "";
-
-    // 1) Rarity tiles get special flavor text
-    if (isRarityType(tile.type)) {
-      const key = tile.type;
-      const base = RARITY_FLAVOR[key] || "You found a special tile!";
-      msg = `${base} +${delta.toLocaleString()} pts.`;
-    } else {
-      // 2) Otherwise, branch on delta sign
-      if (delta > 0) {
-        msg = pickRandomMessage(POSITIVE_MESSAGES);
-      } else if (delta < 0) {
-        msg = pickRandomMessage(NEGATIVE_MESSAGES);
-      } else {
-        msg = pickRandomMessage(NEUTRAL_MESSAGES);
-      }
-    }
-
-    messageArea.textContent = msg;
-  }
+  // 🎉 Fun message based on this tile's outcome (AND rarity, if applicable)
+  const delta = updatedState.lastTileDelta ?? 0;
+  showHitMessage(delta, tile);
   
   setTimeout(() => {
     nextTurn();
