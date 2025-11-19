@@ -282,6 +282,24 @@ function getRequiredGainForLevel(level) {
   return Math.min(required, cap);
 }
 
+function computeSpeedBonus(level, timeBankMs, turns, timePerTurnMs) {
+  if (!timeBankMs || timeBankMs <= 0) return 0;
+
+  // Max possible bank if you insta-clicked every turn
+  const maxBankMs = (turns || 0) * (timePerTurnMs || 0);
+  if (!maxBankMs || maxBankMs <= 0) return 0;
+
+  const fractionSaved = Math.min(1, timeBankMs / maxBankMs); // 0–1
+  const target = getRequiredGainForLevel(level);
+
+  // Cap: at absolute best you can get 30% of the level target as speed bonus
+  const MAX_PCT = 0.30;
+
+  const rawBonus = target * fractionSaved * MAX_PCT;
+
+  return Math.round(rawBonus); // nice integer
+}
+
 function getAllowedMissesForLevel(level) {
   // Effectively “infinite” for now — miss count doesn’t gate progression.
   return 9999;
@@ -315,6 +333,7 @@ function openResultModal({
   neededPoints,
   misses,
   nextLevelNeededPoints,
+  timeBonus = 0,
   isPerfectLevel = false,
   isNewHighScore = false,
 }) {
@@ -365,6 +384,12 @@ function openResultModal({
   // ---- Extra stacked messages ----
   const extraLines = [];
 
+  if (timeBonus && timeBonus > 0) {
+    extraLines.push(
+      `Speed bonus this level: +${timeBonus.toLocaleString()} pts`
+    );
+  }
+
   if (cleared && typeof nextLevelNeededPoints === "number") {
     extraLines.push(
       `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`
@@ -378,6 +403,7 @@ function openResultModal({
   if (isNewHighScore) {
     extraLines.push(`New high score!`);
   }
+
 
   if (extraLines.length > 0) {
     mgExtra.innerHTML = extraLines.join("<br>");
@@ -646,6 +672,10 @@ function startGame() {
     behavior,
     locked: false,
     lastClickTurn: -1,
+    // ⏱ per-level time bank
+    timeBankMs: 0,
+    currentTurnStartMs: null,
+    currentTurnDurationMs: null,
   };
 
   // Debug exports
@@ -672,6 +702,10 @@ function startGame() {
       timePerTurnMs: diff.timePerTurnMs,
       behavior: beh,
       locked: false,
+      // ⏱ per-level time bank
+      timeBankMs: 0,
+      currentTurnStartMs: null,
+      currentTurnDurationMs: null,
     };
 
     window.gameState = gameState;
@@ -716,6 +750,10 @@ function startLevel(level) {
     behavior,
     locked: false,
     lastClickTurn: -1,
+    // ⏱ per-level time bank
+    timeBankMs: 0,
+    currentTurnStartMs: null,
+    currentTurnDurationMs: null,    
   };
 
   updateUIFromState();
@@ -757,6 +795,10 @@ function nextTurn() {
   const now = performance.now();
   const duration = gameState.timePerTurnMs;
   turnDeadline = now + duration;
+  
+  // ⏱ remember this turn’s timing
+  gameState.currentTurnStartMs = now;
+  gameState.currentTurnDurationMs = duration;
 
   timerInterval = setInterval(() => {
     const nowInner = performance.now();
@@ -974,7 +1016,21 @@ function onTileClick(tile) {
     }
   }
 
+  // ⏱ Bank leftover time for this turn (if any)
+  if (
+    gameState &&
+    typeof gameState.currentTurnStartMs === "number" &&
+    typeof gameState.currentTurnDurationMs === "number"
+  ) {
+    const now = performance.now();
+    const elapsed = now - gameState.currentTurnStartMs;
+    const savedMs = Math.max(0, gameState.currentTurnDurationMs - elapsed);
+
+    gameState.timeBankMs = (gameState.timeBankMs || 0) + savedMs;
+  }
+
   resetTimer();
+
 
   const updatedState = resolveTileSelection(tile, gameState);
 
@@ -1185,8 +1241,24 @@ function endRound(reason = "normal") {
   if (!gameState) return;
   gameState.locked = true;
 
-  const finalScore = gameState.score;
   const level = gameState.level;
+
+  // ⏱ Compute speed bonus ONCE per level, apply before gate check
+  let timeBonus = 0;
+  if (gameState.timeBankMs && gameState.timeBankMs > 0) {
+    timeBonus = computeSpeedBonus(
+      level,
+      gameState.timeBankMs,
+      gameState.turns,
+      gameState.timePerTurnMs
+    );
+
+    if (timeBonus > 0) {
+      gameState.score += timeBonus;
+    }
+  }
+
+  const finalScore = gameState.score;
   const levelGain = finalScore - (gameState.scoreAtLevelStart || 0);
   const missed = gameState.missedTurns || 0;
 
@@ -1222,14 +1294,21 @@ function endRound(reason = "normal") {
     return;
   }
 
-  if (passedScoreGate && passedMissGate) {
-    // 🎆 Fireworks on level clear
-    triggerFireworks();
+    if (passedScoreGate && passedMissGate) {
+      // 🎆 Fireworks on level clear
+      triggerFireworks();
+    
+      const bonusText =
+        timeBonus > 0
+          ? ` That includes <strong>${timeBonus.toLocaleString()} pts</strong> from playing fast.`
+          : "";
+    
+      messageArea.innerHTML =
+        `<strong>Level ${level} cleared!</strong> ` +
+        `You earned ${levelGain.toLocaleString()} points this level ` +
+        `(${missed} missed turn${missed === 1 ? "" : "s"}).` +
+        bonusText;
 
-    messageArea.innerHTML =
-      `<strong>Level ${level} cleared!</strong> ` +
-      `You earned ${levelGain.toLocaleString()} points this level ` +
-      `(${missed} missed turn${missed === 1 ? "" : "s"}).`;
 
     // Award retry credit if this level is a milestone
     maybeAwardRetryCreditForLevel(level);
@@ -1256,6 +1335,7 @@ function endRound(reason = "normal") {
       neededPoints: requiredGain,
       misses: missed,
       nextLevelNeededPoints: targetNext,
+      timeBonus,
       isPerfectLevel: missed === 0,
       isNewHighScore: wasNewHighScore,
     });
@@ -1265,10 +1345,17 @@ function endRound(reason = "normal") {
     const reasonText =
       `You needed at least ${requiredGain.toLocaleString()} points this level ` +
       `(you got ${levelGain.toLocaleString()}).`;
-
+  
+    const bonusText =
+      timeBonus > 0
+        ? ` You still earned <strong>${timeBonus.toLocaleString()} pts</strong> from speed this level.`
+        : "";
+  
     messageArea.innerHTML =
       `<strong class="over">Run over at Level ${level}.</strong> ` +
-      `Final score: ${finalScore.toLocaleString()}. ${reasonText}`;
+      `Final score: ${finalScore.toLocaleString()}. ${reasonText}` +
+      bonusText;
+
 
     if (levelGoals) levelGoals.textContent = "";
 
@@ -1285,6 +1372,7 @@ function endRound(reason = "normal") {
       roundPoints: levelGain,
       neededPoints: requiredGain,
       misses: missed,
+      timeBonus,
       retryCredits, // pass current value
     });
   }
