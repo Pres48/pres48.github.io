@@ -43,11 +43,11 @@ export const RARITY_TYPES = {
 export const RARITY_VALUES = {
   rare:       60,
   epic:       120,
-  legend:     220,
-  mythic:     350,
-  relic:      550,
-  exotic:     800,
-  cosmic:     1200,
+  legend:     250,
+  mythic:     500,
+  relic:      750,
+  exotic:     1200,
+  cosmic:     2500,
 };
 
 
@@ -223,10 +223,10 @@ function boardRarityChance(level) {
   if (level < 10) return 0.10;    // 10%
   if (level < 15) return 0.15;
   if (level < 20) return 0.20;
-  if (level < 25) return 0.22;
-  if (level < 30) return 0.25;
-  if (level < 40) return 0.28;
-  return 0.30;                    // max 30% chance a board gets a special tile
+  if (level < 25) return 0.25;
+  if (level < 30) return 0.30;
+  if (level < 40) return 0.35;
+  return 0.40;                    // max 40% chance a board gets a special tile
 }
 
 function rarityWeightsForLevel(level) {
