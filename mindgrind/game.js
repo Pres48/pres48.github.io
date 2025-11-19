@@ -23,11 +23,33 @@ const RISK_MAX = 50;
 // =========================================
 
 export const TILE_TYPES = {
-  NUMBER: "number",
-  BONUS: "bonus",
-  CHAIN: "chain",
-  RISK: "risk",
+  NUMBER:     "number",
+  BONUS:      "bonus",
+  CHAIN:      "chain",
+  RISK:       "risk",
 };
+
+export const RARITY_TYPES = {
+  RARE:       "rare",
+  EPIC:       "epic",
+  LEGEND:     "legend",
+  MYTHIC:     "mythic",
+  RELIC:      "relic",
+  EXOTIC:     "exotic",
+  COSMIC:     "cosmic",
+};
+
+// Special tiles (fixed-value, rare)
+export const RARITY_VALUES = {
+  rare:       75,
+  epic:       100,
+  legend:     150,
+  mythic:     200,
+  relic:      250,
+  exotic:     500,
+  cosmic:     1000,
+};
+
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -195,6 +217,77 @@ function pickTileType(weights) {
   return TILE_TYPES.NUMBER;
 }
 
+
+function boardRarityChance(level) {
+  if (level < 5) return 0;        // no rarities yet
+  if (level < 10) return 0.12;    // 12%
+  if (level < 15) return 0.18;
+  if (level < 20) return 0.25;
+  if (level < 25) return 0.30;
+  if (level < 30) return 0.35;
+  if (level < 40) return 0.40;
+  return 0.45;                    // max 45% chance a board gets a special tile
+}
+
+function rarityWeightsForLevel(level) {
+  const weights = {};
+
+  if (level >= 5)  weights[RARITY_TYPES.RARE]      = 8;
+  if (level >= 10) weights[RARITY_TYPES.EPIC]      = 4;
+  if (level >= 15) weights[RARITY_TYPES.LEGEND]    = 2;
+  if (level >= 20) weights[RARITY_TYPES.MYTHIC]    = 1.5;
+  if (level >= 30) weights[RARITY_TYPES.RELIC]     = 1;
+  if (level >= 40) weights[RARITY_TYPES.EXOTIC]    = 0.5;
+  if (level >= 50) weights[RARITY_TYPES.COSMIC]    = 0.25;
+
+  return weights;
+}
+
+function pickRarityByWeight(weights) {
+  const entries = Object.entries(weights);
+  const total = entries.reduce((sum, [, w]) => sum + w, 0);
+
+  let r = Math.random() * total;
+
+  for (const [rarity, w] of entries) {
+    if (r < w) return rarity;
+    r -= w;
+  }
+
+  // fallback — should never hit
+  return entries[0][0];
+}
+
+function maybeInjectRarityTile(level, grid) {
+  // 1. Roll to see if ANY rarity appears on this board
+  const spawnChance = boardRarityChance(level);
+  if (Math.random() > spawnChance) return;  // no rarity this board
+
+  // 2. Get rarity weights for this level
+  const weights = rarityWeightsForLevel(level);
+  if (!Object.keys(weights).length) return; // none unlocked yet
+
+  // 3. Pick one rarity by weight
+  const rarityType = pickRarityByWeight(weights);
+  const rarityValue = RARITY_VALUES[rarityType];
+
+  // 4. Pick a random tile position
+  const gridSize = grid.length;
+  const row = Math.floor(Math.random() * gridSize);
+  const col = Math.floor(Math.random() * gridSize);
+
+  // 5. Inject rarity tile (overwrite whatever was there)
+  grid[row][col] = {
+    id: `${row}-${col}`,
+    row,
+    col,
+    type: rarityType,
+    value: rarityValue,
+    selected: false
+  };
+}
+
+
 /**
  * Generate a grid configuration given level/difficulty.
  */
@@ -238,8 +331,12 @@ export function generateGrid(level) {
     grid.push(rowArr);
   }
 
+  // Try to overwrite one normal tile with a rarity tile, depending on level
+  maybeInjectRarityTile(level, grid);
+
   return grid;
 }
+
 
 /**
  * Evaluate a tile selection and update score state.
@@ -279,7 +376,18 @@ export function resolveTileSelection(tile, state) {
         parseFloat((newState.multiplier - 0.5).toFixed(2))
       );
     }
-  }
+  } else if (
+  type === RARITY_TYPES.RARE ||
+  type === RARITY_TYPES.EPIC ||
+  type === RARITY_TYPES.LEGEND ||
+  type === RARITY_TYPES.MYTHIC ||
+  type === RARITY_TYPES.RELIC ||
+  type === RARITY_TYPES.EXOTIC ||
+  type === RARITY_TYPES.COSMIC
+) {
+  basePoints = value; // treat like super-number tile
+}
+
 
   const appliedPoints = Math.round(basePoints * newState.multiplier);
   newState.score += appliedPoints;
