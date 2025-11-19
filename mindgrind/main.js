@@ -457,13 +457,13 @@ function openResultModal({
       if (showContinue) {
         btnContinue.textContent = "Continue Run";   // ← no (credits) here
         btnContinue.onclick = () => {
-          // window.retryCredits = Math.max(0, (window.retryCredits || 0) - 1);
+          // Spend ONE credit from the global pool
           retryCredits = Math.max(0, retryCredits - 1);
 
           // Restore score and retry same level
-          if (gameState && typeof gameState.scoreAtLevelStart === "number") {
-            gameState.score = gameState.scoreAtLevelStart;
-          }
+          // if (gameState && typeof gameState.scoreAtLevelStart === "number") {
+          //  gameState.score = gameState.scoreAtLevelStart;
+          // }
 
           closeResultModal();
           startLevel(level); // retry same level
