@@ -134,7 +134,7 @@ function showHitMessage(delta, tile) {
     messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
   } else {
     // Neutral-ish fallback
-    messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
+    messageArea.textContent = pickRandom(HIT_NEUTRAL_MESSAGES);
   }
 }
 
