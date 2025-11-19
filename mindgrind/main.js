@@ -460,8 +460,6 @@ function openResultModal({
   mgMisses.textContent      = misses.toLocaleString();
   mgCredits.textContent     = credits.toString();
   mgTimeBonus.textContent   = timeBonus.toLocaleString()
-  // mgTimeBonus.textContent   = `+${timeBonus.toLocaleString()} pts`
-  // mgNextTarget.textContent  = nextLevelNeededPoints.toLocaleString()
 
   // Round points + ✓
   const passedLevel = roundPoints >= neededPoints;
@@ -469,30 +467,29 @@ function openResultModal({
     ? `${roundPoints.toLocaleString()} <span class="mg-round-check">✓</span>`
     : roundPoints.toLocaleString();
 
+  // ----- Next Level Target (pulled out separately) -----
+  const mgNextTarget = document.getElementById("mg-next-target");
+  
+  if (cleared && typeof nextLevelNeededPoints === "number") {
+    mgNextTarget.textContent =
+      `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`;
+    mgNextTarget.classList.remove("hidden");
+  } else {
+    mgNextTarget.textContent = "";
+    mgNextTarget.classList.add("hidden");
+  }
+  
   // ---- Extra stacked messages ----
   const extraLines = [];
-/*
-  if (timeBonus && timeBonus > 0) {
-    extraLines.push(
-      `Speed bonus this level: +${timeBonus.toLocaleString()} pts`
-    );
-  }
-*/
-  if (cleared && typeof nextLevelNeededPoints === "number") {
-    extraLines.push(
-      `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`
-    );
-  }
-
+  
   if (cleared && isPerfectLevel) {
     extraLines.push(`Perfect level (0 misses)`);
   }
-
+  
   if (isNewHighScore) {
     extraLines.push(`New high score!`);
   }
-
-
+  
   if (extraLines.length > 0) {
     mgExtra.innerHTML = extraLines.join("<br>");
     mgExtra.classList.remove("hidden");
