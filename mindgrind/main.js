@@ -58,6 +58,7 @@ const leaderboardInfoPopover = document.getElementById("leaderboardInfoPopover")
 
 // ---------- FUN MESSAGE POOLS ----------
 
+// When player MISSES a turn
 const MISS_MESSAGES = [
   "Missed that one — brain buffer overflow.",
   "Timer zapped you. Next pick, no hesitation.",
@@ -66,12 +67,30 @@ const MISS_MESSAGES = [
   "That one got away. Regroup and grind.",
 ];
 
-const HIT_MESSAGES = [
+// When player SELECTS a tile (good + neutral + bad)
+const GOOD_PICK_MESSAGES = [
   "Nice grind! 🧠",
   "Clean hit — keep the run alive.",
   "Brain is warmed up now.",
   "Love that pick.",
   "Tasty points. More, please.",
+  "Big brain play 🧠",
+];
+
+const NEUTRAL_PICK_MESSAGES = [
+  "Solid pick.",
+  "Alright, that works.",
+  "Keep it rolling.",
+  "Nice and steady.",
+  "Okay, next tile!",
+];
+
+const BAD_PICK_MESSAGES = [
+  "Ouch, that one stung!",
+  "Risky… didn’t pay off.",
+  "That tile fought back 😬",
+  "Pain. Just pain.",
+  "Shake it off!",
 ];
 
 function pickRandom(arr) {
@@ -850,10 +869,9 @@ function nextTurn() {
 function handleMissedTurn() {
   setTilesDisabled(true);
 
-  // Show a fun randomized "miss" message
-  if (messageArea) {
-    messageArea.textContent = pickRandom(MISS_MESSAGES);
-  }
+  // Pick random miss message
+  const msg = MISS_MESSAGES[Math.floor(Math.random() * MISS_MESSAGES.length)];
+  messageArea.textContent = msg;
 
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
@@ -1078,10 +1096,21 @@ function onTileClick(tile) {
 
   updateUIFromState();
 
-  // 🎉 Positive feedback after a pick
-  if (messageArea) {
-    messageArea.textContent = pickRandom(HIT_MESSAGES);
-  }
+// --- Fun pick feedback ---
+// Based on how good the pick was
+const delta = gameState.lastTileDelta || 0;
+
+let msgList;
+if (delta > 0) {
+  msgList = GOOD_PICK_MESSAGES;
+} else if (delta < 0) {
+  msgList = BAD_PICK_MESSAGES;
+} else {
+  msgList = NEUTRAL_PICK_MESSAGES;
+}
+
+const pickMsg = msgList[Math.floor(Math.random() * msgList.length)];
+messageArea.textContent = pickMsg;
   
   setTimeout(() => {
     nextTurn();
