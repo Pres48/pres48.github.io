@@ -269,51 +269,60 @@
 
   <script type="module" src="main.js"></script>
 
-  <!-- Mind Grind Result Modal -->
-  <div id="mg-modal-overlay" class="mg-overlay hidden">
-    <div class="mg-modal">
+<!-- Result Modal -->
+<div id="mg-modal-overlay" class="mg-overlay hidden">
+  <div class="mg-modal">
 
-      <button id="mg-close" class="mg-close">✕</button>
+    <button id="mg-close" class="mg-close">✕</button>
 
-      <h2 id="mg-title" class="mg-title">Level 1 Cleared!</h2>
-      <p id="mg-subtitle" class="mg-subtitle">Nice job — Level 2 is up next.</p>
-      <p id="mg-extra" class="mg-extra hidden"></p>
+    <h2 id="mg-title" class="mg-title">Level 1 Cleared!</h2>
+    <p id="mg-subtitle" class="mg-subtitle">Nice job — Level 2 is up next.</p>
+    <p id="mg-extra" class="mg-extra hidden"></p>
 
-      <div id="mg-stats" class="mg-stats">
-        <div class="mg-stat">
-          <span class="mg-stat-value" id="mg-needed">0</span>
-          <span class="mg-stat-label">Needed to Clear</span>
-        </div>
-
-        <div class="mg-stat">
-          <span class="mg-stat-value" id="mg-round-points">0</span>
-          <span class="mg-stat-label">Round Points</span>
-        </div>
-
-        <div class="mg-stat">
-          <span class="mg-stat-value" id="mg-total-points">0</span>
-          <span class="mg-stat-label">Total Points</span>
-        </div>
-
-        <div class="mg-stat">
-          <span class="mg-stat-value" id="mg-misses">0</span>
-          <span class="mg-stat-label">Misses</span>
-        </div>
-
-        <div class="mg-stat">
-          <span class="mg-stat-value" id="mg-credits">0</span>
-          <span class="mg-stat-label">Retry Credits</span>
-        </div>
+    <div id="mg-stats" class="mg-stats">
+      <div class="mg-stat">
+        <span class="mg-stat-value" id="mg-needed">0</span>
+        <span class="mg-stat-label">Needed to Clear</span>
       </div>
 
-      <div class="mg-buttons">
-        <button id="mg-next" class="mg-btn mg-primary">Start Next Level</button>
-        <button id="mg-new" class="mg-btn mg-secondary hidden">New Game</button>
-        <button id="mg-continue" class="mg-btn mg-secondary hidden">Continue (0)</button>
+      <div class="mg-stat">
+        <span class="mg-stat-value" id="mg-round-points">0</span>
+        <span class="mg-stat-label">Round Points</span>
       </div>
 
+      <div class="mg-stat">
+        <span class="mg-stat-value" id="mg-total-points">0</span>
+        <span class="mg-stat-label">Total Points</span>
+      </div>
+
+      <div class="mg-stat">
+        <span class="mg-stat-value" id="mg-misses">0</span>
+        <span class="mg-stat-label">Misses</span>
+      </div>
+
+      <div class="mg-stat">
+        <span class="mg-stat-value" id="mg-credits">0</span>
+        <span class="mg-stat-label">Retry Credits</span>
+      </div>
     </div>
+
+    <div class="mg-buttons">
+      <!-- This button is:
+           - "Start Next Level" when cleared
+           - "Start New Game" when run is over & no credits -->
+      <button id="mg-next" class="mg-btn mg-primary">
+        Start Next Level
+      </button>
+
+      <!-- Shown only when run is over *and* credits > 0 -->
+      <button id="mg-continue" class="mg-btn mg-secondary hidden">
+        Continue Run
+      </button>
+    </div>
+
   </div>
+</div>
+
 
 </body>
 </html>
