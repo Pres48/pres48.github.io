@@ -68,7 +68,7 @@ const MISS_MESSAGES = [
 ];
 
 // When player SELECTS a tile (good + neutral + bad)
-const GOOD_PICK_MESSAGES = [
+const POSITIVE_MESSAGES = [
   "Nice grind! 🧠",
   "Clean hit — keep the run alive.",
   "Brain is warmed up now.",
@@ -77,7 +77,7 @@ const GOOD_PICK_MESSAGES = [
   "Big brain play 🧠",
 ];
 
-const NEUTRAL_PICK_MESSAGES = [
+const NEUTRAL_MESSAGES = [
   "Alright, warming up that brain.",
   "Okay pick. Lining up the big ones.",
   "Not huge, not terrible — keep scanning.",
@@ -85,7 +85,7 @@ const NEUTRAL_PICK_MESSAGES = [
   "Baseline move. Now find the signal."
 ];
 
-const BAD_PICK_MESSAGES = [
+const NEGATIVE_MESSAGES = [
   "Ouch, that one stung!",
   "Risky… didn’t pay off.",
   "That tile fought back 😬",
