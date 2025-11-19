@@ -128,14 +128,15 @@ function showHitMessage(delta, tile) {
   }
 
   // Positive / negative flavor based on the last tile delta
-  if (delta > 0) {
-    messageArea.textContent = pickRandom(HIT_POSITIVE_MESSAGES);
-  } else if (delta < 0) {
-    messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
-  } else {
-    // Neutral-ish fallback
-    messageArea.textContent = pickRandom(HIT_NEUTRAL_MESSAGES);
-  }
+    const positiveThreshold = Math.max(10, Math.floor(gameState.level * 1.5));
+    
+    if (delta >= positiveThreshold) {
+      messageArea.textContent = pickRandom(HIT_POSITIVE_MESSAGES);
+    } else if (delta < 0) {
+      messageArea.textContent = pickRandom(HIT_NEGATIVE_MESSAGES);
+    } else {
+      messageArea.textContent = pickRandom(HIT_NEUTRAL_MESSAGES);
+    }
 }
 
 // ---------- CONSTANTS & STATE ----------
