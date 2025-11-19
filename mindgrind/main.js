@@ -882,7 +882,37 @@ function renderGrid() {
         } else {
           valueEl.textContent = formatTileDisplay(tile, behavior);
         }
-      }
+        
+        // ==== RARITY TILE RENDERING ====
+        } else if (tile.type === "rare") {
+          if (showLabel) label.textContent = "RARE";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "epic") {
+          if (showLabel) label.textContent = "EPIC";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "legend") {
+          if (showLabel) label.textContent = "LEGEND";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "mythic") {
+          if (showLabel) label.textContent = "MYTHIC";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "relic") {
+          if (showLabel) label.textContent = "RELIC";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "exotic") {
+          if (showLabel) label.textContent = "EXOTIC";
+          valueEl.textContent = tile.value;
+        
+        } else if (tile.type === "cosmic") {
+          if (showLabel) label.textContent = "COSMIC";
+          valueEl.textContent = tile.value;
+        }
+
 
       const text = valueEl.textContent || "";
       if (text.length >= 5) {
