@@ -70,7 +70,7 @@ export function getLevelBehavior(level) {
   // Start sprinkling equations on NUMBER / CHAIN tiles, but keep labels
   // ----------------------------------
   if (level <= 20) {
-    behavior.equationChance = 0.18;
+    behavior.equationChance = 0.1;
     behavior.multiStepEquationChance = 0.0; // only single-op
     return behavior;
   }
@@ -80,8 +80,8 @@ export function getLevelBehavior(level) {
   // Mental load increases, still readable.
   // -----------------------------------------
   if (level <= 30) {
-    behavior.equationChance = 0.30;
-    behavior.multiStepEquationChance = 0.10;
+    behavior.equationChance = 0.15;
+    behavior.multiStepEquationChance = 0.05;
     return behavior;
   }
 
@@ -90,39 +90,42 @@ export function getLevelBehavior(level) {
   // More equations, occasional multi-step.
   // ------------------------------------------------
   if (level <= 40) {
-    behavior.equationChance = 0.42;
-    behavior.multiStepEquationChance = 0.18;
+    behavior.equationChance = 0.2;
+    behavior.multiStepEquationChance = 0.1;
+    
+    behavior.showNumberChainLabels = false;
+    
     return behavior;
   }
 
   // ----------------------------------------------------------
   // TIER 5 – Pattern recognition challenge (L41–50)
   // Remove NUM/CHAIN labels; rely on colors + equation format.
-  // In your current code, risk is NOT hidden yet at these levels.
+  // Remove BONUS/RISK labels; rely on colors
   // ----------------------------------------------------------
   if (level <= 50) {
-    behavior.equationChance = 0.55;
-    behavior.multiStepEquationChance = 0.28;
+    behavior.equationChance = 0.25;
+    behavior.multiStepEquationChance = 0.1;
 
     behavior.showNumberChainLabels = false;
-    behavior.hideRiskValues = false; // matches effective behavior in your last version
+      // hide BONUS/RISK labels here:
+    behavior.showOtherLabels = false;
 
     return behavior;
   }
 
   // ------------------------------------------------------
   // TIER 6 – Advanced play (L51–60)
-  // Higher equation density, more multi-step, risk hidden.
-  // ShuffleEachTurn was never actually enabled here in your old code,
-  // so we keep it off to preserve behavior.
+  // Higher equation density, more multi-step, risk hidden (shows 2 possible number choices for tile).
   // ------------------------------------------------------
   if (level <= 60) {
-    behavior.equationChance = 0.65;
-    behavior.multiStepEquationChance = 0.35;
+    behavior.equationChance = 0.3;
+    behavior.multiStepEquationChance = 0.15;
 
     behavior.showNumberChainLabels = false;
+    behavior.showOtherLabels = false;
+    
     behavior.hideRiskValues = true;
-    // shuffleEachTurn stays false here (matches previous effective behavior)
 
     return behavior;
   }
@@ -130,17 +133,16 @@ export function getLevelBehavior(level) {
   // ------------------------------------------------------
   // TIER 7 – Expert / “endless” (L61+)
   // Dense equations, frequent multi-step, shuffled boards, risk hidden,
-  // NUM/CHAIN labels gone.
+  // NUM/CHAIN, BONUS/RISK labels gone.
   // ------------------------------------------------------
-  behavior.equationChance = 0.75;
-  behavior.multiStepEquationChance = 0.45;
+  behavior.equationChance = 0.35;
+  behavior.multiStepEquationChance = 0.2;
 
   behavior.showNumberChainLabels = false;
+  behavior.showOtherLabels = false;
   behavior.hideRiskValues = true;
+  
   behavior.shuffleEachTurn = true;
-
-  // You *could* also hide BONUS/RISK labels here if you want true chaos:
-  // behavior.showOtherLabels = false;
 
   return behavior;
 }
@@ -160,7 +162,7 @@ export function getDifficultyForLevel(level) {
     baseTimeMs - (level - 1) * timeStep
   );
 
-  const gridSize = level >= 32 ? 7 : 6;
+  const gridSize = level >= 35 ? 7 : 6;
   const turns = 8 + Math.min(4, Math.floor(level / 7)); // 8–12 turns
 
   // Tile distribution weights – same as before
@@ -258,6 +260,7 @@ export function resolveTileSelection(tile, state) {
     let step = 0.40;
     if (state.level >= 10) step = 0.45;
     if (state.level >= 20) step = 0.50;
+    if (state.level >= 40) step = 0.55;
   
     const chainFactor = 1 + newState.chainCount * step;
     basePoints = Math.round(value * chainFactor);
