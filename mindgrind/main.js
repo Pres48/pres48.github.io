@@ -460,7 +460,7 @@ function openResultModal({
   mgMisses.textContent      = misses.toLocaleString();
   mgCredits.textContent     = credits.toString();
   mgTimeBonus.textContent   = `+${timeBonus.toLocaleString()} pts`
-  mgNextTarget.textContent  = nextLevelNeededPoints.toLocaleString()
+  //mgNextTarget.textContent  = nextLevelNeededPoints.toLocaleString()
 
   // Round points + ✓
   const passedLevel = roundPoints >= neededPoints;
