@@ -56,6 +56,30 @@ const levelGoalsInfoPopover = document.getElementById("levelGoalsInfoPopover");
 const leaderboardInfoBtn = document.getElementById("leaderboardInfoBtn");
 const leaderboardInfoPopover = document.getElementById("leaderboardInfoPopover");
 
+// ---------- FUN MESSAGE POOLS ----------
+
+const MISS_MESSAGES = [
+  "Missed that one — brain buffer overflow.",
+  "Timer zapped you. Next pick, no hesitation.",
+  "You blinked… the turn vanished.",
+  "Even geniuses need warm-up turns.",
+  "That one got away. Regroup and grind.",
+];
+
+const HIT_MESSAGES = [
+  "Nice grind! 🧠",
+  "Clean hit — keep the run alive.",
+  "Brain is warmed up now.",
+  "Love that pick.",
+  "Tasty points. More, please.",
+];
+
+function pickRandom(arr) {
+  if (!arr || arr.length === 0) return "";
+  const idx = Math.floor(Math.random() * arr.length);
+  return arr[idx];
+}
+
 // ---------- CONSTANTS & STATE ----------
 
 const MIN_SUBMIT_SCORE = 5000; // minimum score required to submit to global leaderboard
@@ -773,6 +797,9 @@ function startLevel(level) {
 function nextTurn() {
   if (!gameState) return;
 
+  // 🧹 Clear old messages each turn
+  messageArea.textContent = "";
+
   gameState.locked = false;
 
   const behavior = gameState.behavior || getLevelBehavior(gameState.level);
@@ -822,7 +849,11 @@ function nextTurn() {
 
 function handleMissedTurn() {
   setTilesDisabled(true);
-  messageArea.textContent = "Missed! No tile selected this turn.";
+
+  // Show a fun randomized "miss" message
+  if (messageArea) {
+    messageArea.textContent = pickRandom(MISS_MESSAGES);
+  }
 
   gameState.turnIndex += 1;
   gameState.chainCount = 0;
@@ -1000,6 +1031,9 @@ function onTileClick(tile) {
   // 🚫 If this tile has already been used in this level, ignore it
   if (tile.used) return;
 
+  // 🧹 Clear "Missed!" or other leftover messages
+  messageArea.textContent = "";
+
   // ✅ First time this tile is being used in this level
   selectedThisTurn = true;
   tile.used = true;
@@ -1044,6 +1078,11 @@ function onTileClick(tile) {
 
   updateUIFromState();
 
+  // 🎉 Positive feedback after a pick
+  if (messageArea) {
+    messageArea.textContent = pickRandom(HIT_MESSAGES);
+  }
+  
   setTimeout(() => {
     nextTurn();
   }, 300);
