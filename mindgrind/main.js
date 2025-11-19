@@ -304,8 +304,9 @@ function maybeAwardRetryCreditForLevel(level) {
   }
 }
 
-// ===== Modal open/close helpers =====
 
+
+// ===== Modal open/close helpers =====
 function openResultModal({
   cleared,
   level,
@@ -322,8 +323,7 @@ function openResultModal({
     return;
   }
 
-  // Use the global retryCredits as the single source of truth
-  const credits = retryCredits;
+  const credits = retryCredits; // single source of truth
 
   console.log("openResultModal()", {
     cleared,
@@ -338,147 +338,123 @@ function openResultModal({
     isNewHighScore,
   });
 
-  // 🔹 Tag modal for layout differences in "run over" vs "cleared"
-  if (mgModal) {
-    mgModal.classList.toggle("mg-run-over", !cleared);
-  }
-
   // ---- Header text ----
   if (cleared) {
-    if (mgTitle) mgTitle.textContent = `Level ${level} Cleared!`;
-    if (mgSubtitle)
-      mgSubtitle.textContent = `Nice job — Level ${level + 1} is up next.`;
+    mgTitle.textContent = `Level ${level} Cleared!`;
+    mgSubtitle.textContent = `Nice job — Level ${level + 1} is up next.`;
   } else {
-    if (mgTitle) mgTitle.textContent = `Run Over — Level ${level}`;
-    if (mgSubtitle)
-      mgSubtitle.textContent = `You were ${Math.max(
-        0,
-        neededPoints - roundPoints
-      ).toLocaleString()} points short.`;
+    mgTitle.textContent = `Run Over — Level ${level}`;
+    mgSubtitle.textContent = `You were ${Math.max(
+      0,
+      neededPoints - roundPoints
+    ).toLocaleString()} points short.`;
   }
 
   // ---- Stats ----
-  if (mgNeeded && typeof neededPoints === "number") {
-    mgNeeded.textContent = neededPoints.toLocaleString();
-  }
-  if (mgTotalPoints && typeof totalPoints === "number") {
-    mgTotalPoints.textContent = totalPoints.toLocaleString();
-  }
-  if (mgMisses && typeof misses === "number") {
-    mgMisses.textContent = misses.toLocaleString();
-  }
-  if (mgCredits) {
-    mgCredits.textContent = credits.toString();
-  }
+  mgNeeded.textContent      = neededPoints.toLocaleString();
+  mgTotalPoints.textContent = totalPoints.toLocaleString();
+  mgMisses.textContent      = misses.toLocaleString();
+  mgCredits.textContent     = credits.toString();
 
-  // Round points + ✓ if pass
-  if (mgRoundPoints && typeof roundPoints === "number") {
-    const passedLevel = roundPoints >= neededPoints;
-    mgRoundPoints.innerHTML = passedLevel
-      ? `${roundPoints.toLocaleString()} <span class="mg-round-check">✓</span>`
-      : roundPoints.toLocaleString();
-  }
+  // Round points + ✓
+  const passedLevel = roundPoints >= neededPoints;
+  mgRoundPoints.innerHTML = passedLevel
+    ? `${roundPoints.toLocaleString()} <span class="mg-round-check">✓</span>`
+    : roundPoints.toLocaleString();
 
   // ---- Extra stacked messages ----
-  if (mgExtra) {
-    const extraLines = [];
+  const extraLines = [];
 
-    if (cleared && typeof nextLevelNeededPoints === "number") {
-      extraLines.push(
-        `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`
-      );
-    }
+  if (cleared && typeof nextLevelNeededPoints === "number") {
+    extraLines.push(
+      `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`
+    );
+  }
 
-    if (cleared && isPerfectLevel) {
-      extraLines.push(`Perfect level (0 misses)`);
-    }
+  if (cleared && isPerfectLevel) {
+    extraLines.push(`Perfect level (0 misses)`);
+  }
 
-    if (isNewHighScore) {
-      extraLines.push(`New high score!`);
-    }
+  if (isNewHighScore) {
+    extraLines.push(`New high score!`);
+  }
 
-    if (extraLines.length > 0) {
-      mgExtra.innerHTML = extraLines.join("<br>");
-      mgExtra.classList.remove("hidden");
-    } else {
-      mgExtra.innerHTML = "";
-      mgExtra.classList.add("hidden");
-    }
+  if (extraLines.length > 0) {
+    mgExtra.innerHTML = extraLines.join("<br>");
+    mgExtra.classList.remove("hidden");
+  } else {
+    mgExtra.innerHTML = "";
+    mgExtra.classList.add("hidden");
   }
 
   // --------------------------------------------------------------------
   //                      BUTTON LOGIC
   // --------------------------------------------------------------------
 
-  const btnNext     = mgBtnNext;
-  const btnContinue = mgBtnContinue;
-  const btnNewGame  = mgBtnNew; // We keep but hide
+  const btnNext     = document.getElementById("mg-next");
+  const btnContinue = document.getElementById("mg-continue");
+  const btnNewGame  = document.getElementById("mg-new");
 
-  // Clear old handlers
-  if (btnNext)     btnNext.onclick = null;
-  if (btnContinue) btnContinue.onclick = null;
-  if (btnNewGame)  btnNewGame.onclick = null;
+  // Clear handlers + hide all + remove color classes
+  [btnNext, btnContinue, btnNewGame].forEach(btn => {
+    if (!btn) return;
+    btn.onclick = null;
+    btn.classList.add("hidden");
+    btn.classList.remove("mg-btn-next", "mg-btn-continue", "mg-btn-newgame");
+  });
 
+  // ===== LEVEL CLEARED ================================================
   if (cleared) {
-    // LEVEL CLEARED ----------------------------------------------------
+    btnNext.textContent = "Start Next Level";
+    btnNext.classList.remove("hidden");
+    btnNext.classList.add("mg-btn-next");
 
-    // Big green button → Start Next Level
-    if (btnNext) {
-      btnNext.classList.remove("hidden");
-      btnNext.textContent = "Start Next Level";
-      btnNext.onclick = () => {
-        closeResultModal();
-        startLevel(level + 1);
-      };
-    }
+    btnNext.onclick = () => {
+      closeResultModal();
+      startLevel(level + 1);
+    };
 
-    // Hide other buttons
-    if (btnContinue) btnContinue.classList.add("hidden");
-    if (btnNewGame)  btnNewGame.classList.add("hidden");
-
-  } else {
-    // RUN OVER ---------------------------------------------------------
-
-    // Big green button → Start New Game
-    if (btnNext) {
-      btnNext.classList.remove("hidden");
-      btnNext.textContent = "Start New Game";
-      btnNext.onclick = () => {
-        closeResultModal();
-        restartGame();
-      };
-    }
-
-    // Show Continue only if credits > 0
-    if (btnContinue) {
-      const showContinue = credits > 0;
-      btnContinue.classList.toggle("hidden", !showContinue);
-
-      if (showContinue) {
-        btnContinue.textContent = "Continue Run";   // ← no (credits) here
-        btnContinue.onclick = () => {
-          // Spend ONE credit from the global pool
-          retryCredits = Math.max(0, retryCredits - 1);
-
-          // Restore score and retry same level
-          // if (gameState && typeof gameState.scoreAtLevelStart === "number") {
-          //  gameState.score = gameState.scoreAtLevelStart;
-          // }
-
-          closeResultModal();
-          startLevel(level); // retry same level
-        };
-      }
-    }
-
-
-    // Never show separate New Game button
-    if (btnNewGame) btnNewGame.classList.add("hidden");
+    mgOverlay.classList.remove("hidden");
+    return;
   }
 
-  // Show modal
+  // ===== RUN OVER ======================================================
+
+  if (credits > 0) {
+    // --------------------------------------------
+    // User has retry credits → ONLY Continue Run
+    // --------------------------------------------
+    btnContinue.textContent = "Continue Run";
+    btnContinue.classList.remove("hidden");
+    btnContinue.classList.add("mg-btn-continue");
+
+    btnContinue.onclick = () => {
+      retryCredits = Math.max(0, retryCredits - 1);
+
+      // Keep accumulated score — DO NOT reset
+      closeResultModal();
+      startLevel(level);
+    };
+
+  } else {
+    // --------------------------------------------
+    // No credits → ONLY Start New Game
+    // --------------------------------------------
+    btnNext.textContent = "Start New Game";
+    btnNext.classList.remove("hidden");
+    btnNext.classList.add("mg-btn-newgame");
+
+    btnNext.onclick = () => {
+      closeResultModal();
+      restartGame();
+    };
+  }
+
+  // Display modal
   mgOverlay.classList.remove("hidden");
 }
+
+
 
 function closeResultModal() {
   if (!mgOverlay) return;
