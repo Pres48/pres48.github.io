@@ -322,8 +322,8 @@ body {
 }
 
 .stat {
-  flex: 1 1 80px;
-  min-width: 80px;
+  flex: 1 1 60px; /* 80px */
+  min-width: 60px; /* 80px */
   background: linear-gradient(135deg, #020617, #020617);
   border-radius: var(--radius-md);
   padding: 6px 8px;
