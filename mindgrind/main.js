@@ -939,7 +939,8 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRiskDisplayOptions(tile) {
+function getRiskDisplayOptions(tile, level) {
+  // Reuse cached pair if already generated
   if (
     tile.riskOptions &&
     Array.isArray(tile.riskOptions) &&
@@ -948,6 +949,68 @@ function getRiskDisplayOptions(tile) {
     return tile.riskOptions;
   }
 
+  const actual = tile.value;
+
+  // --- LEVEL 51–60: both same sign (both + or both -), at least 10 apart ----
+  if (level >= 51 && level <= 60) {
+    const sign = actual >= 0 ? 1 : -1;
+    const actualMag = Math.max(5, Math.abs(actual));
+
+    // ensure some separation, at least 10 difference in magnitude
+    const minDiff = 10;
+    const maxDiff = Math.max(minDiff + 5, Math.floor(actualMag * 0.8));
+    const diff = getRandomInt(minDiff, maxDiff);
+
+    // randomly decide whether decoy is bigger or smaller in magnitude
+    const bigger = Math.random() < 0.5;
+    let decoyMag = bigger ? actualMag + diff : Math.max(1, actualMag - diff);
+
+    // avoid identical magnitude just in case
+    if (decoyMag === actualMag) {
+      decoyMag += 5;
+    }
+
+    const decoy = sign * decoyMag;
+    let pair = [actual, decoy];
+
+    // randomize A | B order so position isn't a tell
+    if (Math.random() < 0.5) pair.reverse();
+
+    tile.riskOptions = pair;
+    return pair;
+  }
+
+  // --- LEVEL 61–70: one positive, one negative (Option A – symmetric-ish) ----
+  if (level >= 61 && level <= 70) {
+    const actualMag = Math.max(5, Math.abs(actual));
+
+    // opposite sign for the decoy
+    const decoySign = actual >= 0 ? -1 : 1;
+
+    // magnitude somewhere around the actual (sometimes bigger, sometimes smaller)
+    const minFactor = 0.6;
+    const maxFactor = 1.6;
+    const factor = minFactor + Math.random() * (maxFactor - minFactor);
+    let decoyMag = Math.round(actualMag * factor);
+    if (decoyMag < 1) decoyMag = 1;
+
+    // avoid identical magnitude
+    if (decoyMag === actualMag) {
+      decoyMag += 5;
+    }
+
+    const decoy = decoySign * decoyMag;
+    let pair = [actual, decoy];
+
+    // randomize order; sometimes the larger number is the decoy,
+    // sometimes the smaller is the decoy → no obvious pattern
+    if (Math.random() < 0.5) pair.reverse();
+
+    tile.riskOptions = pair;
+    return pair;
+  }
+
+  // --- DEFAULT: existing behavior for earlier levels (<= 50) -----------------
   const actual = tile.value;
   let decoy;
 
@@ -978,6 +1041,7 @@ function getRiskDisplayOptions(tile) {
   tile.riskOptions = pair;
   return pair;
 }
+
 
 function renderGrid() {
   gridContainer.innerHTML = "";
@@ -1016,16 +1080,24 @@ function renderGrid() {
         valueEl.textContent = formatTileDisplay(tile, behavior);
       } else if (tile.type === "risk") {
         if (showLabel) label.textContent = "RISK";
-
-        if (shouldHideRiskValues(gameState.level)) {
-          const [optA, optB] = getRiskDisplayOptions(tile);
+      
+        const lvl = gameState.level;
+      
+        // --- 71+ : pure mystery, UI shows only "??" ------------------------
+        if (lvl >= 71) {
+          valueEl.textContent = "??";
+        }
+        // --- 51–70 : masked pair, but logic differs inside getRiskDisplayOptions ---
+        else if (shouldHideRiskValues(lvl)) {
+          const [optA, optB] = getRiskDisplayOptions(tile, lvl);
           valueEl.textContent = `${optA} | ${optB}`;
-        } else {
+        }
+        // --- earlier levels: show concrete value/equation ------------------
+        else {
           valueEl.textContent = formatTileDisplay(tile, behavior);
         }
-        
         // ==== RARITY TILE RENDERING ====
-        } else if (tile.type === "rare") {
+        else if (tile.type === "rare") {
           if (showLabel) label.textContent = "RARE";
           valueEl.textContent = tile.value;
         
