@@ -1394,12 +1394,15 @@ function endRound(reason = "normal") {
     if (passedScoreGate && passedMissGate) {
       // 🎆 Fireworks on level clear
       triggerFireworks();
+
+      // Mark this as a “long” center message
+      messageArea.classList.add("long");
     
       const bonusText =
         timeBonus > 0
           ? ` That includes <strong>${timeBonus.toLocaleString()} pts</strong> from playing fast.`
           : "";
-    
+
       messageArea.innerHTML =
         `<strong>Level ${level} cleared!</strong> ` +
         `You earned ${levelGain.toLocaleString()} points this level ` +
@@ -1439,6 +1442,10 @@ function endRound(reason = "normal") {
 
   } else {
     // ❌ Run ends here due to not hitting the point target
+
+    // Mark this as a “long” center message
+    messageArea.classList.add("long");
+      
     const reasonText =
       `You needed at least ${requiredGain.toLocaleString()} points this level ` +
       `(you got ${levelGain.toLocaleString()}).`;
