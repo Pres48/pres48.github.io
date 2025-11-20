@@ -13,12 +13,12 @@ const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
 const CHAIN_MIN = 7; 
-const CHAIN_MAX = 18;
+const CHAIN_MAX = 16;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
-const RISK_MIN = -30; 
-const RISK_MAX = 50;
+export const RISK_MIN = -30;
+export const RISK_MAX = 50;
 
 // =========================================
 
@@ -174,18 +174,18 @@ export function getLevelBehavior(level) {
  */
 export function getDifficultyForLevel(level) {
   // New timing curve: more thinking room, smoother ramp
-  const baseTimeMs = 6400;   // L1 ≈ 6.4s per turn
-  const minTimeMs  = 2400;   // Never go below ~2.4s per turn
+  const baseTimeMs = 6300;   // L1 ≈ 6.4s per turn
+  const minTimeMs  = 2200;   // Never go below ~2.4s per turn
 
   // Each level shaves off XX ms, until minTimeMs
-  const timeStep = 50; // was 70
+  const timeStep = 55; // was 70
   const timePerTurnMs = Math.max(
     minTimeMs,
     baseTimeMs - (level - 1) * timeStep
   );
 
   const gridSize = level >= 35 ? 7 : 6;
-  const turns = 8 + Math.min(4, Math.floor(level / 7)); // 8–12 turns
+  const turns = 8 + Math.min(4, Math.floor(level / 8)); // 8–12 turns (max)
 
   // Tile distribution weights – same as before
   const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));
@@ -354,10 +354,11 @@ export function resolveTileSelection(tile, state) {
   } else if (type === TILE_TYPES.CHAIN) {
     // Slightly stronger chains so they become a real strategy,
     // especially in mid/high levels.
-    let step = 0.40;
-    if (state.level >= 10) step = 0.45;
-    if (state.level >= 20) step = 0.50;
-    if (state.level >= 40) step = 0.55;
+    let step = 0.35;
+    if (state.level >= 10) step = 0.37;
+    if (state.level >= 20) step = 0.40;
+    if (state.level >= 40) step = 0.45;
+    if (state.level >= 60) step = 0.50;
   
     const chainFactor = 1 + newState.chainCount * step;
     basePoints = Math.round(value * chainFactor);
