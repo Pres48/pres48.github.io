@@ -425,18 +425,18 @@ function getRequiredGainForLevel(level) {
   let required;
 
   if (level <= 1) {
-    required = 80;
+    required = 100;                     // +20
   } else if (level <= 5) {
-    required = 80 + 15 * (level - 1);
+    required = 100 + 15 * (level - 1);  // 80 -> 100
   } else if (level <= 10) {
-    required = 160 + 20 * (level - 6);
+    required = 180 + 20 * (level - 6);  // 160 -> 180
   } else if (level <= 15) {
-    required = 270 + 25 * (level - 11);
+    required = 290 + 25 * (level - 11); // 270 -> 290
   } else if (level <= 20) {
-    required = 400 + 30 * (level - 16);
+    required = 420 + 30 * (level - 16); // 400 -> 420
   } else {
     const extra = level - 20;
-    const baseAfter20 = 550;
+    const baseAfter20 = 570;            // 550 -> 570
     const step = 35;
     required = baseAfter20 + step * Math.log2(1 + extra);
   }
