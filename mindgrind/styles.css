@@ -76,6 +76,14 @@ body {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
 }
 
+.logo-img {
+  width: 28px;      /* adjust as needed */
+  height: 28px;
+  object-fit: contain;
+  display: inline-block;
+  margin-right: 10px;
+}
+
 .brand-title {
   font-weight: 700;
   letter-spacing: 0.04em;
