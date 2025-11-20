@@ -4,7 +4,10 @@ import {
   getDifficultyForLevel,
   resolveTileSelection,
   getLevelBehavior,
+  RISK_MIN,
+  RISK_MAX,
 } from "./game.js";
+
 
 import { saveScoreToSupabase, fetchTopScores } from "./supabaseClient.js";
 
@@ -950,21 +953,51 @@ function getRiskDisplayOptions(tile, level) {
   }
 
   const actual = tile.value;
+  const actualMag = Math.max(1, Math.abs(actual));
 
-  // --- LEVEL 51–60: both same sign (both + or both -), at least 10 apart ----
+  // Global cap based on your real risk range
+  const maxRiskMagnitude = Math.max(Math.abs(RISK_MIN), Math.abs(RISK_MAX));
+
+  // --- LEVEL 51–60: both same sign (both + or both -), at least 10 apart ---
   if (level >= 51 && level <= 60) {
     const sign = actual >= 0 ? 1 : -1;
-    const actualMag = Math.max(5, Math.abs(actual));
-
     const minDiff = 10;
-    const maxDiff = Math.max(minDiff + 5, Math.floor(actualMag * 0.8));
-    const diff = getRandomInt(minDiff, maxDiff);
 
-    const bigger = Math.random() < 0.5;
-    let decoyMag = bigger ? actualMag + diff : Math.max(1, actualMag - diff);
+    // Start with a diff relative to actual
+    let diff = getRandomInt(minDiff, Math.max(minDiff + 5, Math.floor(actualMag * 0.8)));
 
+    // Randomly decide bigger or smaller in magnitude
+    let makeBigger = Math.random() < 0.5;
+
+    let decoyMag;
+
+    if (makeBigger) {
+      // Try going up
+      decoyMag = actualMag + diff;
+      // Clamp to cap
+      if (decoyMag > maxRiskMagnitude) {
+        // If we busted the cap, flip to smaller instead
+        decoyMag = Math.max(1, actualMag - diff);
+      }
+    } else {
+      // Try going down
+      decoyMag = Math.max(1, actualMag - diff);
+      // If that collapses too low (no separation), flip to bigger but clamped
+      if (actualMag - decoyMag < minDiff) {
+        decoyMag = Math.min(maxRiskMagnitude, actualMag + diff);
+      }
+    }
+
+    // Final safety: clamp to [1, maxRiskMagnitude]
+    decoyMag = Math.min(Math.max(decoyMag, 1), maxRiskMagnitude);
+
+    // Avoid identical magnitude
     if (decoyMag === actualMag) {
-      decoyMag += 5;
+      if (actualMag + minDiff <= maxRiskMagnitude) {
+        decoyMag = actualMag + minDiff;
+      } else if (actualMag - minDiff >= 1) {
+        decoyMag = actualMag - minDiff;
+      }
     }
 
     const decoy = sign * decoyMag;
@@ -976,20 +1009,27 @@ function getRiskDisplayOptions(tile, level) {
     return pair;
   }
 
-  // --- LEVEL 61–70: one positive, one negative (Option A – symmetric-ish) ----
+  // --- LEVEL 61–70: one positive, one negative (Option A – symmetric-ish) ---
   if (level >= 61 && level <= 70) {
-    const actualMag = Math.max(5, Math.abs(actual));
-
     const decoySign = actual >= 0 ? -1 : 1;
 
     const minFactor = 0.6;
     const maxFactor = 1.6;
     const factor = minFactor + Math.random() * (maxFactor - minFactor);
     let decoyMag = Math.round(actualMag * factor);
+
     if (decoyMag < 1) decoyMag = 1;
 
+    // Clamp to your real risk cap
+    decoyMag = Math.min(decoyMag, maxRiskMagnitude);
+
+    // Avoid identical magnitude
     if (decoyMag === actualMag) {
-      decoyMag += 5;
+      if (actualMag + 5 <= maxRiskMagnitude) {
+        decoyMag = actualMag + 5;
+      } else if (actualMag - 5 >= 1) {
+        decoyMag = actualMag - 5;
+      }
     }
 
     const decoy = decoySign * decoyMag;
@@ -1001,7 +1041,7 @@ function getRiskDisplayOptions(tile, level) {
     return pair;
   }
 
-  // --- DEFAULT: existing behavior for earlier levels (<= 50) -----------------
+  // --- DEFAULT: existing behavior for earlier levels (<= 50) ---------------
   let decoy;
 
   if (actual > 0) {
@@ -1031,6 +1071,7 @@ function getRiskDisplayOptions(tile, level) {
   tile.riskOptions = pair;
   return pair;
 }
+
 
 
 
