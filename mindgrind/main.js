@@ -467,9 +467,7 @@ function openResultModal({
     ? `${roundPoints.toLocaleString()} <span class="mg-round-check">✓</span>`
     : roundPoints.toLocaleString();
 
-  // ----- Next Level Target (pulled out separately) -----
-  const mgNextTarget = document.getElementById("mg-next-target");
-  
+  // ----- Next Level Target (pulled out separately) -----  
   if (cleared && typeof nextLevelNeededPoints === "number") {
     mgNextTarget.textContent =
       `Next level target: ${nextLevelNeededPoints.toLocaleString()} pts`;
