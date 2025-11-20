@@ -352,16 +352,19 @@ export function resolveTileSelection(tile, state) {
     basePoints = value;
 
   } else if (type === TILE_TYPES.CHAIN) {
-    // Slightly stronger chains so they become a real strategy,
-    // especially in mid/high levels.
     let step = 0.35;
     if (state.level >= 10) step = 0.37;
     if (state.level >= 20) step = 0.40;
     if (state.level >= 40) step = 0.45;
     if (state.level >= 60) step = 0.50;
   
-    const chainFactor = 1 + newState.chainCount * step;
-    basePoints = Math.round(value * chainFactor);
+    const chainMultiplier = 1 + newState.chainCount * step;
+    
+    // Store it so UI can display exactly what was used
+    newState.chainMultiplierDisplay = chainMultiplier;
+  
+    basePoints = Math.round(value * chainMultiplier);
+  
     newState.chainCount += 1;
   } else if (type === TILE_TYPES.BONUS) {
     newState.multiplier = parseFloat(
@@ -398,6 +401,7 @@ export function resolveTileSelection(tile, state) {
   // Reset chain if not a chain tile
   if (type !== TILE_TYPES.CHAIN) {
     newState.chainCount = 0;
+    newState.chainMultiplierDisplay = 1;   // 👈 add this here
   }
 
   return newState;
