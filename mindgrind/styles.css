@@ -396,6 +396,22 @@ body {
     0 0 22px rgba(239, 68, 68, 0.7);
 }
 
+.message.long {
+  display: block;
+  line-height: 1.35;
+  min-height: unset;
+  padding: 4px 0;
+}
+
+.message strong {
+  white-space: normal !important;
+}
+
+.unit {
+  white-space: nowrap;
+}
+
+
 /* Grid */
 
 .grid {
