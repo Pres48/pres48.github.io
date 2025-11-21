@@ -191,6 +191,39 @@ const RARITY_MESSAGES = {
   cosmic: "COSMIC tile!! The universe just high-fived you. 🌌🚀"
 };
 
+const openHowToPlayBtn   = document.getElementById("openHowToPlay");
+const howToPlayBackdrop  = document.getElementById("howToPlayBackdrop");
+const closeHowToPlayBtn  = document.getElementById("closeHowToPlay");
+
+function openHowToPlay() {
+  if (!howToPlayBackdrop) return;
+  howToPlayBackdrop.hidden = false;
+}
+
+function closeHowToPlay() {
+  if (!howToPlayBackdrop) return;
+  howToPlayBackdrop.hidden = true;
+}
+
+if (openHowToPlayBtn && howToPlayBackdrop && closeHowToPlayBtn) {
+  openHowToPlayBtn.addEventListener("click", openHowToPlay);
+  closeHowToPlayBtn.addEventListener("click", closeHowToPlay);
+
+  // Close when clicking outside the modal
+  howToPlayBackdrop.addEventListener("click", (e) => {
+    if (e.target === howToPlayBackdrop) {
+      closeHowToPlay();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !howToPlayBackdrop.hidden) {
+      closeHowToPlay();
+    }
+  });
+}
+
 
 function pickRandom(arr) {
   if (!arr || arr.length === 0) return "";
