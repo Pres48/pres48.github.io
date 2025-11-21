@@ -7,6 +7,8 @@ const supabaseAnonKey =
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+window.supabase = supabase;
+
 /**
  * Insert OR update a score row in the "scores" table.
  *
