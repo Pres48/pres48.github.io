@@ -60,7 +60,7 @@ export async function saveScoreToSupabase(name, score, level, existingId = null)
   return data.id;
 }
 
-export async function fetchTopScores(limit = 10) {
+export async function fetchTopScores(limit = 15) {
   const { data, error } = await supabase
     .from("scores")
     .select("id, name, score, level, created_at")  // 👈 added id here
