@@ -153,17 +153,43 @@ export function getLevelBehavior(level) {
   }
 
   // ------------------------------------------------------
-  // TIER 7 – Expert / “endless” (L61+)
+  // TIER 7 – Advanced play (L61–80)
+  // Higher equation density, more multi-step, risk hidden (shows ?? for tile).
+  // ------------------------------------------------------
+  if (level <= 80) {
+    behavior.equationChance = 0.35;
+    behavior.multiStepEquationChance = 0.15;
+    behavior.showNumberChainLabels = false;
+    behavior.showOtherLabels = false;
+    behavior.hideRiskValues = true;
+
+    return behavior;
+  }
+
+  // ------------------------------------------------------
+  // TIER 8 – Advanced play (L81–100)
+  // Higher equation density, more multi-step, risk hidden (shows ?? for tile).
+  // ------------------------------------------------------
+  if (level <= 100) {
+    behavior.equationChance = 0.4;
+    behavior.multiStepEquationChance = 0.2;
+    behavior.showNumberChainLabels = false;
+    behavior.showOtherLabels = false;
+    behavior.hideRiskValues = true;
+
+    return behavior;
+  }
+
+  // ------------------------------------------------------
+  // TIER 9 – Expert / “endless” (L100+)
   // Dense equations, frequent multi-step, shuffled boards, risk hidden,
   // NUM/CHAIN, BONUS/RISK labels gone.
   // ------------------------------------------------------
-  behavior.equationChance = 0.35;
-  behavior.multiStepEquationChance = 0.2;
-
+  behavior.equationChance = 0.5;
+  behavior.multiStepEquationChance = 0.25;
   behavior.showNumberChainLabels = false;
   behavior.showOtherLabels = false;
   behavior.hideRiskValues = true;
-  
   behavior.shuffleEachTurn = true;
 
   return behavior;
