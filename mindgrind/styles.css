@@ -332,7 +332,8 @@ body {
 
 .tile.idle-tile {
   cursor: default;
-  opacity: 0.9; /* subtle difference from live tiles */
+}
+  /*opacity: 0.9;  subtle difference from live tiles
 }
 
 .idle-tile.type-rare,
@@ -346,7 +347,7 @@ body {
   outline: 2px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
-
+ */
 
 
 /* === FIREWORKS OVERLAY === */
