@@ -1153,48 +1153,6 @@ button:disabled {
   box-shadow: none;
 }
 
-
-
-.howto-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.78); /* slate-ish overlay */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.howto-backdrop[hidden] {
-  display: none;
-}
-
-.howto-modal {
-  max-width: 720px;
-  width: 90%;
-  max-height: 90vh;
-  background: #0b1120;
-  color: #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
-  padding: 20px 24px;
-  overflow-y: auto;
-}
-
-.howto-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.howto-header h2 {
-  font-size: 1.1rem;
-  margin: 0 0 8px 0;
-  color: #e5e7eb;
-}
-
 .icon-button.howto-button,
 .close-button {
   width: 18px;
@@ -1217,29 +1175,136 @@ button:disabled {
   background: #334155;
 }
 
-.howto-body {
+
+/* Backdrop */
+.howto-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: radial-gradient(circle at top, rgba(15, 23, 42, 0.92), #020617);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* respect the hidden attribute */
+.howto-backdrop[hidden] {
+  display: none;
+}
+
+/* Modal container */
+.howto-modal {
+  max-width: 720px;
+  width: 90%;
+  max-height: 90vh;
+
+  background: linear-gradient(
+    145deg,
+    rgba(18, 29, 52, 0.88),
+    rgba(32, 46, 78, 0.72)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #e5e7eb;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+
+  padding: 24px 28px;
+  overflow-y: auto;
+}
+
+/* Header bar */
+.howto-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  font-size: 0.9rem;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  padding: 12px 18px;
+
+  margin: -24px -28px 18px -28px; /* stretch to modal edges */
+  border-radius: 16px 16px 0 0;
+}
+
+/* Title */
+.howto-modal-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #f9fafb;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+}
+
+/* Close button */
+.howto-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f9fafb;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.7);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+.howto-modal-close:hover {
+  background: rgba(30, 64, 175, 0.9);
+  box-shadow: 0 0 14px rgba(129, 140, 248, 0.7);
+  transform: translateY(-1px);
+}
+
+/* Body content */
+.howto-body {
+  padding-right: 4px;
+}
+
+/* Sections */
+.howto-section {
+  margin-bottom: 14px;
 }
 
 .howto-section h3 {
-  margin: 8px 0 4px;
-  font-size: 0.9rem;
-  color: #e5e7eb;
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #bfdbfe;
 }
 
 .howto-section ul {
-  margin: 0 0 4px 1.1rem;
-  font-size: 0.8rem;
-  color: var(--text-soft);
-  padding: 0;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.9rem;
 }
 
 .howto-section li {
   margin-bottom: 4px;
+  color: #d6dae0;
+  line-height: 1.55;
 }
+
+.howto-section li::marker {
+  color: #60a5fa;
+}
+
+
+
 
 /* Responsive */
 
