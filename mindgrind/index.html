@@ -24,11 +24,11 @@
   <div class="app">
     <header class="top-bar">
       <div class="brand">
-        <!-- <span class="logo-dot"></span> -->
         <img class="logo-img" src="MindGrind_logo.png" alt="Mind Grind logo">
-        <span class="brand-title">Mind Grind: Tile Tactics</span>
+        <span class="brand-title">Mind Grind:</span>
+        <span class="brand-subtitle">Tile Tactics</span>
       </div>
-      
+
       <div class="player-info">
         <label class="player-info-label">
           Name:
@@ -39,6 +39,20 @@
           This name will appear on the public leaderboard.
         </div>
       </div>
+
+      <div class="top-bar-actions">
+      <!-- Other controls (sound, menu, etc.) -->
+  
+      <!-- NEW: How to Play / Help icon -->
+      <button
+            type="button"
+            class="icon-button howto-button"
+            id="openHowToPlay"
+            aria-label="How to play"
+      >?</button>
+        
+    </div>
+      
     </header>
 
     <main class="game-layout">
@@ -182,7 +196,7 @@
                 <ul>
                   <li><strong>Less time per move</strong></li>
                   <li><strong>Tougher score targets</strong> required to advance</li>
-                  <li><strong>Stricter limits on missed turns</strong></li>
+                  <li><strong>Additional complexities sprinkled in</strong></li>
                 </ul>
               </div>
             </div>
@@ -201,6 +215,35 @@
               <br />
               <code>tile points × current multiplier</code>
             </p>
+
+          <span class="level-goals-label">Level Goals</span>
+        
+          <button
+            type="button"
+            class="info-icon"
+            id="levelGoalsInfoBtn"
+            aria-label="More info about level goals"
+          >?</button>
+        
+          <span class="level-goals-separator">|</span>
+        
+          <span class="level-goals-text" id="levelGoals"></span>
+        
+          <div class="info-popover" id="levelGoalsInfoPopover">
+            <strong>How level goals are calculated</strong>
+            <p>Each level currently has <strong>one requirement</strong>:</p>
+            <ul>
+              <li>Your <strong>score gain this level</strong> must meet or beat the Level target.</li>
+            </ul>
+            <p>
+              Missed turns still hurt your score (you lose chances to earn points),
+              but they <strong>no longer end the run by themselves</strong>.
+            </p>
+            <p>
+              Higher levels require bigger gains and give you less time per move.
+            </p>
+          </div>
+            
             <p>
               Different tiles change your points and multiplier in different ways:
             </p>
@@ -366,6 +409,102 @@
   </div>
 </div>
 
+
+
+
+
+<!-- HOW TO PLAY MODAL -->
+<div class="howto-backdrop" id="howToPlayBackdrop" hidden>
+  <div class="howto-modal" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
+    <header class="howto-header">
+      <h2 id="howToPlayTitle">How to Play</h2>
+      <button
+        type="button"
+        class="icon-button close-button"
+        id="closeHowToPlay"
+        aria-label="Close how to play"
+      >
+        ✕
+      </button>
+    </header>
+
+    <div class="howto-body">
+      <!-- Quick Start -->
+      <section class="howto-section">
+        <h3>Quick Start</h3>
+        <ul>
+          <li>Each level gives you a <strong>fixed number of turns</strong>.</li>
+          <li>On every turn, you must click <strong>exactly one tile</strong> before the time bar empties.</li>
+          <li>Your turn score is usually <strong>tile value × your current multiplier</strong>.</li>
+          <li><strong>Misses</strong> (no click in time) give <strong>0 points</strong> and can break your chain.</li>
+          <li>To advance, your <strong>score gain this level</strong> must meet the level’s target.</li>
+        </ul>
+      </section>
+
+      <!-- Tiles -->
+      <section class="howto-section">
+        <h3>Tile Types</h3>
+        <ul class="bullet-list">
+          <li>
+            <strong>Blue – Number</strong><br />
+            Core points. The value shown on the tile, multiplied by your current multiplier.
+          </li>
+          <li>
+            <strong>Yellow – Bonus</strong><br />
+            Smaller points, but <strong>raises your multiplier</strong> for future turns.
+          </li>
+          <li>
+            <strong>Green – Chain</strong><br />
+            Worth more when you pick them on <strong>consecutive turns</strong>.
+            Hitting a non-chain or missing a turn breaks the chain.
+          </li>
+          <li>
+            <strong>Red – Risk</strong><br />
+            Can be <strong>big positive or negative</strong>.
+            Some risk tiles can also <strong>reduce your multiplier</strong> when they go bad.
+          </li>
+          <li>
+            <strong>Prism / Special Frame – Rarity</strong><br />
+            These are the <strong>RARE / EPIC / LEGEND / MYTHIC / RELIC / EXOTIC / COSMIC</strong> tiles.
+            They can have <strong>huge values or special boosts</strong> and often swing the level.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Levels & goals -->
+      <section class="howto-section">
+        <h3>Levels & Goals</h3>
+        <ul>
+          <li>Each level has a <strongtarget>score target</strong> for that level only.</li>
+          <li>Your total <strong>Level Score</strong> is the sum of all turns in that level.</li>
+          <li>If your Level Score meets or beats the target, you <strong>advance</strong> to the next level.</li>
+          <li>As levels go up, you get:
+            <ul>
+              <li><strong>Less time per move</strong>, so you must think faster.</li>
+              <li><strong>More turns per level</strong>, with tougher targets.</li>
+              <li><strong>Spicier tile distributions</strong> (more risk, more rarity, stronger chains).</li>
+            </ul>
+          </li>
+          <li>Missing turns no longer ends your run, but <strong>wasted turns make targets harder</strong>.</li>
+        </ul>
+      </section>
+
+      <!-- Tips -->
+      <section class="howto-section">
+        <h3>Strategy Tips</h3>
+        <ul>
+          <li>Early in a level, grab <strong>Bonus tiles</strong> to build your multiplier.</li>
+          <li>Look for <strong>Chains</strong> you can feed over multiple turns for big payoffs.</li>
+          <li>Use <strong>Risk tiles</strong> when you need a big swing or you’re safely ahead.</li>
+          <li><strong>Rarity tiles</strong> can be run-defining — but don’t time out staring at them.</li>
+          <li>Glance at <strong>Level Goal</strong>, <strong>Accuracy</strong>, and <strong>Chain</strong> stats to decide whether to play safe or aggressive.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+  
 
 </body>
 </html>
