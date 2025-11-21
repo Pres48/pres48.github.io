@@ -1972,36 +1972,6 @@ function init() {
       `Level ${initialLevel} target: +${target.toLocaleString()} pts`;
   }
 
-  // Restore player name from previous visit, if any
-  try {
-    const savedName = localStorage.getItem("mindgrindPlayerName");
-    if (savedName && typeof savedName === "string" && playerNameInput) {
-      playerNameInput.value = savedName;
-    }
-  } catch (e) {
-    console.warn("Name restore skipped (localStorage unavailable):", e);
-  }
-
-  // Persist player name on change + clear warnings
-  if (playerNameInput) {
-    playerNameInput.addEventListener("input", () => {
-      const raw = playerNameInput.value || "";
-      const trimmed = raw.trim();
-
-      setNameWarningActive(false);
-
-      try {
-        if (trimmed.length === 0) {
-          localStorage.removeItem("mindgrindPlayerName");
-        } else {
-          localStorage.setItem("mindgrindPlayerName", trimmed);
-        }
-      } catch (e) {
-        console.warn("Name save skipped (localStorage unavailable):", e);
-      }
-    });
-  }
-
 
   // Load leaderboard on page load
   loadLeaderboard();
