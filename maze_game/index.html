@@ -1,131 +1,145 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>Mini Maze Game</title>
+<meta charset="UTF-8">
+<title>Maze Game</title>
 
 <style>
   body {
-    background: #222;
+    background: #f0f0f0;
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    padding-top: 30px;
+    font-family: Arial, sans-serif;
   }
 
-  canvas {
-    background: #ffffff;
+  #game {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    background: white;
     border: 4px solid black;
+  }
+
+  /* Player */
+  #player {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: blue;
+    top: 30px;
+    left: 30px;
+  }
+
+  /* Start label */
+  #start {
+    position: absolute;
+    color: green;
+    font-size: 20px;
+    font-weight: bold;
+    top: 0px;
+    left: 10px;
+  }
+
+  /* Finish label */
+  #finish {
+    position: absolute;
+    color: red;
+    font-size: 22px;
+    font-weight: bold;
+    bottom: 0px;
+    right: 10px;
+  }
+
+  /* Maze walls */
+  .wall {
+    position: absolute;
+    background: black;
   }
 </style>
 </head>
 
 <body>
 
-<canvas id="maze" width="500" height="500"></canvas>
+<div id="game">
+
+  <div id="start">START</div>
+  <div id="finish">FINISH</div>
+
+  <!-- Player -->
+  <div id="player"></div>
+
+  <!-- Maze walls (harder layout) -->
+  <div class="wall" style="top: 70px; left: 0; width: 500px; height: 10px;"></div>
+  <div class="wall" style="top: 150px; left: 100px; width: 500px; height: 10px;"></div>
+  <div class="wall" style="top: 230px; left: 0; width: 500px; height: 10px;"></div>
+
+  <div class="wall" style="top: 70px; left: 480px; width: 10px; height: 160px;"></div>
+  <div class="wall" style="top: 230px; left: 480px; width: 10px; height: 160px;"></div>
+
+  <div class="wall" style="top: 390px; left: 0; width: 500px; height: 10px;"></div>
+  <div class="wall" style="top: 470px; left: 100px; width: 500px; height: 10px;"></div>
+  <div class="wall" style="top: 540px; left: 0; width: 500px; height: 10px;"></div>
+
+  <div class="wall" style="top: 390px; left: 480px; width: 10px; height: 160px;"></div>
+
+</div>
 
 <script>
-// ----- Canvas Setup -----
-const canvas = document.getElementById("maze");
-const ctx = canvas.getContext("2d");
+const player = document.getElementById("player");
+const walls = document.querySelectorAll(".wall");
+const finish = document.getElementById("finish");
+const game = document.getElementById("game");
 
-// Player square
-let player = {
-  x: 40,
-  y: 450,
-  size: 20,
-  speed: 3
-};
+let x = 30;
+let y = 30;
+const speed = 5;
 
-// Maze walls (x, y, width, height)
-const walls = [
-  {x: 0, y: 400, w: 350, h: 20},
-  {x: 350, y: 200, w: 20, h: 220},
-  {x: 150, y: 100, w: 220, h: 20},
-  {x: 150, y: 100, w: 20, h: 320},
-  {x: 0, y: 0, w: 150, h: 20},
-  {x: 130, y: 0, w: 20, h: 100}
-];
+/* Move player */
+document.addEventListener("keydown", (e) => {
+  let oldX = x;
+  let oldY = y;
 
-// Start line
-const startLine = { x: 0, y: 470, w: 200, h: 20 };
+  if (e.key === "ArrowUp") y -= speed;
+  if (e.key === "ArrowDown") y += speed;
+  if (e.key === "ArrowLeft") x -= speed;
+  if (e.key === "ArrowRight") x += speed;
 
-// Finish line
-const finishLine = { x: 400, y: 0, w: 100, h: 20 };
+  player.style.left = x + "px";
+  player.style.top = y + "px";
 
-// ----- Drawing the Maze -----
-function drawMaze() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw walls
-  ctx.fillStyle = "black";
-  walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
-
-  // Draw Start Line
-  ctx.fillStyle = "green";
-  ctx.fillRect(startLine.x, startLine.y, startLine.w, startLine.h);
-  ctx.font = "20px Arial";
-  ctx.fillText("START", startLine.x + 10, startLine.y - 5);
-
-  // Draw Finish Line
-  ctx.fillStyle = "red";
-  ctx.fillRect(finishLine.x, finishLine.y, finishLine.w, finishLine.h);
-  ctx.fillText("FINISH", finishLine.x + 10, finishLine.y + 35);
-
-  // Draw Player
-  ctx.fillStyle = "blue";
-  ctx.fillRect(player.x, player.y, player.size, player.size);
-}
-
-// ----- Collision Check -----
-function rectCollision(a, b) {
-  return (
-    a.x < b.x + b.w &&
-    a.x + a.size > b.x &&
-    a.y < b.y + b.h &&
-    a.y + a.size > b.y
-  );
-}
-
-// ----- Movement -----
-let keys = {};
-
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-function movePlayer() {
-  let oldX = player.x;
-  let oldY = player.y;
-
-  if (keys["ArrowUp"]) player.y -= player.speed;
-  if (keys["ArrowDown"]) player.y += player.speed;
-  if (keys["ArrowLeft"]) player.x -= player.speed;
-  if (keys["ArrowRight"]) player.x += player.speed;
-
-  // Collision check with walls
+  // Collision with walls
   for (let w of walls) {
-    if (rectCollision(player, w)) {
-      player.x = oldX;
-      player.y = oldY;
-      break;
+    if (isColliding(player, w)) {
+      x = 30;
+      y = 30;
+      player.style.left = x + "px";
+      player.style.top = y + "px";
+      alert("You hit a wall! Back to START.");
     }
   }
 
-  // Check Finish Line
-  if (rectCollision(player, finishLine)) {
-    setTimeout(() => {
-      alert("🎉 YOU WIN! 🎉");
-    }, 50);
+  // Reached FINISH area
+  if (isColliding(player, finish)) {
+    alert("🎉 You Win! You made it to the FINISH!");
+    x = 30;
+    y = 30;
+    player.style.left = x + "px";
+    player.style.top = y + "px";
   }
-}
+});
 
-// ----- Game Loop -----
-function gameLoop() {
-  movePlayer();
-  drawMaze();
-  requestAnimationFrame(gameLoop);
+/* Collision check */
+function isColliding(a, b) {
+  let aRect = a.getBoundingClientRect();
+  let bRect = b.getBoundingClientRect();
+  return !(
+    aRect.bottom < bRect.top ||
+    aRect.top > bRect.bottom ||
+    aRect.right < bRect.left ||
+    aRect.left > bRect.right
+  );
 }
-
-gameLoop();
 </script>
 
 </body>
