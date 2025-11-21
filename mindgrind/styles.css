@@ -1036,7 +1036,7 @@ button:disabled {
 }
 
 .howto-header h2 {
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin: 0 0 8px 0;
   color: #e5e7eb;
 }
@@ -1072,7 +1072,7 @@ button:disabled {
 
 .howto-section h3 {
   margin: 8px 0 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #e5e7eb;
 }
 
