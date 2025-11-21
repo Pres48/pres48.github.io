@@ -256,11 +256,12 @@
 <!-- HOW TO PLAY MODAL -->
 <div class="howto-backdrop" id="howToPlayBackdrop" hidden>
   <div class="howto-modal" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
-    <header class="howto-header">
-      <h2 id="howToPlayTitle">How to Play</h2>
+
+    <header class="howto-header howto-modal-header">
+      <h2 id="howToPlayTitle" class="howto-modal-title">How to Play</h2>
       <button
         type="button"
-        class="info-icon"
+        class="howto-modal-close"
         id="closeHowToPlay"
         aria-label="Close how to play"
       >
@@ -274,7 +275,7 @@
         <h3>Quick Start</h3>
         <ul>
           <li>Each level gives you a <strong>fixed number of turns</strong>.</li>
-          <li>On every turn, you must click <strong>exactly one tile</strong> before the time bar empties.</li>
+          <li>On every turn, click <strong>exactly one tile</strong> before the time bar empties.</li>
           <li>Your turn score is usually <strong>tile value × your current multiplier</strong>.</li>
           <li><strong>Misses</strong> (no click in time) give <strong>0 points</strong> and can break your chain.</li>
           <li>To advance, your <strong>score gain this level</strong> must meet the level’s target.</li>
@@ -284,7 +285,7 @@
       <!-- Tiles -->
       <section class="howto-section">
         <h3>Tile Types</h3>
-        <ul class="bullet-list">
+        <ul>
           <li>
             <strong>Blue – Number</strong><br />
             Core points. The value shown on the tile, multiplied by your current multiplier.
@@ -313,10 +314,10 @@
 
       <!-- Levels & goals -->
       <section class="howto-section">
-        <h3>Levels & Goals</h3>
+        <h3>Levels &amp; Goals</h3>
         <ul>
           <li>Each level has a <strong>score target</strong> for that level only.</li>
-          <li>Your total <strong>Level Score</strong> is the sum of all turns in that level.</li>
+          <li>Your <strong>Level Score</strong> is the sum of all turns in that level.</li>
           <li>If your Level Score meets or beats the target, you <strong>advance</strong> to the next level.</li>
           <li>As levels go up, you get:
             <ul>
@@ -343,6 +344,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- LEADERBOARD NAME DIALOG -->
 <div id="nameDialogOverlay" class="overlay hidden">
