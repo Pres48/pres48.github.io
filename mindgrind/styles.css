@@ -1140,6 +1140,7 @@ button:disabled {
 .main-cta-danger:hover:enabled {
   transform: translateY(-1px);
   box-shadow: 0 0 14px rgba(248, 113, 113, 0.65);
+  background: #bb2f2f;
 }
 
 /* Disabled state just dims */
