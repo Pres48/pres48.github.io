@@ -140,7 +140,7 @@ body {
   font-size: 0.66rem;
   color: var(--text-soft);
   opacity: 0.75;
-  margin-left: 2px;
+  /*margin-left: 2px;*/
   line-height: 1.25;
 }
 
