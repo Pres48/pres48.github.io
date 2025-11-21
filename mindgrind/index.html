@@ -27,31 +27,16 @@
         <img class="logo-img" src="MindGrind_logo.png" alt="Mind Grind logo">
         <span class="brand-title">Mind Grind:</span>
       </div>
-
-      <div class="player-info">
-        <label class="player-info-label">
-          Name:
-          <input id="playerNameInput" type="text" placeholder="Your name" />
-        </label>
-      
-        <div class="player-info-helper" id="playerNameHelper">
-          This name will appear on the public leaderboard.
-        </div>
-      </div>
-
+    
       <div class="top-bar-actions">
-      <!-- Other controls (sound, menu, etc.) -->
-  
-      <!-- NEW: How to Play / Help icon -->
-      <button
-            type="button"
-            class="info-icon"
-            id="openHowToPlay"
-            aria-label="How to play"
-      >?</button>
-        
-    </div>
-      
+        <!-- Other controls (sound, menu, etc.) -->
+        <button
+          type="button"
+          class="info-icon"
+          id="openHowToPlay"
+          aria-label="How to play"
+        >?</button>
+      </div>
     </header>
 
     <main class="game-layout">
@@ -359,6 +344,25 @@
   </div>
 </div>
 
+<!-- LEADERBOARD NAME DIALOG -->
+<div id="nameDialogOverlay" class="overlay hidden">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="nameDialogTitle">
+    <h2 id="nameDialogTitle">New Leaderboard Score!</h2>
+    <p>Enter the name you want to show on the public leaderboard:</p>
+
+    <input
+      id="nameDialogInput"
+      type="text"
+      maxlength="16"
+      placeholder="Your name"
+    />
+
+    <div class="dialog-buttons">
+      <button id="nameDialogCancel" class="mg-btn mg-secondary">Skip</button>
+      <button id="nameDialogSave" class="mg-btn mg-primary">Save</button>
+    </div>
+  </div>
+</div>
   
 
 </body>
