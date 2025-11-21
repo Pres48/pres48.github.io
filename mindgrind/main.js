@@ -1432,16 +1432,15 @@ function updateUIFromState() {
       turns,
       timePerTurnMs
     );
-  
-    // Time Bonus (speed bonus for current level)
-    const bonusText = bonus === 0 
-      ? "0" 
-      : bonus > 0 
-        ? `+${bonus.toLocaleString()}` 
+
+    const bonusText = bonus === 0
+      ? "0"
+      : bonus > 0
+        ? `+${bonus.toLocaleString()}`
         : `${bonus}`;
-    
+
     speedBonusDisplay.textContent = bonusText;
-    
+
     if (bonus > 0) {
       speedBonusDisplay.style.color = "#22c55e";
     } else if (bonus < 0) {
@@ -1449,11 +1448,11 @@ function updateUIFromState() {
     } else {
       speedBonusDisplay.style.color = "#9ca3af";
     }
+  } // ✅ this was missing
 
-
-  // Last Move display (you already had this styling logic)
+  // Last Move display
   const delta = gameState.lastTileDelta ?? 0;
-  let text = delta === 0 ? "0" : delta > 0 ? `+${delta}` : `${delta}`;
+  const text = delta === 0 ? "0" : delta > 0 ? `+${delta}` : `${delta}`;
   lastMoveDisplay.textContent = text;
 
   if (delta > 0) {
@@ -1464,7 +1463,6 @@ function updateUIFromState() {
     lastMoveDisplay.style.color = "#9ca3af";
   }
 }
-
 
 function updateTurnDisplay() {
   if (!gameState) {
