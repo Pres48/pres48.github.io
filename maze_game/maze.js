@@ -3,7 +3,7 @@ const canvas = document.getElementById("mazeCanvas");
 const ctx = canvas.getContext("2d");
 
 const size = 600;
-const cell = 40;  // MAZE CELL SIZE
+const cell = 50;  // MAZE CELL SIZE
 const rows = size / cell;
 const cols = size / cell;
 
@@ -11,7 +11,7 @@ const cols = size / cell;
 let ball = {
     x: 0,
     y: 0,
-    r: 10,
+    r: 5,
     dx: 0,
     dy: 0,
     speed: 1
