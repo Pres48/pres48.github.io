@@ -7,139 +7,146 @@
 <style>
   body {
     background: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    padding-top: 30px;
     font-family: Arial, sans-serif;
+    text-align: center;
   }
 
-  #game {
-    position: relative;
-    width: 600px;
-    height: 600px;
+  canvas {
     background: white;
     border: 4px solid black;
+    margin-top: 20px;
   }
 
-  /* Player */
-  #player {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: blue;
-    top: 30px;
-    left: 30px;
-  }
-
-  /* Start label */
-  #start {
-    position: absolute;
-    color: green;
-    font-size: 20px;
-    font-weight: bold;
-    top: 0px;
-    left: 10px;
-  }
-
-  /* Finish label */
-  #finish {
-    position: absolute;
-    color: red;
-    font-size: 22px;
-    font-weight: bold;
-    bottom: 0px;
-    right: 10px;
-  }
-
-  /* Maze walls */
-  .wall {
-    position: absolute;
-    background: black;
+  h1 {
+    margin-top: 10px;
   }
 </style>
 </head>
 
 <body>
 
-<div id="game">
+<h1>Maze Game</h1>
 
-  <div id="start">START</div>
-  <div id="finish">FINISH</div>
-
-  <!-- Player -->
-  <div id="player"></div>
-
-  <!-- Maze walls (harder layout) -->
-  <div class="wall" style="top: 70px; left: 0; width: 500px; height: 10px;"></div>
-  <div class="wall" style="top: 150px; left: 100px; width: 500px; height: 10px;"></div>
-  <div class="wall" style="top: 230px; left: 0; width: 500px; height: 10px;"></div>
-
-  <div class="wall" style="top: 70px; left: 480px; width: 10px; height: 160px;"></div>
-  <div class="wall" style="top: 230px; left: 480px; width: 10px; height: 160px;"></div>
-
-  <div class="wall" style="top: 390px; left: 0; width: 500px; height: 10px;"></div>
-  <div class="wall" style="top: 470px; left: 100px; width: 500px; height: 10px;"></div>
-  <div class="wall" style="top: 540px; left: 0; width: 500px; height: 10px;"></div>
-
-  <div class="wall" style="top: 390px; left: 480px; width: 10px; height: 160px;"></div>
-
-</div>
+<canvas id="mazeCanvas" width="600" height="600"></canvas>
 
 <script>
-const player = document.getElementById("player");
-const walls = document.querySelectorAll(".wall");
-const finish = document.getElementById("finish");
-const game = document.getElementById("game");
+const canvas = document.getElementById("mazeCanvas");
+const ctx = canvas.getContext("2d");
 
-let x = 30;
-let y = 30;
-const speed = 5;
+const player = {
+  x: 40,
+  y: 560,
+  size: 15,
+  speed: 3
+};
 
-/* Move player */
-document.addEventListener("keydown", (e) => {
-  let oldX = x;
-  let oldY = y;
+// ------- MAZE WALLS -------
+// Format: [x, y, width, height]
+const walls = [
 
-  if (e.key === "ArrowUp") y -= speed;
-  if (e.key === "ArrowDown") y += speed;
-  if (e.key === "ArrowLeft") x -= speed;
-  if (e.key === "ArrowRight") x += speed;
+  // OUTER BORDER (IMPOSSIBLE TO LEAVE)
+  [0, 0, 600, 10],
+  [0, 0, 10, 600],
+  [0, 590, 600, 10],
+  [590, 0, 10, 600],
 
-  player.style.left = x + "px";
-  player.style.top = y + "px";
+  // INNER MAZE (TRICKY BUT SOLVABLE)
+  [50, 100, 500, 10],
+  [50, 100, 10, 400],
+  [100, 150, 450, 10],
+  [100, 150, 10, 350],
+  [150, 200, 400, 10],
+  [150, 200, 10, 300],
+  [200, 250, 350, 10],
+  [200, 250, 10, 250],
 
-  // Collision with walls
+  // GAPS & TRICKY PATHWAYS
+  [250, 300, 300, 10],
+  [250, 300, 10, 200],
+  [300, 350, 250, 10],
+  [300, 350, 10, 150],
+
+  // Upper tricky section
+  [350, 100, 10, 250],
+  [350, 340, 200, 10],
+  [540, 100, 10, 250],
+
+  // Final path area
+  [420, 400, 10, 150],
+  [350, 400, 80, 10],
+  [350, 540, 80, 10]
+
+];
+
+// START & FINISH LINES
+const startLine = { x: 20, y: 540, width: 80, height: 20 };
+const finishLine = { x: 480, y: 30, width: 100, height: 20 };
+
+function drawMaze() {
+  ctx.clearRect(0, 0, 600, 600);
+
+  // START
+  ctx.fillStyle = "green";
+  ctx.fillRect(startLine.x, startLine.y, startLine.width, startLine.height);
+  ctx.fillStyle = "white";
+  ctx.font = "16px Arial";
+  ctx.fillText("START", 35, 555);
+
+  // FINISH
+  ctx.fillStyle = "red";
+  ctx.fillRect(finishLine.x, finishLine.y, finishLine.width, finishLine.height);
+  ctx.fillStyle = "white";
+  ctx.fillText("FINISH", 505, 45);
+
+  // WALLS
+  ctx.fillStyle = "black";
+  for (let w of walls) ctx.fillRect(w[0], w[1], w[2], w[3]);
+
+  // PLAYER
+  ctx.fillStyle = "blue";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+}
+
+function isColliding(nx, ny) {
   for (let w of walls) {
-    if (isColliding(player, w)) {
-      x = 30;
-      y = 30;
-      player.style.left = x + "px";
-      player.style.top = y + "px";
-      alert("You hit a wall! Back to START.");
+    if (nx < w[0] + w[2] &&
+        nx + player.size > w[0] &&
+        ny < w[1] + w[3] &&
+        ny + player.size > w[1]) {
+      return true;
     }
   }
+  return false;
+}
 
-  // Reached FINISH area
-  if (isColliding(player, finish)) {
-    alert("🎉 You Win! You made it to the FINISH!");
-    x = 30;
-    y = 30;
-    player.style.left = x + "px";
-    player.style.top = y + "px";
+document.addEventListener("keydown", (e) => {
+  let nx = player.x;
+  let ny = player.y;
+
+  if (e.key === "ArrowUp") ny -= player.speed;
+  if (e.key === "ArrowDown") ny += player.speed;
+  if (e.key === "ArrowLeft") nx -= player.speed;
+  if (e.key === "ArrowRight") nx += player.speed;
+
+  if (!isColliding(nx, ny)) {
+    player.x = nx;
+    player.y = ny;
   }
+
+  // WIN DETECTION
+  if (player.x > finishLine.x &&
+      player.x < finishLine.x + finishLine.width &&
+      player.y > finishLine.y &&
+      player.y < finishLine.y + finishLine.height) {
+    alert("You WIN!");
+    player.x = 40;
+    player.y = 560;
+  }
+
+  drawMaze();
 });
 
-/* Collision check */
-function isColliding(a, b) {
-  let aRect = a.getBoundingClientRect();
-  let bRect = b.getBoundingClientRect();
-  return !(
-    aRect.bottom < bRect.top ||
-    aRect.top > bRect.bottom ||
-    aRect.right < bRect.left ||
-    aRect.left > bRect.right
-  );
-}
+drawMaze();
 </script>
 
 </body>
