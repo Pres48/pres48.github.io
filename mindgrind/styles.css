@@ -1070,6 +1070,29 @@ button:disabled {
   font-weight: 700;
 }
 
+.mg-btn-endgame {
+  background: #d64040;             /* red base */
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mg-btn-endgame:hover {
+  background: #bb2f2f;
+}
+
+#endButton:disabled,
+.mg-btn-endgame:disabled {
+  background: #333 !important;
+  color: #777 !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+
 
 .howto-backdrop {
   position: fixed;
