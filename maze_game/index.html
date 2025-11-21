@@ -3,150 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <title>Maze Game</title>
-
 <style>
   body {
-    background: #f0f0f0;
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-
-  canvas {
-    background: white;
-    border: 4px solid black;
+    background: #e8e8e8;
+    display: flex;
+    justify-content: center;
     margin-top: 20px;
   }
 
-  h1 {
-    margin-top: 10px;
+  #maze {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background: white;
+    border: 4px solid black;
+  }
+
+  .wall {
+    position: absolute;
+    background: black;
+  }
+
+  #player {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: red;
+    top: 20px;
+    left: 20px;
+  }
+
+  #start {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: green;
+  }
+
+  #finish {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: blue;
   }
 </style>
 </head>
 
 <body>
 
-<h1>Maze Game</h1>
+<div id="maze">
 
-<canvas id="mazeCanvas" width="600" height="600"></canvas>
+  <div id="start">START</div>
+  <div id="finish">FINISH</div>
+
+  <div id="player"></div>
+
+  <!-- OUTER BORDER (keeps player inside) -->
+  <div class="wall" style="top:0; left:0; width:500px; height:10px;"></div>
+  <div class="wall" style="bottom:0; left:0; width:500px; height:10px;"></div>
+  <div class="wall" style="top:0; left:0; width:10px; height:500px;"></div>
+  <div class="wall" style="top:0; right:0; width:10px; height:500px;"></div>
+
+  <!-- INTERNAL MAZE WALLS (one real path with two turns) -->
+  
+  <!-- First vertical wall -->
+  <div class="wall" style="top:50px; left:120px; width:10px; height:350px;"></div>
+
+  <!-- Dead-end trap -->
+  <div class="wall" style="top:100px; left:120px; width:150px; height:10px;"></div>
+
+  <!-- Horizontal wall forcing turn #1 -->
+  <div class="wall" style="top:300px; left:120px; width:260px; height:10px;"></div>
+
+  <!-- Second vertical wall (forces turn #2) -->
+  <div class="wall" style="top:150px; left:380px; width:10px; height:300px;"></div>
+
+  <!-- Dead-end horizontal trick -->
+  <div class="wall" style="top:200px; left:250px; width:140px; height:10px;"></div>
+
+</div>
 
 <script>
-const canvas = document.getElementById("mazeCanvas");
-const ctx = canvas.getContext("2d");
+const player = document.getElementById("player");
+const maze = document.getElementById("maze");
+const walls = document.getElementsByClassName("wall");
 
-const player = {
-  x: 40,
-  y: 560,
-  size: 15,
-  speed: 3
-};
-
-// ------- MAZE WALLS -------
-// Format: [x, y, width, height]
-const walls = [
-
-  // OUTER BORDER (IMPOSSIBLE TO LEAVE)
-  [0, 0, 600, 10],
-  [0, 0, 10, 600],
-  [0, 590, 600, 10],
-  [590, 0, 10, 600],
-
-  // INNER MAZE (TRICKY BUT SOLVABLE)
-  [50, 100, 500, 10],
-  [50, 100, 10, 400],
-  [100, 150, 450, 10],
-  [100, 150, 10, 350],
-  [150, 200, 400, 10],
-  [150, 200, 10, 300],
-  [200, 250, 350, 10],
-  [200, 250, 10, 250],
-
-  // GAPS & TRICKY PATHWAYS
-  [250, 300, 300, 10],
-  [250, 300, 10, 200],
-  [300, 350, 250, 10],
-  [300, 350, 10, 150],
-
-  // Upper tricky section
-  [350, 100, 10, 250],
-  [350, 340, 200, 10],
-  [540, 100, 10, 250],
-
-  // Final path area
-  [420, 400, 10, 150],
-  [350, 400, 80, 10],
-  [350, 540, 80, 10]
-
-];
-
-// START & FINISH LINES
-const startLine = { x: 20, y: 540, width: 80, height: 20 };
-const finishLine = { x: 480, y: 30, width: 100, height: 20 };
-
-function drawMaze() {
-  ctx.clearRect(0, 0, 600, 600);
-
-  // START
-  ctx.fillStyle = "green";
-  ctx.fillRect(startLine.x, startLine.y, startLine.width, startLine.height);
-  ctx.fillStyle = "white";
-  ctx.font = "16px Arial";
-  ctx.fillText("START", 35, 555);
-
-  // FINISH
-  ctx.fillStyle = "red";
-  ctx.fillRect(finishLine.x, finishLine.y, finishLine.width, finishLine.height);
-  ctx.fillStyle = "white";
-  ctx.fillText("FINISH", 505, 45);
-
-  // WALLS
-  ctx.fillStyle = "black";
-  for (let w of walls) ctx.fillRect(w[0], w[1], w[2], w[3]);
-
-  // PLAYER
-  ctx.fillStyle = "blue";
-  ctx.fillRect(player.x, player.y, player.size, player.size);
-}
-
-function isColliding(nx, ny) {
-  for (let w of walls) {
-    if (nx < w[0] + w[2] &&
-        nx + player.size > w[0] &&
-        ny < w[1] + w[3] &&
-        ny + player.size > w[1]) {
-      return true;
-    }
-  }
-  return false;
-}
+let x = 20;
+let y = 20;
+const speed = 3;
 
 document.addEventListener("keydown", (e) => {
-  let nx = player.x;
-  let ny = player.y;
+  let newX = x;
+  let newY = y;
 
-  if (e.key === "ArrowUp") ny -= player.speed;
-  if (e.key === "ArrowDown") ny += player.speed;
-  if (e.key === "ArrowLeft") nx -= player.speed;
-  if (e.key === "ArrowRight") nx += player.speed;
+  if (e.key === "ArrowUp") newY -= speed;
+  if (e.key === "ArrowDown") newY += speed;
+  if (e.key === "ArrowLeft") newX -= speed;
+  if (e.key === "ArrowRight") newX += speed;
 
-  if (!isColliding(nx, ny)) {
-    player.x = nx;
-    player.y = ny;
+  const playerRect = {
+    left: newX,
+    top: newY,
+    right: newX + 18,
+    bottom: newY + 18
+  };
+
+  let blocked = false;
+
+  for (let wall of walls) {
+    const rect = wall.getBoundingClientRect();
+    const mazeRect = maze.getBoundingClientRect();
+
+    const wallRect = {
+      left: rect.left - mazeRect.left,
+      top: rect.top - mazeRect.top,
+      right: rect.right - mazeRect.left,
+      bottom: rect.bottom - mazeRect.top
+    };
+
+    if (
+      playerRect.right > wallRect.left &&
+      playerRect.left < wallRect.right &&
+      playerRect.bottom > wallRect.top &&
+      playerRect.top < wallRect.bottom
+    ) {
+      blocked = true;
+      break;
+    }
   }
 
-  // WIN DETECTION
-  if (player.x > finishLine.x &&
-      player.x < finishLine.x + finishLine.width &&
-      player.y > finishLine.y &&
-      player.y < finishLine.y + finishLine.height) {
-    alert("You WIN!");
-    player.x = 40;
-    player.y = 560;
+  if (!blocked) {
+    x = newX;
+    y = newY;
+    player.style.left = x + "px";
+    player.style.top = y + "px";
   }
 
-  drawMaze();
+  if (x > 430 && y > 430) {
+    alert("🎉 You reached the FINISH line!");
+  }
 });
-
-drawMaze();
 </script>
 
 </body>
