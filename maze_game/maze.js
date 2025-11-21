@@ -181,14 +181,30 @@ function gameLoop() {
 gameLoop();
 
 // ----------------- CONTROLS -----------------
-document.addEventListener("keydown", (e) => {
-    if (!gameRunning) return;
+// Change this number to control speed (1 = slow, 3 = medium, 5 = fast)
+let speed = 2;
 
-    if (e.key === "ArrowUp") { ball.dx = 0; ball.dy = -ball.speed; }
-    if (e.key === "ArrowDown") { ball.dx = 0; ball.dy = ball.speed; }
-    if (e.key === "ArrowLeft") { ball.dx = -ball.speed; ball.dy = 0; }
-    if (e.key === "ArrowRight") { ball.dx = ball.speed; ball.dy = 0; }
+document.addEventListener("keydown", (e) => {
+  if (!gameRunning) return;
+
+  if (e.key === "ArrowUp") {
+    ball.dx = 0;
+    ball.dy = -speed;
+  }
+  if (e.key === "ArrowDown") {
+    ball.dx = 0;
+    ball.dy = speed;
+  }
+  if (e.key === "ArrowLeft") {
+    ball.dx = -speed;
+    ball.dy = 0;
+  }
+  if (e.key === "ArrowRight") {
+    ball.dx = speed;
+    ball.dy = 0;
+  }
 });
+
 
 // START GAME BUTTON
 document.getElementById("startBtn").onclick = () => {
