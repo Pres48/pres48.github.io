@@ -1092,17 +1092,63 @@ button:disabled {
   opacity: 0.5;
 }
 
-.mg-btn-startgame { 
-  display: flex;                 /* override global button inline-flex */
+/* Main HUD buttons (Start / Play Level / End) */
+.main-cta {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  padding: 8px 18px;
+  border-radius: 999px;
   border: none;
-  font-size: .85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  text-align: center;
-  
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
 }
+
+/* Default “Start Game / Start New Game” look */
+.main-cta-primary {
+  background: linear-gradient(180deg, #7c83ff 0%, #4c20db 100%);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(124, 131, 255, 0.45);
+}
+
+.main-cta-primary:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(124, 131, 255, 0.6);
+}
+
+/* “Play Level X” look (green, like your screenshot) */
+.main-cta-next {
+  background: linear-gradient(180deg, #7ce843 0%, #4ac02d 100%);
+  color: #02140b;
+  box-shadow: 0 0 14px rgba(124, 232, 67, 0.45);
+}
+
+.main-cta-next:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(124, 232, 67, 0.6);
+}
+
+/* End Game – red/danger */
+.main-cta-danger {
+  background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(248, 113, 113, 0.45);
+}
+
+.main-cta-danger:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.65);
+}
+
+/* Disabled state just dims */
+.main-cta:disabled {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+}
+
 
 
 .howto-backdrop {
