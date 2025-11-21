@@ -330,6 +330,10 @@ body {
   position: relative; /* anchors fireworks overlay if needed */
 }
 
+.tile.idle-tile {
+  cursor: default;
+}
+
 .idle-tile.type-rare,
 .idle-tile.type-epic,
 .idle-tile.type-legend,
@@ -338,9 +342,10 @@ body {
 .idle-tile.type-exotic,
 .idle-tile.type-cosmic {
   transform: scale(1.07);
-  outline: 2px solid rgba(255,255,255,0.1);
-  box-shadow: 0 0 10px rgba(255,255,255,0.15);
+  outline: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
+
 
 
 /* === FIREWORKS OVERLAY === */
