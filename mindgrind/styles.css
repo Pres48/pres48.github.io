@@ -589,9 +589,7 @@ body {
 }
 
 /* Start Next Level (success-green)  background: linear-gradient(180deg, #7ce843 0%, #4cc02b 100%); color: #02140b; */
-
 /* Continue Run (retry-purple)  background: linear-gradient(135deg, #6d28d9, #8b5cf6); */
-
 /* Start New Game (fresh-blue)  background: linear-gradient(135deg, #2563eb, #3b82f6); */
 
 
@@ -1038,22 +1036,10 @@ button:disabled {
 }
 
 .howto-header h2 {
-  font-size: 1.3rem;
-  margin: 0;
-}
-
-.icon-button.howto-button2,
-.close-button2 {
-  border: none;
-  background: #1e293b;
+  font-size: 0.9rem;
+  margin: 0 0 8px 0;
   color: #e5e7eb;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+}
 
 .icon-button.howto-button,
 .close-button {
@@ -1091,7 +1077,9 @@ button:disabled {
 }
 
 .howto-section ul {
-  margin: 0 0 4px 1.1rem;
+  /*margin: 0 0 4px 1.1rem;*/
+  font-size: 0.8rem;
+  color: var(--text-soft);
   padding: 0;
 }
 
@@ -1099,7 +1087,8 @@ button:disabled {
   margin-bottom: 4px;
 }
 
-/* Mobile tweak: modal closer to full-screen */
+
+/* Mobile tweak: modal closer to full-screen 
 @media (max-width: 600px) {
   .howto-modal {
     width: 96%;
@@ -1108,7 +1097,7 @@ button:disabled {
     border-radius: 10px;
   }
 }
-
+*/
 
 /* Responsive */
 
