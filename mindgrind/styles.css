@@ -858,6 +858,10 @@ button.secondary:disabled {
   justify-content: center;
 }
 
+.howto-backdrop[hidden] {
+  display: none;
+}
+
 .howto-modal {
   width: 480px;
   max-width: calc(100vw - 24px);
