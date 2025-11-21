@@ -973,26 +973,26 @@ function resetTimer() {
 function setStartButtonVisual(mode) {
   if (!startButton) return;
 
-  startButton.classList.add("mg-btn");
-  startButton.classList.remove("mg-btn-next", "mg-btn-newgame", "mg-btn-endgame");
+  startButton.classList.add("main-cta");
+  startButton.classList.remove("main-cta-primary", "main-cta-next");
 
   if (mode === "next") {
-    startButton.classList.add("mg-btn-next");
-  } else if (mode === "new") {
-    startButton.classList.add("mg-btn-newgame");
-  } else if (mode === "end") {
-    startButton.classList.add("mg-btn-endgame");
+    // Play Level X → green style
+    startButton.classList.add("main-cta-next");
+  } else {
+    // Start Game / Start New Game → purple style
+    startButton.classList.add("main-cta-primary");
   }
 }
 
 function setEndButtonVisual(enabled) {
   if (!endButton) return;
 
-  endButton.classList.add("mg-btn");
-  endButton.classList.remove("mg-btn-endgame");
-
+  endButton.classList.add("main-cta");
   if (enabled) {
-    endButton.classList.add("mg-btn-endgame");
+    endButton.classList.add("main-cta-danger");
+  } else {
+    endButton.classList.remove("main-cta-danger");
   }
 }
 
@@ -1648,7 +1648,7 @@ async function autoSaveScoreIfEligible() {
   // Must hit minimum score to even be considered
   if (finalScore < MIN_SUBMIT_SCORE) {
     saveScoreButton.disabled = true;
-    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE.toLocaleString()} points to appear on the global leaderboard.`;
+    saveStatus.textContent = `Reach at least ${MIN_SUBMIT_SCORE.toLocaleString()} points to save to the global leaderboard.`;
     saveStatus.style.color = "#9ca3af";
     return;
   }
@@ -2050,6 +2050,7 @@ function init() {
   bestLevelDisplay.textContent = "–";
   restartButton.disabled = true;
   endButton.disabled = true;
+  
   setEndButtonVisual(false);   // grey/disabled look
   setStartButtonVisual("new"); // normal Start Game style
 
