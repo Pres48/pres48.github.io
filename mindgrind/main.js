@@ -1390,7 +1390,7 @@ function updateUIFromState() {
     }
   }
 
-  // Time Bonus (potential speed bonus for this level so far)
+  // Time Bonus (speed bonus for this level so far)
   if (speedBonusDisplay) {
     const currentTimeBank = timeBankMs || 0;
     const bonus = computeSpeedBonus(
@@ -1399,8 +1399,24 @@ function updateUIFromState() {
       turns,
       timePerTurnMs
     );
-    speedBonusDisplay.textContent = `+${bonus.toLocaleString()} pts`;
-  }
+  
+    // Time Bonus (speed bonus for current level)
+    const bonusText = bonus === 0 
+      ? "0" 
+      : bonus > 0 
+        ? `+${bonus.toLocaleString()}` 
+        : `${bonus}`;
+    
+    speedBonusDisplay.textContent = bonusText;
+    
+    if (bonus > 0) {
+      speedBonusDisplay.style.color = "#22c55e";
+    } else if (bonus < 0) {
+      speedBonusDisplay.style.color = "#f97373";
+    } else {
+      speedBonusDisplay.style.color = "#9ca3af";
+    }
+
 
   // Last Move display (you already had this styling logic)
   const delta = gameState.lastTileDelta ?? 0;
