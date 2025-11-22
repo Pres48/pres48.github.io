@@ -2198,7 +2198,7 @@ async function refreshAuthUI() {
   } else {
     currentProfile = null;
     if (userStatusText) {
-      userStatusText.textContent = "Playing as Guest";
+      userStatusText.textContent = "Guest";
     }
     if (userAuthButton) {
       userAuthButton.textContent = "Sign In";
