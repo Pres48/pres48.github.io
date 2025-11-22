@@ -320,11 +320,15 @@ function updateContinueButtonVisibility() {
   if (!continueSavedButton) return;
 
   if (savedRun && !gameState) {
+    const lvl = savedRun.level ?? 1;
+
+    continueSavedButton.textContent = `Resume Level ${lvl}`;
     continueSavedButton.classList.remove("hidden");
   } else {
     continueSavedButton.classList.add("hidden");
   }
 }
+
 
 async function loadSavedRunForUI() {
   // Only matters if logged in.
