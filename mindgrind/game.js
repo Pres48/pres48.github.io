@@ -201,7 +201,7 @@ export function getLevelBehavior(level) {
 export function getDifficultyForLevel(level) {
   // New timing curve: more thinking room, smoother ramp
   const baseTimeMs = 6300;   // L1 ≈ 6.4s per turn
-  const minTimeMs  = 2200;   // Never go below ~2.4s per turn
+  const minTimeMs  = 1800;   // Never go below ~1.8s per turn
 
   // Each level shaves off XX ms, until minTimeMs
   const timeStep = 55; // was 70
@@ -210,8 +210,8 @@ export function getDifficultyForLevel(level) {
     baseTimeMs - (level - 1) * timeStep
   );
 
-  const gridSize = level >= 35 ? 7 : 6;
-  const turns = 8 + Math.min(4, Math.floor(level / 8)); // 8–12 turns (max)
+  const gridSize = level >= 40 ? 7 : 6;
+  const turns = 8 + Math.min(4, Math.floor(level / 10)); // 8–12 turns (max)
 
   // Tile distribution weights – same as before
   // const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));
@@ -383,11 +383,25 @@ export function resolveTileSelection(tile, state) {
     basePoints = value;
 
   } else if (type === TILE_TYPES.CHAIN) {
-    let step = 0.35;
-    if (state.level >= 10) step = 0.37;
-    if (state.level >= 20) step = 0.40;
-    if (state.level >= 40) step = 0.45;
-    if (state.level >= 60) step = 0.50;
+    // let step = 0.35;
+    // if (state.level >= 20) step = 0.37;
+    // if (state.level >= 50) step = 0.40;
+    // if (state.level >= 75) step = 0.45;
+    // if (state.level >= 100) step = 0.50;
+    
+    let step;
+    
+    if (state.level < 20) {
+      step = 0.35;                 // early: feels good
+    } else if (state.level < 40) {
+      step = 0.32;                 // mid-game: still attractive
+    } else if (state.level < 60) {
+      step = 0.29;                 // late-mid: less oppressive
+    } else if (state.level < 100) {
+      step = 0.26;                 // late: chains no longer dominate
+    } else {
+      step = 0.24;                 // ultra-late: controlled, fair
+    }
   
     const chainMultiplier = 1 + newState.chainCount * step;
     
@@ -432,7 +446,7 @@ export function resolveTileSelection(tile, state) {
   // Reset chain if not a chain tile
   if (type !== TILE_TYPES.CHAIN) {
     newState.chainCount = 0;
-    newState.chainMultiplierDisplay = 1;   // 👈 add this here
+    newState.chainMultiplierDisplay = 1;
   }
 
   return newState;
