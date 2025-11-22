@@ -616,6 +616,7 @@ function getRequiredGainForLevel(level) {
 
   required = Math.round(required);
 
+  // Still enforce fairness so we don’t ask for the impossible
   const cap = getTheoreticalMaxLevelGain(level);
   return Math.min(required, cap);
 }
@@ -630,8 +631,8 @@ function computeSpeedBonus(level, timeBankMs, turns, timePerTurnMs) {
   const fractionSaved = Math.min(1, timeBankMs / maxBankMs); // 0–1
   const target = getRequiredGainForLevel(level);
 
-  // Cap: at absolute best you can get 30% of the level target as speed bonus
-  const MAX_PCT = 0.30;
+  // Cap: at absolute best you can get 20% of the level target as speed bonus
+  const MAX_PCT = 0.20;
 
   const rawBonus = target * fractionSaved * MAX_PCT;
 
@@ -893,7 +894,7 @@ function computeMaxPossibleGain(grid, turns) {
     let chainCount = 0;
     let total = 0;
     for (let i = 0; i < turns; i++) {
-      const factor = 1 + chainCount * 0.35;
+      const factor = 1 + chainCount * 0.3;
       const base = Math.round(bestChain * factor);
       total += Math.round(base * mult);
       chainCount += 1;
@@ -915,7 +916,7 @@ function computeMaxPossibleGain(grid, turns) {
           total += Math.round(base * mult);
           mult = parseFloat((mult + bestBonus * 0.25).toFixed(2));
         } else {
-          const factor = 1 + chainCount * 0.35;
+          const factor = 1 + chainCount * 0.3;
           const base = Math.round(bestChain * factor);
           total += Math.round(base * mult);
           chainCount += 1;
@@ -1600,7 +1601,7 @@ function updateUIFromState() {
     } else {
       speedBonusDisplay.style.color = "#9ca3af";
     }
-  } // ✅ this was missing
+  }
 
   // Last Move display
   const delta = gameState.lastTileDelta ?? 0;
