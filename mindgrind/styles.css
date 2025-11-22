@@ -1559,7 +1559,7 @@ button:disabled {
 }
 
 .auth-close {
-  border: none;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   background: transparent;
   color: #9ca3af;
   cursor: pointer;
@@ -1567,7 +1567,13 @@ button:disabled {
 }
 
 .auth-close:hover {
-  color: #e5e7eb;
+  /*color: #e5e7eb;*/
+  background: radial-gradient(circle at top left, #2563eb, #020617);
+  border-color: rgba(129, 140, 248, 0.9);
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.7),
+    0 0 25px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
 }
 
 .auth-mode-toggle {
