@@ -1587,6 +1587,7 @@ button:disabled {
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.9);
   padding: 2px;
+  gap: 10px;
   margin-bottom: 14px;
 }
 
