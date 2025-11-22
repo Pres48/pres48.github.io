@@ -159,3 +159,68 @@ export async function login(email, password) {
 export async function logout() {
   return await supabase.auth.signOut();
 }
+
+/* -----------------------------------------------------
+   Saved runs (Step 4)
+   - Persist the last reached level + total score
+----------------------------------------------------- */
+
+export async function saveSavedRunForCurrentUser(level, score) {
+  const user = await getCurrentUser();
+  if (!user) return null;  // guests: do nothing
+
+  const payload = {
+    user_id: user.id,
+    level,
+    score,
+  };
+
+  const { data, error } = await supabase
+    .from("saved_runs")
+    .upsert(payload, { onConflict: "user_id" })
+    .select()
+    .single();
+
+  if (error) {
+    console.warn("saveSavedRunForCurrentUser error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function getSavedRunForCurrentUser() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("saved_runs")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    // No row is not a big deal
+    if (error.code !== "PGRST116") {
+      console.warn("getSavedRunForCurrentUser error:", error);
+    }
+    return null;
+  }
+
+  return data;
+}
+
+export async function clearSavedRunForCurrentUser() {
+  const user = await getCurrentUser();
+  if (!user) return;
+
+  const { error } = await supabase
+    .from("saved_runs")
+    .delete()
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.warn("clearSavedRunForCurrentUser error:", error);
+  }
+}
+
