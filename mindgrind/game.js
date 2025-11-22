@@ -13,7 +13,7 @@ const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
 const CHAIN_MIN = 6; 
-const CHAIN_MAX = 15;
+const CHAIN_MAX = 14;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
