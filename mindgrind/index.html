@@ -629,6 +629,61 @@
   </nav>
 </div>
 
+
+<!-- SETTINGS MODAL -->
+<div id="settingsOverlay" class="settings-overlay hidden">
+  <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <header class="settings-header">
+      <h2 id="settingsTitle">Settings</h2>
+      <button
+        type="button"
+        class="settings-close"
+        id="settingsCloseButton"
+        aria-label="Close settings"
+      >
+        ✕
+      </button>
+    </header>
+
+    <div class="settings-body">
+      <div class="settings-group">
+        <h3>Audio</h3>
+        <label class="settings-toggle">
+          <input type="checkbox" id="settingsSound" />
+          <span class="toggle-pill"></span>
+          <span class="toggle-label">Sound effects</span>
+        </label>
+      </div>
+
+      <div class="settings-group">
+        <h3>Visuals</h3>
+        <label class="settings-toggle">
+          <input type="checkbox" id="settingsAnimations" />
+          <span class="toggle-pill"></span>
+          <span class="toggle-label">Tile & UI animations</span>
+        </label>
+
+        <label class="settings-toggle">
+          <input type="checkbox" id="settingsFireworks" />
+          <span class="toggle-pill"></span>
+          <span class="toggle-label">Fireworks on level clear</span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="settings-footer">
+      <button type="button" class="settings-secondary" id="settingsCancelButton">
+        Cancel
+      </button>
+      <button type="button" class="settings-primary" id="settingsSaveButton">
+        Save
+      </button>
+    </footer>
+  </div>
+</div>
+
+
+  
   
 </body>
 </html>
