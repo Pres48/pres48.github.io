@@ -1595,24 +1595,25 @@ function renderGrid() {
 function onTileClick(tile) {
   if (!gameState || gameState.locked) return;
   if (selectedThisTurn) return;
-
-  // 🚫 If this tile has already been used in this level, ignore it
   if (tile.used) return;
 
   selectedThisTurn = true;
   tile.used = true;
+
+  // ❌ disable further clicks, but without dimming everything (after CSS fix)
   setTilesDisabled(true);
 
-  // 🔹 NEW: remove previous "selected" highlights
+  // 🔹 clear previous highlight
   const previouslySelected = gridContainer.querySelectorAll(".tile.selected");
   previouslySelected.forEach((el) => el.classList.remove("selected"));
 
   const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
 
   if (el) {
+    // this tile pops
     el.classList.add("selected");
 
-    // immediately mark/dim this tile
+    // this tile is the only one that gets visually dimmed as "used"
     el.classList.add("tile-used");
     el.disabled = true;
 
