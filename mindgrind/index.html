@@ -283,80 +283,178 @@
     </header>
 
     <div class="howto-body">
-      <!-- Quick Start -->
+
+      <!-- ========================= -->
+      <!--       QUICK START         -->
+      <!-- ========================= -->
       <section class="howto-section">
         <h3>Quick Start</h3>
         <ul>
           <li>Each level gives you a <strong>fixed number of turns</strong>.</li>
           <li>On every turn, click <strong>exactly one tile</strong> before the time bar empties.</li>
-          <li>Your turn score is usually <strong>tile value × your current multiplier</strong>.</li>
-          <li><strong>Misses</strong> (no click in time) give <strong>0 points</strong> and can break your chain.</li>
-          <li>To advance, your <strong>score gain this level</strong> must meet the level’s target.</li>
+          <li>Your points usually come from:<br><strong>Tile Value × Your Multiplier</strong>.</li>
+          <li>Your <strong>Level Score</strong> must meet the <strong>Level Goal</strong> to advance.</li>
+          <li>Missing a turn gives <strong>0 points</strong> and breaks your chain.</li>
         </ul>
       </section>
 
-      <!-- Tiles -->
+      <!-- ========================= -->
+      <!--      THE GAME LOOP        -->
+      <!-- ========================= -->
+      <section class="howto-section">
+        <h3>The Game Loop</h3>
+        <ul>
+          <li>Board appears → pick a tile quickly.</li>
+          <li>Your selection adds to this level’s score.</li>
+          <li>New board → repeat until turns run out.</li>
+          <li>If your Level Score meets the goal, you <strong>advance</strong>.</li>
+          <li>If not, your <strong>run ends</strong> (unless you spend a retry credit).</li>
+        </ul>
+      </section>
+
+      <!-- ========================= -->
+      <!--       TILE TYPES          -->
+      <!-- ========================= -->
       <section class="howto-section">
         <h3>Tile Types</h3>
         <ul>
           <li>
-            <strong>Blue – Number</strong><br />
-            Core points. The value shown on the tile, multiplied by your current multiplier.
+            <strong>🔵 Number (Blue)</strong><br>
+            Straight points: tile value × multiplier.
           </li>
+
           <li>
-            <strong>Yellow – Bonus</strong><br />
-            Smaller points, but <strong>raises your multiplier</strong> for future turns.
+            <strong>🟡 Bonus (Yellow)</strong><br>
+            Small points now, increases your <strong>multiplier</strong> for future turns.
           </li>
+
           <li>
-            <strong>Green – Chain</strong><br />
-            Worth more when you pick them on <strong>consecutive turns</strong>.
-            Hitting a non-chain or missing a turn breaks the chain.
+            <strong>🟢 Chain (Green)</strong><br>
+            More valuable when picked on <strong>consecutive turns</strong>.
+            Picking anything else (or missing) resets the chain.
           </li>
+
           <li>
-            <strong>Red – Risk</strong><br />
-            Can be <strong>big positive or negative</strong>.
-            Some risk tiles can also <strong>reduce your multiplier</strong> when they go bad.
+            <strong>🔴 Risk (Red)</strong><br>
+            Can be <strong>highly positive</strong> or <strong>negative</strong>.
+            Bad outcomes can also <strong>reduce your multiplier</strong>.
           </li>
+
           <li>
-            <strong>Prism / Special Frame – Rarity</strong><br />
-            These are the <strong>RARE / EPIC / LEGEND / MYTHIC / RELIC / EXOTIC / COSMIC</strong> tiles.
-            They can have <strong>huge values or special boosts</strong> and often swing the level.
+            <strong>🌈 Rarity (Prism Frame)</strong><br>
+            Rare and powerful. Includes:<br>
+            <em>Rare, Epic, Legend, Mythic, Relic, Exotic, Cosmic</em>.<br>
+            These can massively swing a level.
           </li>
         </ul>
       </section>
 
-      <!-- Levels & goals -->
+      <!-- ========================= -->
+      <!--     LEVELS & GOALS        -->
+      <!-- ========================= -->
       <section class="howto-section">
         <h3>Levels &amp; Goals</h3>
         <ul>
-          <li>Each level has a <strong>score target</strong> for that level only.</li>
-          <li>Your <strong>Level Score</strong> is the sum of all turns in that level.</li>
-          <li>If your Level Score meets or beats the target, you <strong>advance</strong> to the next level.</li>
-          <li>As levels go up, you get:
+          <li>Your <strong>Level Score</strong> resets each level — only this level’s points matter.</li>
+
+          <li>
+            Turns per level:
             <ul>
-              <li><strong>Less time per move</strong>, so you must think faster.</li>
-              <li><strong>More turns per level</strong>, with tougher targets.</li>
-              <li><strong>Spicier tile distributions</strong> (more risk, more rarity, stronger chains).</li>
+              <li>Levels 1–7 → 8 turns</li>
+              <li>Levels 8–15 → 9 turns</li>
+              <li>Levels 16–23 → 10 turns</li>
+              <li>Levels 24–29 → 11 turns</li>
+              <li>Level 30+ → 12 turns</li>
             </ul>
           </li>
-          <li>Missing turns no longer ends your run, but <strong>wasted turns make targets harder</strong>.</li>
+
+          <li>
+            Time per turn gets <strong>shorter</strong> as levels increase.  
+            Higher levels require faster decisions.
+          </li>
+
+          <li>
+            Level Goals rise over time — you must score more per level to advance.
+          </li>
+
+          <li>
+            Missing turns no longer ends the run, but <strong>wasted turns make goals harder</strong>.
+          </li>
         </ul>
       </section>
 
-      <!-- Tips -->
+      <!-- ========================= -->
+      <!--         SCORING           -->
+      <!-- ========================= -->
+      <section class="howto-section">
+        <h3>Scoring</h3>
+        <ul>
+          <li><strong>Base Score:</strong> Tile Value × Multiplier</li>
+
+          <li>
+            <strong>Chain Scoring:</strong><br>
+            Consecutive green tiles increase the <strong>Chain Multiplier</strong>.
+            Breaking the chain resets it.
+          </li>
+
+          <li>
+            <strong>Missed Turn:</strong><br>
+            0 points, chain broken, time bonus reduced.
+          </li>
+
+          <li>
+            <strong>Speed Bonus:</strong><br>
+            Finishing turns quickly banks time. Leftover time becomes bonus points at the end of the level (up to a capped percentage).
+          </li>
+        </ul>
+      </section>
+
+      <!-- ========================= -->
+      <!--       STRATEGY TIPS       -->
+      <!-- ========================= -->
       <section class="howto-section">
         <h3>Strategy Tips</h3>
         <ul>
-          <li>Early in a level, grab <strong>Bonus tiles</strong> to build your multiplier.</li>
-          <li>Look for <strong>Chains</strong> you can feed over multiple turns for big payoffs.</li>
-          <li>Use <strong>Risk tiles</strong> when you need a big swing or you’re safely ahead.</li>
-          <li><strong>Rarity tiles</strong> can be run-defining — but don’t time out staring at them.</li>
-          <li>Glance at <strong>Level Goal</strong>, <strong>Accuracy</strong>, and <strong>Chain</strong> stats to decide whether to play safe or aggressive.</li>
+          <li>Early turns: grab <strong>Bonus tiles</strong> to build multiplier.</li>
+          <li>Mid-level: look for <strong>Chain opportunities</strong> for big gains.</li>
+          <li>If behind the goal: consider <strong>Risk</strong> or <strong>Rarity</strong> tiles.</li>
+          <li>If ahead: play safe and avoid negative swings.</li>
+          <li>Watch <strong>Goal %</strong>, <strong>Remaining Points</strong>, and <strong>Chain</strong> to adjust your strategy.</li>
         </ul>
       </section>
+
+      <!-- ========================= -->
+      <!--     COMMON MISTAKES       -->
+      <!-- ========================= -->
+      <section class="howto-section">
+        <h3>Common Mistakes</h3>
+        <ul>
+          <li>Staring at the board too long → missed turns.</li>
+          <li>Ignoring Bonus tiles early.</li>
+          <li>Breaking chains by accident.</li>
+          <li>Taking every Risk tile without context.</li>
+          <li>Thinking total score matters per level (it doesn’t).</li>
+          <li>Underestimating the time bar in later levels.</li>
+        </ul>
+      </section>
+
+      <!-- ========================= -->
+      <!--     ADVANCED DETAILS      -->
+      <!-- ========================= -->
+      <section class="howto-section">
+        <h3>Advanced Details</h3>
+        <ul>
+          <li>Tile distribution shifts at higher levels — more risk, more rarity, stronger bonuses.</li>
+          <li>Chain multipliers scale slightly with level, rewarding consistent play.</li>
+          <li>Speed bonus is capped to prevent runaway scoring but remains strategically important.</li>
+          <li>Rarity tiers can dramatically swing runs — but don’t freeze your timer evaluating them.</li>
+        </ul>
+      </section>
+
     </div>
   </div>
 </div>
+
 
 
 <!-- LEADERBOARD NAME DIALOG -->
