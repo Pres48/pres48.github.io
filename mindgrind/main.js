@@ -294,6 +294,47 @@ let tutorialState = {
   timeoutId: null,
 };
 
+// ---------- SETTINGS STATE ----------
+const SETTINGS_KEY = "mindgrindSettings";
+
+let userSettings = {
+  sound: true,
+  animations: true,
+  fireworks: true,
+};
+
+function loadSettingsFromStorage() {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      userSettings = { ...userSettings, ...parsed };
+    }
+  } catch (e) {
+    console.warn("Settings restore failed:", e);
+  }
+  applySettingsToGame();
+}
+
+function saveSettingsToStorage() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(userSettings));
+  } catch (e) {
+    console.warn("Settings save failed:", e);
+  }
+}
+
+function applySettingsToGame() {
+  // Animations toggle → reduced-motion class on <body>
+  if (userSettings.animations === false) {
+    document.body.classList.add("reduced-motion");
+  } else {
+    document.body.classList.remove("reduced-motion");
+  }
+
+  // Fireworks toggle is respected in triggerFireworks()
+  // Sound: when you add audio, only play if userSettings.sound is true.
+}
 
 
 
@@ -1999,6 +2040,11 @@ function maybeStartFirstRunTutorial() {
 // ---------- Fireworks ----------
 
 function triggerFireworks() {
+  // respect settings
+  if (userSettings && userSettings.fireworks === false) {
+    return;
+  }
+
   const overlay = document.getElementById("fireworksOverlay");
   if (!overlay) return;
 
@@ -2528,6 +2574,10 @@ function init() {
   // 🔹 Show a preview board on load
   renderIdleGrid();
 
+  // Load settings once DOM is ready
+  loadSettingsFromStorage();
+
+
   // Leaderboard popover min score
   const minScoreSpan = document.getElementById("leaderboardMinScore");
   if (minScoreSpan) {
@@ -2621,6 +2671,62 @@ function init() {
   maybeStartFirstRunTutorial();
 
 
+  // --- Settings modal wiring ---
+  const settingsOverlay     = document.getElementById("settingsOverlay");
+  const settingsCloseButton = document.getElementById("settingsCloseButton");
+  const settingsCancel      = document.getElementById("settingsCancelButton");
+  const settingsSave        = document.getElementById("settingsSaveButton");
+  const settingsSound       = document.getElementById("settingsSound");
+  const settingsAnimations  = document.getElementById("settingsAnimations");
+  const settingsFireworks   = document.getElementById("settingsFireworks");
+
+  function openSettings() {
+    if (!settingsOverlay) return;
+    // sync checkboxes from current settings
+    if (settingsSound)      settingsSound.checked      = !!userSettings.sound;
+    if (settingsAnimations) settingsAnimations.checked = !!userSettings.animations;
+    if (settingsFireworks)  settingsFireworks.checked  = !!userSettings.fireworks;
+    settingsOverlay.classList.remove("hidden");
+  }
+
+  function closeSettings() {
+    if (!settingsOverlay) return;
+    settingsOverlay.classList.add("hidden");
+  }
+
+  if (settingsCloseButton) {
+    settingsCloseButton.addEventListener("click", closeSettings);
+  }
+  if (settingsCancel) {
+    settingsCancel.addEventListener("click", closeSettings);
+  }
+
+  if (settingsSave) {
+    settingsSave.addEventListener("click", () => {
+      if (settingsSound) {
+        userSettings.sound = !!settingsSound.checked;
+      }
+      if (settingsAnimations) {
+        userSettings.animations = !!settingsAnimations.checked;
+      }
+      if (settingsFireworks) {
+        userSettings.fireworks = !!settingsFireworks.checked;
+      }
+
+      saveSettingsToStorage();
+      applySettingsToGame();
+      closeSettings();
+    });
+  }
+
+  // Allow clicking backdrop to close
+  if (settingsOverlay) {
+    settingsOverlay.addEventListener("click", (e) => {
+      if (e.target === settingsOverlay) {
+        closeSettings();
+      }
+    });
+  }
 
 
   
@@ -2823,10 +2929,10 @@ function init() {
   if (navMenuSettings) {
     navMenuSettings.addEventListener("click", () => {
       closeNavMenu();
-      // TODO: open Settings modal when you build it
-      alert("Settings coming soon.");
+      openSettings();
     });
   }
+
 
   if (navMenuAbout) {
     navMenuAbout.addEventListener("click", () => {
