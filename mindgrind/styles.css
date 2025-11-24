@@ -1417,6 +1417,177 @@ button:disabled {
 }
 
 
+/* ================== Settings Modal ================== */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), #020617);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-overlay.hidden {
+  display: none;
+}
+
+.settings-modal {
+  width: 100%;
+  max-width: 420px;
+  background: radial-gradient(circle at top left, #020617, #020617 35%, #0b1120 90%);
+  border-radius: 18px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(148, 163, 184, 0.25);
+  padding: 18px 20px 14px;
+  color: #e5e7eb;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-header h2 {
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.settings-close {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.settings-close:hover {
+  color: #e5e7eb;
+}
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.settings-group h3 {
+  font-size: 0.85rem;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #bfdbfe;
+}
+
+.settings-group {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.settings-toggle input {
+  display: none;
+}
+
+/* toggle pill look */
+.toggle-pill {
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #4b5563;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.toggle-pill::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #9ca3af;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+/* checked state */
+.settings-toggle input:checked + .toggle-pill {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.settings-toggle input:checked + .toggle-pill::before {
+  transform: translateX(16px);
+  background: #f9fafb;
+}
+
+.toggle-label {
+  color: #e5e7eb;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.settings-secondary,
+.settings-primary {
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+}
+
+.settings-secondary {
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
+}
+
+.settings-secondary:hover {
+  background: rgba(31, 41, 55, 0.95);
+}
+
+.settings-primary {
+  background: linear-gradient(120deg, #4f46e5, #8b5cf6);
+  color: #f9fafb;
+  box-shadow:
+    0 0 10px rgba(129, 140, 248, 0.8),
+    0 0 24px rgba(56, 189, 248, 0.5);
+}
+
+.settings-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* Reduced-motion helper: global kill switch for animations */
+body.reduced-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+
+
+
 /* ================== First-Run Tutorial ================== */
 
 .tutorial-overlay {
