@@ -224,10 +224,10 @@ export function getDifficultyForLevel(level) {
   // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));
   // const numberWeight = 9;
 
-  const bonusWeight  = 3;
-  const chainWeight  = 3;
-  const riskWeight   = 2;
-  const numberWeight = 9;
+  const bonusWeight  = 2 + Math.min(1, Math.floor(level / 20)); // 2 → 3
+  const chainWeight  = 2 + Math.min(1, Math.floor(level / 25)); // 2 → 3
+  const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2
+  const numberWeight = 9;                                       // stays 9
 
   return {
     timePerTurnMs,
