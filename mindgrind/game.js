@@ -13,7 +13,7 @@ const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
 const CHAIN_MIN = 6; 
-const CHAIN_MAX = 15;
+const CHAIN_MAX = 16;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
@@ -214,21 +214,29 @@ export function getDifficultyForLevel(level) {
   const turns = 8 + Math.min(4, Math.floor(level / 10)); // 8–12 turns (max)
 
   // Tile distribution weights – same as before
-  // const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));
-  // const chainWeight  = 1 + Math.min(3, Math.floor(level / 5));
-  // const riskWeight   = 1 + Math.min(2, Math.floor(level / 10));
-  // const numberWeight = 6;
+  // const bonusWeight  = 1 + Math.min(3, Math.floor(level / 4));     // 1 → 4  →                 11% to 23%  →  4 to 7 tiles (11)
+  // const chainWeight  = 1 + Math.min(3, Math.floor(level / 5));     // 1 → 4  →                 11% to 23%  →  4 to 7 tiles (11)
+  // const riskWeight   = 1 + Math.min(2, Math.floor(level / 10));    // 1 → 3  →                 11% to 17%  →  4 to 6 tiles (8)
+  // const numberWeight = 6;                                          // stays 6  →  9 to 17  →   66% to 43%  →  24 to 15 tiles (21)
 
-  // const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20));
-  // const chainWeight  = 2 + Math.min(2, Math.floor(level / 25));
-  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));
-  // const numberWeight = 9;
+  // const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20)); // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
+  // const chainWeight  = 2 + Math.min(2, Math.floor(level / 25)); // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
+  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2  →                 7% to 11%   →  3 to 4 tiles (5)
+  // const numberWeight = 9;                                       // stays 9  →  14 to 19  →  64% to 47%  →  23 to 17 tiles (23)
 
-  const bonusWeight  = 2 + Math.min(1, Math.floor(level / 20)); // 2 → 3
-  const chainWeight  = 2 + Math.min(1, Math.floor(level / 25)); // 2 → 3
-  const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2
-  const numberWeight = 9;                                       // stays 9
+  // const bonusWeight  = 2 + Math.min(1, Math.floor(level / 20)); // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
+  // const chainWeight  = 2 + Math.min(1, Math.floor(level / 25)); // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
+  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2  →                 7% to 12%   →  3 to 4 tiles (6)
+  // const numberWeight = 9;                                       // stays 9  →  14 to 17  →  64% to 53%  →  23 to 19 tiles (26)
 
+  const bonusWeight  = 1 + Math.min(2, Math.floor(level / 20));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
+  const chainWeight  = 1 + Math.min(2, Math.floor(level / 25));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
+  const riskWeight   = 1 + Math.min(0.5, Math.floor(level / 30));  // 1 → 1.5  →               9% to 10%   →  3 to 4 tiles (5)
+  const numberWeight = 8;                                          // stays 8  → 11 to 15.5 →  72% to 53%  →  26 to 19 tiles (25)
+  
+  // 9, 9, 5, 26  →   3, 3, 1.5, 8
+  // 18.4%, 18.4%. 10.2%, 53%  →   
+  
   return {
     timePerTurnMs,
     gridSize,
@@ -397,15 +405,15 @@ export function resolveTileSelection(tile, state) {
     let step;
     
     if (state.level < 20) {
-      step = 0.35;                 // early: feels good
+      step = 0.36;                 // early: feels good
     } else if (state.level < 40) {
-      step = 0.33;                 // mid-game: still attractive
+      step = 0.34;                 // mid-game: still attractive
     } else if (state.level < 60) {
-      step = 0.31;                 // late-mid: less oppressive
+      step = 0.32;                 // late-mid: less oppressive
     } else if (state.level < 100) {
-      step = 0.28;                 // late: chains no longer dominate
+      step = 0.30;                 // late: chains no longer dominate
     } else {
-      step = 0.26;                 // ultra-late: controlled, fair
+      step = 0.28;                 // ultra-late: controlled, fair
     }
   
     const chainMultiplier = 1 + newState.chainCount * step;
