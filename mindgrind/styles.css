@@ -1525,8 +1525,8 @@ button:disabled {
 /* Mobile menu toggle (hamburger) */
 .nav-menu-toggle {
   display: none; /* desktop default: hidden */
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 28px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.7);
   background: radial-gradient(circle at top left, #1d2a4f, #020617);
@@ -1603,8 +1603,8 @@ button:disabled {
 }
 
 .nav-menu-close {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 28px;
   border-radius: 999px;
   border: none;
   background: rgba(15, 23, 42, 0.9);
