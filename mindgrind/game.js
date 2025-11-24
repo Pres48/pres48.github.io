@@ -13,7 +13,7 @@ const BONUS_STEPS_MAX = 4;
 
 // Chain tiles: base points before chain multiplier
 const CHAIN_MIN = 6; 
-const CHAIN_MAX = 14;
+const CHAIN_MAX = 15;
 
 // Risk tiles: random integer between these two
 // You can make this all positive, all negative, or mixed.
@@ -200,11 +200,11 @@ export function getLevelBehavior(level) {
  */
 export function getDifficultyForLevel(level) {
   // New timing curve: more thinking room, smoother ramp
-  const baseTimeMs = 6300;   // L1 ≈ 6.4s per turn
+  const baseTimeMs = 6400;   // L1 ≈ 6.4s per turn
   const minTimeMs  = 1800;   // Never go below ~1.8s per turn
 
   // Each level shaves off XX ms, until minTimeMs
-  const timeStep = 55; // was 70
+  const timeStep = 50; // was 70
   const timePerTurnMs = Math.max(
     minTimeMs,
     baseTimeMs - (level - 1) * timeStep
@@ -222,7 +222,7 @@ export function getDifficultyForLevel(level) {
   const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20));
   const chainWeight  = 2 + Math.min(2, Math.floor(level / 25));
   const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));
-  const numberWeight = 10;
+  const numberWeight = 9;
 
   return {
     timePerTurnMs,
@@ -394,13 +394,13 @@ export function resolveTileSelection(tile, state) {
     if (state.level < 20) {
       step = 0.35;                 // early: feels good
     } else if (state.level < 40) {
-      step = 0.32;                 // mid-game: still attractive
+      step = 0.33;                 // mid-game: still attractive
     } else if (state.level < 60) {
-      step = 0.29;                 // late-mid: less oppressive
+      step = 0.31;                 // late-mid: less oppressive
     } else if (state.level < 100) {
-      step = 0.26;                 // late: chains no longer dominate
+      step = 0.28;                 // late: chains no longer dominate
     } else {
-      step = 0.24;                 // ultra-late: controlled, fair
+      step = 0.26;                 // ultra-late: controlled, fair
     }
   
     const chainMultiplier = 1 + newState.chainCount * step;
