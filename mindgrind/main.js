@@ -2073,6 +2073,15 @@ function triggerFireworks() {
 
 function endRound(reason = "normal") {
   resetTimer();
+
+  // 🔹 clear visual state from tiles (optional, purely cosmetic)
+  const tiles = gridContainer.querySelectorAll(".tile");
+  tiles.forEach((el) => {
+    // el.classList.remove("selected");
+    // if you ALSO don’t want the last tile to look dim after the round:
+    el.classList.remove("tile-used");
+  });
+  
   setTilesDisabled(true);
   if (!gameState) return;
   gameState.locked = true;
