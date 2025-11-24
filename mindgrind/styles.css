@@ -585,10 +585,36 @@ body {
   filter: none;           /* no grayscale */
 }
 
+/*
 .tile.selected {
   box-shadow: 0 0 0 2px #fef9c3, 0 0 0 4px rgba(250, 204, 21, 0.6);
   transform: translateY(-2px) scale(1.02);
 }
+*/
+
+/* Pop + glow when you click */
+.tile.selected {
+  box-shadow:
+    0 0 0 2px #fef9c3,
+    0 0 16px rgba(250, 204, 21, 0.9),
+    0 0 28px rgba(250, 204, 21, 0.6);
+  transform: translateY(-3px) scale(1.06);
+  animation: tilePop 180ms ease-out;
+}
+
+/* little pop animation */
+@keyframes tilePop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.09);
+  }
+  100% {
+    transform: translateY(-3px) scale(1.06);
+  }
+}
+
 
 .tile.type-number {
   background: radial-gradient(circle at 30% 20%, #bfdbfe, var(--tile-blue));
@@ -658,10 +684,26 @@ body {
   transform: scale(1.08);
 }
 
+/*
 .tile-used {
   opacity: 0.4;
   pointer-events: none;
 }
+*/
+
+.tile-used {
+  opacity: 0.45;
+  filter: saturate(0.6) brightness(0.9);
+  pointer-events: none;
+}
+
+/* When it's just been clicked and is both selected + used */
+.tile.selected.tile-used {
+  opacity: 0.65; /* not fully dim yet */
+  filter: saturate(0.9) brightness(1.05);
+}
+
+
 
 /* Controls */
 
