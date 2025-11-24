@@ -2728,6 +2728,38 @@ function init() {
     });
   }
 
+    // --- About modal wiring ---
+  const aboutOverlay     = document.getElementById("aboutOverlay");
+  const aboutCloseButton = document.getElementById("aboutCloseButton");
+  const aboutYearSpan    = document.getElementById("aboutYear");
+
+  function openAbout() {
+    if (!aboutOverlay) return;
+    aboutOverlay.classList.remove("hidden");
+  }
+
+  function closeAbout() {
+    if (!aboutOverlay) return;
+    aboutOverlay.classList.add("hidden");
+  }
+
+  if (aboutCloseButton) {
+    aboutCloseButton.addEventListener("click", closeAbout);
+  }
+
+  if (aboutOverlay) {
+    aboutOverlay.addEventListener("click", (e) => {
+      if (e.target === aboutOverlay) {
+        closeAbout();
+      }
+    });
+  }
+
+  // Set current year in footnote
+  if (aboutYearSpan) {
+    aboutYearSpan.textContent = new Date().getFullYear();
+  }
+
 
   
   // --- Auth / user UI wiring ---
@@ -2937,9 +2969,10 @@ function init() {
   if (navMenuAbout) {
     navMenuAbout.addEventListener("click", () => {
       closeNavMenu();
-      alert("Mind Grind: Tile Tactics\nBuilt for quick, smart, high-pressure decisions.");
+      openAbout();
     });
   }
+
 
   
 }
