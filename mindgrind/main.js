@@ -1599,10 +1599,13 @@ function onTileClick(tile) {
   // 🚫 If this tile has already been used in this level, ignore it
   if (tile.used) return;
 
-  // ✅ First time this tile is being used in this level
   selectedThisTurn = true;
   tile.used = true;
   setTilesDisabled(true);
+
+  // 🔹 NEW: remove previous "selected" highlights
+  const previouslySelected = gridContainer.querySelectorAll(".tile.selected");
+  previouslySelected.forEach((el) => el.classList.remove("selected"));
 
   const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
 
