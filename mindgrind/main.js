@@ -239,6 +239,70 @@ const nameDialogInput   = document.getElementById("nameDialogInput");
 const nameDialogSave    = document.getElementById("nameDialogSave");
 const nameDialogCancel  = document.getElementById("nameDialogCancel");
 
+
+
+// ================= FIRST-RUN TUTORIAL CONFIG =================
+
+const TUTORIAL_STEPS = [
+  {
+    id: "welcome",
+    title: "Welcome to Mind Grind",
+    body:
+      "This is a fast, one-tile-per-turn number game. In ~30 seconds you'll see the essentials.",
+    targetSelector: ".top-bar", // highlight top HUD
+  },
+  {
+    id: "turns-timer",
+    title: "One tile per turn",
+    body:
+      "Each turn you pick exactly one tile before this time bar empties. When it hits zero, the turn is a miss.",
+    targetSelector: ".timer-bar",
+  },
+  {
+    id: "tiles",
+    title: "Tile colors matter",
+    body:
+      "Blue = points, Yellow = multiplier, Green = chains, Red = risk, Prism = rare power tiles.",
+    targetSelector: "#gridContainer",
+  },
+  {
+    id: "level-goal",
+    title: "Beat the Level Goal",
+    body:
+      "This panel shows your progress toward the Level Goal. If your Level Score meets the target, you advance.",
+    targetSelector: "#goalProgressDisplay",
+  },
+  {
+    id: "score-stats",
+    title: "Score & feedback",
+    body:
+      "Watch Last Move, Time Bonus, and Score to decide when to play safe or go aggressive.",
+    targetSelector: ".secondary-stats",
+  },
+  {
+    id: "start-run",
+    title: "You drive the run",
+    body:
+      "Hit Start Game, then try a few tiles. Build multiplier early, chain greens when you can, and use risk when needed.",
+    targetSelector: "#startButton",
+  },
+];
+
+let tutorialState = {
+  active: false,
+  stepIndex: 0,
+  timeoutId: null,
+};
+
+
+
+
+
+
+
+
+
+
 // Load cached player name (supports old key + new key)
 let cachedPlayerName = null;
 
@@ -1798,6 +1862,136 @@ async function autoSaveScoreIfEligible() {
 
 
 
+// ================= FIRST-RUN TUTORIAL LOGIC =================
+
+function setTutorialHighlight(selector) {
+  // Remove existing highlight
+  document
+    .querySelectorAll(".tutorial-highlight")
+    .forEach((el) => el.classList.remove("tutorial-highlight"));
+
+  if (!selector) return;
+
+  const el = document.querySelector(selector);
+  if (el) {
+    el.classList.add("tutorial-highlight");
+    // try to make sure it's visible (especially on mobile)
+    if (typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }
+}
+
+function showTutorialStep(index) {
+  const overlay = document.getElementById("tutorialOverlay");
+  const titleEl = document.getElementById("tutorialTitle");
+  const bodyEl = document.getElementById("tutorialBody");
+  const progressEl = document.getElementById("tutorialProgress");
+  const nextBtn = document.getElementById("tutorialNextBtn");
+
+  if (
+    !overlay ||
+    !titleEl ||
+    !bodyEl ||
+    !progressEl ||
+    !nextBtn ||
+    index < 0 ||
+    index >= TUTORIAL_STEPS.length
+  ) {
+    return;
+  }
+
+  const step = TUTORIAL_STEPS[index];
+
+  overlay.classList.remove("hidden");
+
+  titleEl.textContent = step.title;
+  bodyEl.textContent = step.body;
+  progressEl.textContent = `Step ${index + 1} of ${TUTORIAL_STEPS.length}`;
+
+  // Last step label
+  nextBtn.textContent =
+    index === TUTORIAL_STEPS.length - 1 ? "Got it – Let me play" : "Next";
+
+  setTutorialHighlight(step.targetSelector);
+
+  // Auto-advance ~5 seconds per step → ~30 seconds total
+  if (tutorialState.timeoutId) {
+    clearTimeout(tutorialState.timeoutId);
+  }
+  tutorialState.timeoutId = setTimeout(() => {
+    nextTutorialStep(true);
+  }, 5000);
+}
+
+function nextTutorialStep(fromTimer = false) {
+  if (!tutorialState.active) return;
+
+  // Clear pending timer so we don't double-advance
+  if (tutorialState.timeoutId) {
+    clearTimeout(tutorialState.timeoutId);
+    tutorialState.timeoutId = null;
+  }
+
+  const nextIndex = tutorialState.stepIndex + 1;
+  if (nextIndex >= TUTORIAL_STEPS.length) {
+    endTutorial(true);
+    return;
+  }
+
+  tutorialState.stepIndex = nextIndex;
+  showTutorialStep(nextIndex);
+}
+
+function endTutorial(markSeen) {
+  tutorialState.active = false;
+  if (tutorialState.timeoutId) {
+    clearTimeout(tutorialState.timeoutId);
+    tutorialState.timeoutId = null;
+  }
+
+  const overlay = document.getElementById("tutorialOverlay");
+  if (overlay) {
+    overlay.classList.add("hidden");
+  }
+
+  // remove any remaining highlight
+  setTutorialHighlight(null);
+
+  if (markSeen) {
+    try {
+      localStorage.setItem("mindgridTutorialSeen", "1");
+    } catch (e) {
+      console.warn("Unable to persist tutorial state:", e);
+    }
+  }
+}
+
+function startFirstRunTutorial() {
+  // only start if we have a grid + UI on screen
+  tutorialState.active = true;
+  tutorialState.stepIndex = 0;
+  showTutorialStep(0);
+}
+
+function maybeStartFirstRunTutorial() {
+  try {
+    const seen = localStorage.getItem("mindgridTutorialSeen");
+    if (seen === "1") return; // user has already seen it
+  } catch (e) {
+    // if localStorage is unavailable, still try to show once
+  }
+
+  // Delay slightly so the layout is rendered
+  setTimeout(() => {
+    startFirstRunTutorial();
+  }, 600);
+}
+
+
+
+
+
 // ---------- Fireworks ----------
 
 function triggerFireworks() {
@@ -2387,6 +2581,36 @@ function init() {
     });
   });
 
+
+
+  // --- Tutorial controls ---
+  const tutorialNextBtn = document.getElementById("tutorialNextBtn");
+  const tutorialSkipBtn = document.getElementById("tutorialSkipBtn");
+
+  if (tutorialNextBtn) {
+    tutorialNextBtn.addEventListener("click", () => {
+      if (!tutorialState.active) {
+        // If for some reason user opens this later, just close it
+        endTutorial(true);
+      } else {
+        nextTutorialStep(false);
+      }
+    });
+  }
+
+  if (tutorialSkipBtn) {
+    tutorialSkipBtn.addEventListener("click", () => {
+      endTutorial(true);
+    });
+  }
+
+  // Start first-run tutorial if user hasn't seen it
+  maybeStartFirstRunTutorial();
+
+
+
+
+  
   // --- Auth / user UI wiring ---
   if (userAuthButton) {
     userAuthButton.addEventListener("click", async () => {
