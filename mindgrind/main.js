@@ -2717,6 +2717,125 @@ function init() {
       }
     };
   }
+
+    // --- Mobile nav menu wiring ---
+  const navMenuToggle   = document.getElementById("navMenuToggle");
+  const navMenuOverlay  = document.getElementById("navMenuOverlay");
+  const navMenuClose    = document.getElementById("navMenuClose");
+
+  const navMenuHowTo        = document.getElementById("navMenuHowTo");
+  const navMenuLeaderboard  = document.getElementById("navMenuLeaderboard");
+  const navMenuStats        = document.getElementById("navMenuStats");
+  const navMenuProfile      = document.getElementById("navMenuProfile");
+  const navMenuLogout       = document.getElementById("navMenuLogout");
+  const navMenuContinue     = document.getElementById("navMenuContinue");
+  const navMenuSettings     = document.getElementById("navMenuSettings");
+  const navMenuAbout        = document.getElementById("navMenuAbout");
+
+  function openNavMenu() {
+    if (!navMenuOverlay) return;
+    navMenuOverlay.classList.remove("hidden");
+  }
+
+  function closeNavMenu() {
+    if (!navMenuOverlay) return;
+    navMenuOverlay.classList.add("hidden");
+  }
+
+  if (navMenuToggle) {
+    navMenuToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openNavMenu();
+    });
+  }
+
+  if (navMenuClose) {
+    navMenuClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeNavMenu();
+    });
+  }
+
+  // Close menu when tapping outside panel
+  if (navMenuOverlay) {
+    navMenuOverlay.addEventListener("click", (e) => {
+      if (e.target === navMenuOverlay) {
+        closeNavMenu();
+      }
+    });
+  }
+
+  // ESC key closes menu
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && navMenuOverlay && !navMenuOverlay.classList.contains("hidden")) {
+      closeNavMenu();
+    }
+  });
+
+  // Hook menu actions into existing UI where possible
+  if (navMenuHowTo && openHowToPlayBtn) {
+    navMenuHowTo.addEventListener("click", () => {
+      closeNavMenu();
+      openHowToPlay(); // uses your existing helper
+    });
+  }
+
+  if (navMenuLeaderboard && leaderboardList) {
+    navMenuLeaderboard.addEventListener("click", () => {
+      closeNavMenu();
+      leaderboardList.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  if (navMenuStats) {
+    const highScoreBox = document.getElementById("highScoreBox");
+    navMenuStats.addEventListener("click", () => {
+      closeNavMenu();
+      if (highScoreBox) {
+        highScoreBox.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  if (navMenuProfile && userAuthButton) {
+    navMenuProfile.addEventListener("click", () => {
+      closeNavMenu();
+      userAuthButton.click(); // open your auth modal
+    });
+  }
+
+  // Placeholder: wire this up to your real sign-out flow later
+  if (navMenuLogout) {
+    navMenuLogout.addEventListener("click", () => {
+      closeNavMenu();
+      // TODO: implement real logout
+      alert("Log Out coming soon.");
+    });
+  }
+
+  if (navMenuContinue) {
+    navMenuContinue.addEventListener("click", () => {
+      closeNavMenu();
+      // Game just continues; nothing special to do.
+    });
+  }
+
+  if (navMenuSettings) {
+    navMenuSettings.addEventListener("click", () => {
+      closeNavMenu();
+      // TODO: open Settings modal when you build it
+      alert("Settings coming soon.");
+    });
+  }
+
+  if (navMenuAbout) {
+    navMenuAbout.addEventListener("click", () => {
+      closeNavMenu();
+      alert("Mind Grind: Tile Tactics\nBuilt for quick, smart, high-pressure decisions.");
+    });
+  }
+
+  
 }
 
 init();
