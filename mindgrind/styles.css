@@ -571,10 +571,18 @@ body {
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.9);
 }
 
+/*
 .tile.disabled {
   pointer-events: none;
   opacity: 0.4;
   filter: grayscale(0.2);
+}
+*/
+
+.tile.disabled {
+  pointer-events: none;   /* still blocks clicks */
+  opacity: 1;             /* no visual dim */
+  filter: none;           /* no grayscale */
 }
 
 .tile.selected {
