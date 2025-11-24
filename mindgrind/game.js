@@ -219,9 +219,14 @@ export function getDifficultyForLevel(level) {
   // const riskWeight   = 1 + Math.min(2, Math.floor(level / 10));
   // const numberWeight = 6;
 
-  const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20));
-  const chainWeight  = 2 + Math.min(2, Math.floor(level / 25));
-  const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));
+  // const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20));
+  // const chainWeight  = 2 + Math.min(2, Math.floor(level / 25));
+  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));
+  // const numberWeight = 9;
+
+  const bonusWeight  = 3;
+  const chainWeight  = 3;
+  const riskWeight   = 2;
   const numberWeight = 9;
 
   return {
