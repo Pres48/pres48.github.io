@@ -27,28 +27,41 @@
         <img class="logo-img" src="MindGrind_logo.png" alt="Mind Grind logo">
         <span class="brand-title">Mind Grind:</span>
       </div>
-
-      
-      <div class="top-bar-actions">
-
-        <!-- User status pill -->
+    
+      <!-- RIGHT SIDE: user status + actions + mobile menu -->
+      <div class="top-bar-right">
+        <!-- User status pill (desktop + tablet) -->
         <div class="user-status" id="userStatus">
-          <span id="userStatusText">Guest</span>
+          <span id="userStatusText">Playing as Guest</span>
           <button type="button" class="user-auth-btn" id="userAuthButton">
             Sign In
           </button>
         </div>
-        
-        <!-- Other controls (sound, menu, etc.) -->
+    
+        <!-- "How to Play" icon (desktop + tablet) -->
+        <div class="top-bar-actions">
+          <button
+            type="button"
+            class="info-btn"
+            id="openHowToPlay"
+            aria-label="How to play"
+          >
+            ?
+          </button>
+        </div>
+    
+        <!-- MOBILE: collapses actions into this menu button -->
         <button
           type="button"
-          class="info-btn"
-          id="openHowToPlay"
-          aria-label="How to play"
-        >?</button>      
-        
+          class="nav-menu-toggle"
+          id="navMenuToggle"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
       </div>
     </header>
+
 
     <main class="game-layout">
       <section class="game-panel">
