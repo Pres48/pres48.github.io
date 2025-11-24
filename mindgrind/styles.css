@@ -611,7 +611,7 @@ body {
     transform: translateY(-4px) scale(1.09);
   }
   100% {
-    transform: translateY(-3px) scale(1.06);
+    transform: translateY(0) scale(1);
   }
 }
 
