@@ -1605,7 +1605,7 @@ function onTileClick(tile) {
 
   // 🔹 clear previous highlight
   const previouslySelected = gridContainer.querySelectorAll(".tile.selected");
-  previouslySelected.forEach((el) => el.classList.remove("selected"));
+  // previouslySelected.forEach((el) => el.classList.remove("selected"));
 
   const el = gridContainer.querySelector(`[data-tile-id="${tile.id}"]`);
 
@@ -2079,7 +2079,7 @@ function endRound(reason = "normal") {
   tiles.forEach((el) => {
     // el.classList.remove("selected");
     // if you ALSO don’t want the last tile to look dim after the round:
-    el.classList.remove("tile-used");
+    // el.classList.remove("tile-used");
   });
   
   setTilesDisabled(true);
