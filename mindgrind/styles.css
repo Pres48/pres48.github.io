@@ -598,7 +598,7 @@ body {
     0 0 0 2px #fef9c3,
     0 0 16px rgba(250, 204, 21, 0.9),
     0 0 28px rgba(250, 204, 21, 0.6);
-  transform: translateY(-3px) scale(1.06);
+  transform: translateY(-2px) scale(1.02);
   animation: tilePop 180ms ease-out;
 }
 
@@ -608,10 +608,10 @@ body {
     transform: translateY(0) scale(1);
   }
   50% {
-    transform: translateY(-4px) scale(1.09);
+    transform: translateY(-3px) scale(1.05);
   }
   100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(-2px) scale(1.02);
   }
 }
 
