@@ -283,7 +283,7 @@ const TUTORIAL_STEPS = [
     id: "start-run",
     title: "You drive the run",
     body:
-      "Hit Start Game, then try a few tiles. Build multiplier early, chain greens when you can, and use risk when needed.",
+      "Hit New Game, then try a few tiles. Build multiplier early, chain greens when you can, and use risk when needed.",
     targetSelector: "#startButton",
   },
 ];
@@ -1915,13 +1915,13 @@ function showTutorialStep(index) {
 
   setTutorialHighlight(step.targetSelector);
 
-  // Auto-advance ~5 seconds per step → ~30 seconds total
+  // Auto-advance ~7 seconds per step → ~42 seconds total
   if (tutorialState.timeoutId) {
     clearTimeout(tutorialState.timeoutId);
   }
   tutorialState.timeoutId = setTimeout(() => {
     nextTutorialStep(true);
-  }, 5000);
+  }, 7000);
 }
 
 function nextTutorialStep(fromTimer = false) {
@@ -2384,7 +2384,7 @@ async function refreshAuthUI() {
       "Player";
 
     if (userStatusText) {
-      userStatusText.textContent = `Playing as ${displayName}`;
+      userStatusText.textContent = displayName;     // `Playing as ${displayName}`;
     }
     if (userAuthButton) {
       userAuthButton.textContent = "Log Out";
