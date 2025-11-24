@@ -704,8 +704,8 @@ function computeSpeedBonus(level, timeBankMs, turns, timePerTurnMs) {
   const fractionSaved = Math.min(1, timeBankMs / maxBankMs); // 0–1
   const target = getRequiredGainForLevel(level);
 
-  // Cap: at absolute best you can get 20% of the level target as speed bonus
-  const MAX_PCT = 0.20;
+  // Cap: at absolute best you can get 25% of the level target as speed bonus
+  const MAX_PCT = 0.25;
 
   const rawBonus = target * fractionSaved * MAX_PCT;
 
