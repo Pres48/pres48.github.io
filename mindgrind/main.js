@@ -2051,7 +2051,7 @@ function triggerFireworks() {
   overlay.innerHTML = "";
   overlay.classList.add("active");
 
-  const burstCount = 4;
+  const burstCount = 5;
   const particlesPerBurst = 26;
   const colors = [
     "#f97316",
@@ -2121,12 +2121,12 @@ function endRound(reason = "normal") {
   resetTimer();
 
   // 🔹 clear visual state from tiles (optional, purely cosmetic)
-  const tiles = gridContainer.querySelectorAll(".tile");
-  tiles.forEach((el) => {
+  // const tiles = gridContainer.querySelectorAll(".tile");
+  // tiles.forEach((el) => {
     // el.classList.remove("selected");
     // if you ALSO don’t want the last tile to look dim after the round:
     // el.classList.remove("tile-used");
-  });
+  // });
   
   setTilesDisabled(true);
   if (!gameState) return;
@@ -2443,7 +2443,7 @@ async function refreshAuthUI() {
       "Player";
 
     if (userStatusText) {
-      userStatusText.textContent = displayName;     // `Playing as ${displayName}`;
+      userStatusText.textContent = displayName;
     }
     if (userAuthButton) {
       userAuthButton.textContent = "Log Out";
