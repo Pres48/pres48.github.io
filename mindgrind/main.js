@@ -48,12 +48,11 @@ const bestScoreDisplay = document.getElementById("bestScoreDisplay");
 const bestLevelDisplay = document.getElementById("bestLevelDisplay");
 const saveScoreButton = document.getElementById("saveScoreButton");
 const saveStatus = document.getElementById("saveStatus");
-const lastMoveDisplay = document.getElementById("lastMoveDisplay");
 
+const lastMoveDisplay      = document.getElementById("lastMoveDisplay");
 const leaderboardListSidebar = document.getElementById("leaderboardListSidebar");
 const leaderboardListModal   = document.getElementById("leaderboardListModal");
-
-const levelGoals = document.getElementById("levelGoals");
+const levelGoals           = document.getElementById("levelGoals");
 
 const goalProgressDisplay    = document.getElementById("goalProgressDisplay");
 const goalRemainingDisplay   = document.getElementById("goalRemainingDisplay");
@@ -2348,7 +2347,7 @@ async function loadLeaderboard() {
   const lists = [leaderboardListSidebar, leaderboardListModal].filter(Boolean);
   if (!lists.length) return;
 
-  // show loading in all visible lists
+  // Show loading state in whichever lists exist
   lists.forEach((list) => {
     list.innerHTML = `<p class="soft-text">Loading…</p>`;
   });
@@ -2373,13 +2372,13 @@ async function loadLeaderboard() {
 
         const safeName = escapeHtml(row.name || "Guest");
         const score = row.score ?? 0;
-        const lvl = row.level ?? 1;
+        const lvl   = row.level ?? 1;
 
         let timeText = "";
         if (row.created_at) {
           const d = new Date(row.created_at);
           const month = d.getMonth() + 1;
-          const day = d.getDate();
+          const day   = d.getDate();
           timeText = `${month}/${day}`;
         }
 
@@ -2403,6 +2402,7 @@ async function loadLeaderboard() {
     });
   }
 }
+
 
 
 async function handleSaveScore() {
@@ -2757,23 +2757,31 @@ function init() {
 
   
   // --- Leaderboard modal wiring ---
-const leaderboardBackdrop = document.getElementById("leaderboardBackdrop");
-const leaderboardClose    = document.getElementById("closeLeaderboard");
+  const leaderboardOverlay     = document.getElementById("leaderboardOverlay");
+  const leaderboardCloseButton = document.getElementById("leaderboardCloseButton");
+  
+  function openLeaderboard() {
+    if (!leaderboardOverlay) return;
+    leaderboardOverlay.classList.remove("hidden");
+  }
+  
+  function closeLeaderboard() {
+    if (!leaderboardOverlay) return;
+    leaderboardOverlay.classList.add("hidden");
+  }
+  
+  if (leaderboardCloseButton) {
+    leaderboardCloseButton.addEventListener("click", closeLeaderboard);
+  }
+  
+  if (leaderboardOverlay) {
+    leaderboardOverlay.addEventListener("click", (e) => {
+      if (e.target === leaderboardOverlay) {
+        closeLeaderboard();
+      }
+    });
+  }
 
-function openLeaderboard() {
-  if (!leaderboardBackdrop) return;
-  leaderboardBackdrop.removeAttribute("hidden");
-  loadLeaderboard(); // refresh on open if you want
-}
-
-function closeLeaderboard() {
-  if (!leaderboardBackdrop) return;
-  leaderboardBackdrop.setAttribute("hidden", "");
-}
-
-if (leaderboardClose) {
-  leaderboardClose.addEventListener("click", closeLeaderboard);
-}
 
   
 
