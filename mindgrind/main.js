@@ -49,7 +49,9 @@ const bestLevelDisplay = document.getElementById("bestLevelDisplay");
 const saveScoreButton = document.getElementById("saveScoreButton");
 const saveStatus = document.getElementById("saveStatus");
 const lastMoveDisplay = document.getElementById("lastMoveDisplay");
-const leaderboardList = document.getElementById("leaderboardList");
+const leaderboardListSidebar = document.getElementById("leaderboardList");
+const leaderboardListModal   = document.getElementById("leaderboardListModal");
+
 const levelGoals = document.getElementById("levelGoals");
 
 const goalProgressDisplay    = document.getElementById("goalProgressDisplay");
@@ -2342,58 +2344,64 @@ function endRound(reason = "normal") {
 // ---------- Leaderboard ----------
 
 async function loadLeaderboard() {
-  if (!leaderboardList) return;
+  const lists = [leaderboardListSidebar, leaderboardListModal].filter(Boolean);
+  if (!lists.length) return;
 
-  leaderboardList.innerHTML = `<p class="soft-text">Loading…</p>`;
+  lists.forEach(list => {
+    list.innerHTML = `<p class="soft-text">Loading…</p>`;
+  });
 
   try {
     const rows = await fetchTopScores();
 
     if (!rows || rows.length === 0) {
-      leaderboardList.innerHTML = `<p class="soft-text">No scores yet. Be the first!</p>`;
+      lists.forEach(list => {
+        list.innerHTML = `<p class="soft-text">No scores yet. Be the first!</p>`;
+      });
       return;
     }
 
-    leaderboardList.innerHTML = "";
-    const fragment = document.createDocumentFragment();
+    lists.forEach(list => {
+      list.innerHTML = "";
+      const fragment = document.createDocumentFragment();
 
-    rows.forEach((row, index) => {
-      const div = document.createElement("div");
-      div.className = "leaderboard-row";
+      rows.forEach((row, index) => {
+        const div = document.createElement("div");
+        div.className = "leaderboard-row";
 
-      const safeName = escapeHtml(row.name || "Guest");
-      const score = row.score ?? 0;
-      const lvl = row.level ?? 1;
+        const safeName = escapeHtml(row.name || "Guest");
+        const score = row.score ?? 0;
+        const lvl = row.level ?? 1;
 
-      let timeText = "";
-      if (row.created_at) {
-        const d = new Date(row.created_at);
-        const month = d.getMonth() + 1;
-        const day = d.getDate();
-        let hours = d.getHours();
-        const mins = d.getMinutes().toString().padStart(2, "0");
-        const ampm = hours >= 12 ? "p" : "a";
-        hours = hours % 12 || 12;
-        timeText = `${month}/${day}`;
-      }
+        let timeText = "";
+        if (row.created_at) {
+          const d = new Date(row.created_at);
+          const month = d.getMonth() + 1;
+          const day = d.getDate();
+          timeText = `${month}/${day}`;
+        }
 
-      div.innerHTML = `
-        <span class="rank">#${index + 1}</span>
-        <span class="entry-name">${safeName}</span>
-        <span class="entry-score">${score.toLocaleString()}</span>
-        <span class="entry-level">Lv ${lvl}</span>
-        <span class="entry-time">${timeText}</span>
-      `;
+        div.innerHTML = `
+          <span class="rank">#${index + 1}</span>
+          <span class="entry-name">${safeName}</span>
+          <span class="entry-score">${score.toLocaleString()}</span>
+          <span class="entry-level">Lv ${lvl}</span>
+          <span class="entry-time">${timeText}</span>
+        `;
 
-      fragment.appendChild(div);
+        fragment.appendChild(div);
+      });
+
+      list.appendChild(fragment.cloneNode(true));
     });
-
-    leaderboardList.appendChild(fragment);
   } catch (err) {
     console.error("Leaderboard load error:", err);
-    leaderboardList.innerHTML = `<p class="soft-text">Error loading leaderboard.</p>`;
+    lists.forEach(list => {
+      list.innerHTML = `<p class="soft-text">Error loading leaderboard.</p>`;
+    });
   }
 }
+
 
 async function handleSaveScore() {
   await autoSaveScoreIfEligible();
@@ -2747,30 +2755,25 @@ function init() {
 
   
   // --- Leaderboard modal wiring ---
-  const leaderboardOverlay     = document.getElementById("leaderboardOverlay");
-  const leaderboardCloseButton = document.getElementById("leaderboardCloseButton");
+const leaderboardBackdrop = document.getElementById("leaderboardBackdrop");
+const leaderboardClose    = document.getElementById("closeLeaderboard");
 
-  function openLeaderboard() {
-    if (!leaderboardOverlay) return;
-    leaderboardOverlay.classList.remove("hidden");
-  }
+function openLeaderboard() {
+  if (!leaderboardBackdrop) return;
+  leaderboardBackdrop.removeAttribute("hidden");
+  loadLeaderboard(); // refresh on open if you want
+}
 
-  function closeLeaderboard() {
-    if (!leaderboardOverlay) return;
-    leaderboardOverlay.classList.add("hidden");
-  }
+function closeLeaderboard() {
+  if (!leaderboardBackdrop) return;
+  leaderboardBackdrop.setAttribute("hidden", "");
+}
 
-  if (leaderboardCloseButton) {
-    leaderboardCloseButton.addEventListener("click", closeLeaderboard);
-  }
+if (leaderboardClose) {
+  leaderboardClose.addEventListener("click", closeLeaderboard);
+}
 
-  if (leaderboardOverlay) {
-    leaderboardOverlay.addEventListener("click", (e) => {
-      if (e.target === leaderboardOverlay) {
-        closeLeaderboard();
-      }
-    });
-  }
+  
 
   
   // --- About modal wiring ---
