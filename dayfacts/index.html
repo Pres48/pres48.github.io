@@ -1,1 +1,30 @@
-Code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day Facts</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="supabase.js"></script>
+</head>
+<body>
+
+    <h1>Day Facts</h1>
+    <p class="subtitle">Share 2–3 good things that happened today.</p>
+
+    <form id="dayfactsForm">
+        <textarea id="fact1" placeholder="Good thing #1" required></textarea>
+        <textarea id="fact2" placeholder="Good thing #2" required></textarea>
+        <textarea id="fact3" placeholder="Good thing #3 (optional)"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Recent Day Facts</h2>
+    <div id="feed">Loading...</div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
