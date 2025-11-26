@@ -209,9 +209,9 @@
             </div>
           </div>
         
-          <div id="leaderboardList" class="leaderboard-list">
-            <p class="soft-text">Loading…</p>
-          </div>
+          <!-- <div id="leaderboardList" class="leaderboard-list"> -->
+          <!--   <p class="soft-text">Loading…</p> -->
+          <!-- </div> -->
         </section>
       </aside>
 
@@ -760,11 +760,18 @@
 
 <!-- LEADERBOARD CARD -->
   
-<div class="leaderboard-backdrop" id="leaderboardBackdrop">
+<div class="leaderboard-backdrop hidden" id="leaderboardOverlay">
   <div class="leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="LeaderboardTitle">
     <header class="leaderboard-header">
       <h2 id="LeaderboardTitle">🏆 Leaderboard</h2>
-      <button type="button" class="leaderboard-modal-close" id="closeLeaderboard" aria-label="Close leaderboard">✕</button>
+      <button
+        type="button"
+        class="leaderboard-modal-close"
+        id="leaderboardCloseButton"
+        aria-label="Close leaderboard"
+      >
+        ✕
+      </button>
     </header>
 
     <div class="leaderboard-body">
@@ -775,6 +782,7 @@
     
   </div>
 </div>
+
 
   
   
