@@ -524,24 +524,24 @@ function renderIdleGrid() {
       valueEl.className = "tile-value";
 
       // (adjust this mapping to match your actual labels)
-      const typeToLabel = {
-        number: "NUMBER",
-        bonus:  "BONUS",
-        chain:  "CHAIN",
-        risk:   "RISK",
-        rare:   "RARE",
-        epic:   "EPIC",
-        legend: "LEGEND",
-        mythic: "MYTHIC",
-        relic:  "RELIC",
-        exotic: "EXOTIC",
-        cosmic: "COSMIC"
-      };
+      // const typeToLabel = {
+      //  number: "NUM",
+      //  bonus:  "BONUS",
+      //  chain:  "CHAIN",
+      //  risk:   "RISK",
+      //  rare:   "RARE",
+      //  epic:   "EPIC",
+      //  legend: "LEGEND",
+      //  mythic: "MYTHIC",
+      //  relic:  "RELIC",
+      //  exotic: "EXOTIC",
+      //  cosmic: "COSMIC"
+      // };
 
-      label.textContent = typeToLabel[type] || "";
+      // label.textContent = typeToLabel[type] || "";
 
       // Idle board = pure color / frame only
-      // label.textContent = "";
+      label.textContent = "";
       valueEl.textContent = "";
 
       tileEl.appendChild(label);
