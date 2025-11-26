@@ -1744,7 +1744,7 @@ button:disabled {
 .howto-section h3 {
   margin: 0 0 4px 0;
   font-size: 0.95rem;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   letter-spacing: 0.09em;
   color: #bfdbfe;
 }
