@@ -2745,11 +2745,39 @@ function init() {
     });
   }
 
-    // --- About modal wiring ---
+  
+  // --- Leaderboard modal wiring ---
+  const leaderboardOverlay     = document.getElementById("leaderboardOverlay");
+  const leaderboardCloseButton = document.getElementById("leaderboardCloseButton");
+
+  function openLeaderboard() {
+    if (!leaderboardOverlay) return;
+    leaderboardOverlay.classList.remove("hidden");
+  }
+
+  function closeLeaderboard() {
+    if (!leaderboardOverlay) return;
+    leaderboardOverlay.classList.add("hidden");
+  }
+
+  if (leaderboardCloseButton) {
+    leaderboardCloseButton.addEventListener("click", closeLeaderboard);
+  }
+
+  if (leaderboardOverlay) {
+    leaderboardOverlay.addEventListener("click", (e) => {
+      if (e.target === leaderboardOverlay) {
+        closeLeaderboard();
+      }
+    });
+  }
+
+  
+  // --- About modal wiring ---
   const aboutOverlay     = document.getElementById("aboutOverlay");
   const aboutCloseButton = document.getElementById("aboutCloseButton");
   const aboutYearSpan    = document.getElementById("aboutYear");
-
+  
   function openAbout() {
     if (!aboutOverlay) return;
     aboutOverlay.classList.remove("hidden");
