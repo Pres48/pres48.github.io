@@ -955,6 +955,19 @@ button:disabled {
   overflow-y: auto;
 }
 
+.howto-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.howto-header h2 {
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* Header bar – keep the strip but align with mg look */
 .howto-modal-header {
   display: flex;
