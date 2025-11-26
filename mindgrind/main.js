@@ -2924,7 +2924,7 @@ function init() {
   const navMenuStats        = document.getElementById("navMenuStats");
   const navMenuProfile      = document.getElementById("navMenuProfile");
   const navMenuLogout       = document.getElementById("navMenuLogout");
-  const navMenuContinue     = document.getElementById("navMenuContinue");
+  // const navMenuContinue     = document.getElementById("navMenuContinue");
   const navMenuSettings     = document.getElementById("navMenuSettings");
   const navMenuAbout        = document.getElementById("navMenuAbout");
 
@@ -3009,12 +3009,14 @@ function init() {
     });
   }
 
+  /*
   if (navMenuContinue) {
     navMenuContinue.addEventListener("click", () => {
       closeNavMenu();
       // Game just continues; nothing special to do.
     });
   }
+  */
 
   if (navMenuSettings) {
     navMenuSettings.addEventListener("click", () => {
