@@ -2963,10 +2963,10 @@ function init() {
     });
   }
 
-  if (navMenuLeaderboard && leaderboardList) {
+  if (navMenuLeaderboard) {
     navMenuLeaderboard.addEventListener("click", () => {
       closeNavMenu();
-      leaderboardList.scrollIntoView({ behavior: "smooth", block: "start" });
+      openLeaderboard();
     });
   }
 
