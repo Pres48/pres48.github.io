@@ -524,7 +524,7 @@ function renderIdleGrid() {
       valueEl.className = "tile-value";
 
       // Idle board = pure color / frame only
-      label.textContent = "";
+      // label.textContent = "";
       valueEl.textContent = "";
 
       tileEl.appendChild(label);
