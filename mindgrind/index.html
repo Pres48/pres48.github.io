@@ -283,20 +283,22 @@
 
 
 
-<!-- HOW TO PLAY MODAL -->
-<div class="howto-backdrop" id="howToPlayBackdrop" hidden>
-  <div class="howto-modal" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
 
+
+  
+
+
+<!-- HOW TO PLAY MODAL -->
+<!-- <div class="howto-backdrop" id="howToPlayBackdrop" hidden> -->
+<!--   <div class="howto-modal" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle"> -->
+
+<div id="mg-modal-overlay" class="mg-overlay hidden">
+  <div class="mg-modal">
+    
     <header class="howto-header howto-modal-header">
-      <h2 id="howToPlayTitle" class="howto-modal-title">How to Play</h2>
-      <button
-        type="button"
-        class="howto-modal-close"
-        id="closeHowToPlay"
-        aria-label="Close how to play"
-      >
-        ✕
-      </button>
+      <!-- <h2 id="howToPlayTitle" class="howto-modal-title">How to Play</h2> -->
+      <h2 id="mg-title" class="mg-title">How to Play</h2>
+      <button id="mg-close" class="mg-close">✕</button>
     </header>
 
     <div class="howto-body">
@@ -494,6 +496,7 @@
     </div>
   </div>
 </div>
+
   
 
 <!-- AUTH MODAL -->
