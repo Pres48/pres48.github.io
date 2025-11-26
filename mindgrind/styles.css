@@ -2148,12 +2148,13 @@ body.reduced-motion * {
 .nav-menu-item {
   width: 100%;
   text-align: left;
-  border-radius: 999px;
-  border: none;
+  background: none;
+  /*border-radius: 999px;*/
+  /*border: none;*/
   padding: 8px 12px;
   font-size: 0.9rem;
   font-weight: 500;
-  background: rgba(15, 23, 42, 0.9);
+  /*background: rgba(15, 23, 42, 0.9);*/
   color: #e5e7eb;
   cursor: pointer;
   display: flex;
