@@ -2268,6 +2268,15 @@ body.reduced-motion * {
 
 /* ========== RESPONSIVE BEHAVIOR ========== */
 
+/* Mobile: hide sidebar leaderboard, use modal instead */
+@media (max-width: 800px) {
+  .leaderboard-panel {
+    display: none;
+  }
+}
+
+
+
 /* On smaller screens: hide user-status + info icon, show menu button */
 @media (max-width: 800px) {
   .user-status {
