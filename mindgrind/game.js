@@ -219,20 +219,20 @@ export function getDifficultyForLevel(level) {
   // const riskWeight   = 1 + Math.min(2, Math.floor(level / 10));    // 1 → 3  →                 11% to 17%  →  4 to 6 tiles (8)
   // const numberWeight = 6;                                          // stays 6  →  9 to 17  →   66% to 43%  →  24 to 15 tiles (21)
 
-  // const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20)); // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
-  // const chainWeight  = 2 + Math.min(2, Math.floor(level / 25)); // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
-  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2  →                 7% to 11%   →  3 to 4 tiles (5)
-  // const numberWeight = 9;                                       // stays 9  →  14 to 19  →  64% to 47%  →  23 to 17 tiles (23)
+  const bonusWeight  = 2 + Math.min(2, Math.floor(level / 20));       // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
+  const chainWeight  = 2 + Math.min(2, Math.floor(level / 25));       // 2 → 4  →                 14% to 21%  →  5 to 7 tiles (10)
+  const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));       // 1 → 2  →                 7% to 11%   →  3 to 4 tiles (5)
+  const numberWeight = 9;                                             // stays 9  →  14 to 19  →  64% to 47%  →  23 to 17 tiles (23)
 
-  // const bonusWeight  = 2 + Math.min(1, Math.floor(level / 20)); // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
-  // const chainWeight  = 2 + Math.min(1, Math.floor(level / 25)); // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
-  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30)); // 1 → 2  →                 7% to 12%   →  3 to 4 tiles (6)
-  // const numberWeight = 9;                                       // stays 9  →  14 to 17  →  64% to 53%  →  23 to 19 tiles (26)
+  // const bonusWeight  = 2 + Math.min(1, Math.floor(level / 20));    // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
+  // const chainWeight  = 2 + Math.min(1, Math.floor(level / 25));    // 2 → 3  →                 14% to 17%  →  5 to 6 tiles (8)
+  // const riskWeight   = 1 + Math.min(1, Math.floor(level / 30));    // 1 → 2  →                 7% to 12%   →  3 to 4 tiles (6)
+  // const numberWeight = 9;                                          // stays 9  →  14 to 17  →  64% to 53%  →  23 to 19 tiles (26)
 
-  const bonusWeight  = 1 + Math.min(2, Math.floor(level / 20));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
-  const chainWeight  = 1 + Math.min(2, Math.floor(level / 25));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
-  const riskWeight   = 1 + Math.min(0.5, Math.floor(level / 30));  // 1 → 1.5  →               9% to 10%   →  3 to 4 tiles (5)
-  const numberWeight = 8;                                          // stays 8  → 11 to 15.5 →  72% to 53%  →  26 to 19 tiles (25)
+  // const bonusWeight  = 1 + Math.min(2, Math.floor(level / 20));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
+  // const chainWeight  = 1 + Math.min(2, Math.floor(level / 25));    // 1 → 3  →                 9% to 19%  →   3 to 7 tiles (9)
+  // const riskWeight   = 1 + Math.min(0.5, Math.floor(level / 30));  // 1 → 1.5  →               9% to 10%   →  3 to 4 tiles (5)
+  // const numberWeight = 8;                                          // stays 8  → 11 to 15.5 →  72% to 53%  →  26 to 19 tiles (25)
   
   // 9, 9, 5, 26  →   3, 3, 1.5, 8
   // 18.4%, 18.4%. 10.2%, 53%  →   
