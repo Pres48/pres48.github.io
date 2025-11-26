@@ -523,6 +523,23 @@ function renderIdleGrid() {
       const valueEl = document.createElement("span");
       valueEl.className = "tile-value";
 
+      // (adjust this mapping to match your actual labels)
+      const typeToLabel = {
+        number: "NUMBER",
+        bonus:  "BONUS",
+        chain:  "CHAIN",
+        risk:   "RISK",
+        rare:   "RARE",
+        epic:   "EPIC",
+        legend: "LEGEND",
+        mythic: "MYTHIC",
+        relic:  "RELIC",
+        exotic: "EXOTIC",
+        cosmic: "COSMIC"
+      };
+
+      label.textContent = typeToLabel[type] || "";
+
       // Idle board = pure color / frame only
       // label.textContent = "";
       valueEl.textContent = "";
