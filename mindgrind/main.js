@@ -49,7 +49,8 @@ const bestLevelDisplay = document.getElementById("bestLevelDisplay");
 const saveScoreButton = document.getElementById("saveScoreButton");
 const saveStatus = document.getElementById("saveStatus");
 const lastMoveDisplay = document.getElementById("lastMoveDisplay");
-const leaderboardListSidebar = document.getElementById("leaderboardList");
+
+const leaderboardListSidebar = document.getElementById("leaderboardListSidebar");
 const leaderboardListModal   = document.getElementById("leaderboardListModal");
 
 const levelGoals = document.getElementById("levelGoals");
@@ -2347,7 +2348,8 @@ async function loadLeaderboard() {
   const lists = [leaderboardListSidebar, leaderboardListModal].filter(Boolean);
   if (!lists.length) return;
 
-  lists.forEach(list => {
+  // show loading in all visible lists
+  lists.forEach((list) => {
     list.innerHTML = `<p class="soft-text">Loading…</p>`;
   });
 
@@ -2355,13 +2357,13 @@ async function loadLeaderboard() {
     const rows = await fetchTopScores();
 
     if (!rows || rows.length === 0) {
-      lists.forEach(list => {
+      lists.forEach((list) => {
         list.innerHTML = `<p class="soft-text">No scores yet. Be the first!</p>`;
       });
       return;
     }
 
-    lists.forEach(list => {
+    lists.forEach((list) => {
       list.innerHTML = "";
       const fragment = document.createDocumentFragment();
 
@@ -2392,11 +2394,11 @@ async function loadLeaderboard() {
         fragment.appendChild(div);
       });
 
-      list.appendChild(fragment.cloneNode(true));
+      list.appendChild(fragment);
     });
   } catch (err) {
     console.error("Leaderboard load error:", err);
-    lists.forEach(list => {
+    lists.forEach((list) => {
       list.innerHTML = `<p class="soft-text">Error loading leaderboard.</p>`;
     });
   }
