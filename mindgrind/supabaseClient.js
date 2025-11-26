@@ -130,7 +130,7 @@ export async function saveScoreToSupabase(name, score, level, existingId = null)
   return data.id;
 }
 
-export async function fetchTopScores(limit = 15) {
+export async function fetchTopScores(limit = 20) {
   const { data, error } = await supabase
     .from("scores")
     .select("id, name, score, level, created_at")
