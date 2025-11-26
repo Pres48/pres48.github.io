@@ -339,21 +339,7 @@ body {
 .tile.idle-tile {
   cursor: default;
 }
-  /*opacity: 0.9;  subtle difference from live tiles
-}
 
-.idle-tile.type-rare,
-.idle-tile.type-epic,
-.idle-tile.type-legend,
-.idle-tile.type-mythic,
-.idle-tile.type-relic,
-.idle-tile.type-exotic,
-.idle-tile.type-cosmic {
-  transform: scale(1.07);
-  outline: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
- */
 
 
 /* === FIREWORKS OVERLAY === */
@@ -517,70 +503,6 @@ body {
 .unit {
   white-space: nowrap;
 }
-
-
-
-
- /* --- NEW: Modal tightening (keep 3 columns) --- */
-
-  .mg-modal {
-    padding: 18px 14px 16px;
-    max-width: 100%;
-  }
-
-  .mg-title {
-    font-size: 22px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-  }
-
-  .mg-subtitle {
-    font-size: 13px;
-    margin-bottom: 2px;
-  }
-
-  .mg-extra {
-    font-size: 12px;
-    line-height: 1.35;
-    margin-bottom: 12px;
-  }
-
-  /* Keep 3 columns, reduce spacing & padding */
-  .mg-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px 6px;         /* tightened */
-    margin: 10px 0 12px;  /* less vertical spacing */
-  }
-
-  .mg-stat-value {
-    font-size: 18px;      /* slightly smaller for phone */
-    margin-bottom: 2px;
-  }
-
-  .mg-stat-label {
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    opacity: 0.7;
-  }
-
-  /* Primary CTA button */
-  #mg-next {
-    font-size: 16px;
-    padding: 12px 14px;
-    margin-top: 8px;
-    width: 100%;   /* makes it cleaner on narrow phones */
-  }
-
-  /* Secondary buttons */
-  .mg-btn.mg-secondary {
-    font-size: 15px;
-    padding: 11px 14px;
-    width: 100%;
-  }
-}
-
-
-
 
 
 
@@ -768,6 +690,75 @@ body {
   opacity: 0.65; /* not fully dim yet */
   filter: saturate(0.9) brightness(1.05);
 }
+
+
+
+
+
+ /* --- NEW: Modal tightening (keep 3 columns) --- */
+
+  .mg-modal {
+    padding: 18px 14px 16px;
+    max-width: 100%;
+  }
+
+  .mg-title {
+    font-size: 22px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .mg-subtitle {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .mg-extra {
+    font-size: 12px;
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
+
+  /* Keep 3 columns, reduce spacing & padding */
+  .mg-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 6px;         /* tightened */
+    margin: 10px 0 12px;  /* less vertical spacing */
+  }
+
+  .mg-stat-value {
+    font-size: 18px;      /* slightly smaller for phone */
+    margin-bottom: 2px;
+  }
+
+  .mg-stat-label {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+  }
+
+  /* Primary CTA button */
+  #mg-next {
+    font-size: 16px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    width: 100%;   /* makes it cleaner on narrow phones */
+  }
+
+  /* Secondary buttons */
+  .mg-btn.mg-secondary {
+    font-size: 15px;
+    padding: 11px 14px;
+    width: 100%;
+  }
+}
+
+
+
+
+
+
+
 
 
 
