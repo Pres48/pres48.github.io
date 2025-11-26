@@ -176,7 +176,7 @@
 
         
         <!-- GLOBAL LEADERBOARD (SUPABASE) -->
-        <section class="panel-block">
+        <section class="panel-block leaderboard-panel">
           <div class="panel-header-with-icon">
             <h2>Leaderboard</h2>
             <button
@@ -209,15 +209,19 @@
             </div>
           </div>
         
+          <!-- DESKTOP/TABLET LIST -->
           <div id="leaderboardListSidebar" class="leaderboard-list">
             <p class="soft-text">Loading…</p>
           </div>
-
         </section>
+
       </aside>
 
     </main>
   </div>
+
+
+  
 
   <script type="module" src="main.js"></script>
 
@@ -759,8 +763,7 @@
 
 
 
-<!-- LEADERBOARD CARD -->
-  
+<!-- LEADERBOARD MODAL -->
 <div class="leaderboard-backdrop hidden" id="leaderboardOverlay">
   <div class="leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="LeaderboardTitle">
     <header class="leaderboard-header">
@@ -770,16 +773,20 @@
         class="leaderboard-modal-close"
         id="leaderboardCloseButton"
         aria-label="Close leaderboard"
-      >✕</button>
+      >
+        ✕
+      </button>
     </header>
 
     <div class="leaderboard-body">
+      <!-- MOBILE MODAL LIST -->
       <div id="leaderboardListModal" class="leaderboard-list">
         <p class="soft-text">Loading…</p>
       </div>
     </div>
   </div>
 </div>
+
 
 
 
