@@ -1575,6 +1575,7 @@ button:disabled {
 .about-text {
   margin: 6px 0 6px;
   color: #d1d5db;
+  margin-top: 20px;
 }
 
 .about-list {
@@ -1595,6 +1596,7 @@ button:disabled {
   margin: 4px 0 0;
   font-size: 0.75rem;
   color: #9ca3af;
+  margin-top: 20px;
 }
 
 
